@@ -3,6 +3,7 @@ import { FontAwesome5, MaterialCommunityIcons, FontAwesome6 } from "@expo/vector
 import { Tabs } from "expo-router";
 import React from "react";
 import { Platform, StyleSheet, Text, View } from "react-native";
+import TennisShoe from '@/assets/icons/tennis-shoe.svg'
 
 export default function TabLayout() {
   return (
@@ -62,11 +63,7 @@ export default function TabLayout() {
           title: "Nutri",
           tabBarIcon: ({ focused }) => (
             <View style={[styles.tab_selected_base, focused && styles.tab_selected_active]}>
-              <MaterialCommunityIcons
-                size={28}
-                name="shoe-sneaker"
-                color={focused ? "white" : Colors.light.darkgray}
-              />
+              <TennisShoe fill={focused ? "white": Colors.light.darkgray}/>
             </View>
           ),
           tabBarLabel: ({ focused }) => (
