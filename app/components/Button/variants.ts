@@ -25,3 +25,12 @@ export const VariantText = StyleSheet.create({
     fontWeight: "800",
   },
 });
+
+export const DisabledButton = StyleSheet.create({
+  container: {
+    opacity: 0.5,
+  },
+  text: {
+    opacity: 1,
+  },
+});
