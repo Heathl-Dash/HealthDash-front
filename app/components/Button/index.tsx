@@ -1,5 +1,13 @@
 import React from "react";
-import { Pressable, StyleProp, StyleSheet, Text, TextStyle, ViewStyle } from "react-native";
+import {
+  ActivityIndicator,
+  Pressable,
+  StyleProp,
+  StyleSheet,
+  Text,
+  TextStyle,
+  ViewStyle,
+} from "react-native";
 import { DisabledButton, Variants, VariantText } from "./variants";
 
 type ButtonVariants = keyof typeof Variants;
@@ -10,6 +18,7 @@ interface ButtonProps {
   style?: StyleProp<ViewStyle>;
   styleText?: StyleProp<TextStyle>;
   isDisable?: boolean;
+  isLoading?: boolean;
   icon?: React.ReactNode;
   iconPosition?: "start" | "end";
   onPress: () => void;
@@ -20,8 +29,9 @@ const Button = ({
   variant,
   onPress,
   isDisable,
+  isLoading,
   icon,
-  iconPosition,
+  iconPosition = "start",
   style,
   styleText,
 }: ButtonProps) => {
@@ -32,18 +42,22 @@ const Button = ({
         Variants[variant],
         style,
         isDisable && DisabledButton.container,
-        iconPosition === "end" && { flexDirection: "row-reverse" },
         pressed && styles.buttonPressed,
+        isLoading && styles.buttonLoading
       ]}
       onPress={onPress}
       disabled={isDisable}
     >
-      {icon && icon}
-      <Text
-        style={[VariantText[variant], styleText, isDisable && DisabledButton.text]}
-      >
+      {isLoading && (
+        <ActivityIndicator
+          color={StyleSheet.flatten(styleText)?.color || VariantText[variant].color}
+        />
+      )}
+      {icon && iconPosition === "start" && icon}
+      <Text style={[VariantText[variant], styleText, isDisable && DisabledButton.text]}>
         {title}
       </Text>
+      {icon && iconPosition === "end" && icon}
     </Pressable>
   );
 };
@@ -63,4 +77,7 @@ const styles = StyleSheet.create({
   buttonPressed: {
     opacity: 0.7,
   },
+  buttonLoading:{
+    opacity: 0.7,
+  }
 });
