@@ -10,23 +10,40 @@ interface ButtonProps {
   style?: StyleProp<ViewStyle>;
   styleText?: StyleProp<TextStyle>;
   isDisable?: boolean;
-  onPress: () => any;
+  icon?: React.ReactNode;
+  iconPosition?: "start" | "end";
+  onPress: () => void;
 }
 
-const Button = ({ title, variant, onPress, isDisable, style, styleText }: ButtonProps) => {
+const Button = ({
+  title,
+  variant,
+  onPress,
+  isDisable,
+  icon,
+  iconPosition,
+  style,
+  styleText,
+}: ButtonProps) => {
   return (
     <Pressable
       style={({ pressed }) => [
         styles.button,
         Variants[variant],
-        style && style,
+        style,
         isDisable && DisabledButton.container,
+        iconPosition === "end" && { flexDirection: "row-reverse" },
         pressed && styles.buttonPressed,
       ]}
       onPress={onPress}
       disabled={isDisable}
     >
-      <Text style={[VariantText[variant], styleText && styleText, isDisable && DisabledButton.text]}>{title}</Text>
+      {icon && icon}
+      <Text
+        style={[VariantText[variant], styleText, isDisable && DisabledButton.text]}
+      >
+        {title}
+      </Text>
     </Pressable>
   );
 };
@@ -36,6 +53,8 @@ export default Button;
 const styles = StyleSheet.create({
   button: {
     width: "100%",
+    flexDirection: "row",
+    gap: 10,
     padding: 8,
     borderRadius: 8,
     justifyContent: "center",
