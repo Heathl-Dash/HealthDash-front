@@ -24,7 +24,7 @@ interface ButtonProps {
   onPress: () => void;
 }
 
-const Button = ({
+const CustomButton = ({
   title,
   variant,
   onPress,
@@ -62,7 +62,7 @@ const Button = ({
   );
 };
 
-export default Button;
+export default CustomButton;
 
 const styles = StyleSheet.create({
   button: {
