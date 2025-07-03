@@ -1,7 +1,7 @@
 import GlassIcon from "@/assets/images/bottles/glass.svg";
 import { Colors } from "@/constants/Colors";
 import React, { useEffect, useState } from "react";
-import { StyleSheet, TouchableOpacity, ViewStyle } from "react-native";
+import { StyleSheet, TouchableOpacity, View, ViewStyle } from "react-native";
 
 type WidthProp = number | `${number}%`;
 
@@ -12,17 +12,11 @@ interface WaterButtonProp {
   onPress: () => void;
 }
 
-const WaterButton = ({
-  waterGoal,
-  mlDrinked,
-  width,
-  onPress,
-}: WaterButtonProp) => {
+const WaterButton = ({ waterGoal, mlDrinked, width, onPress }: WaterButtonProp) => {
   const [levelStyle, setLevelStyle] = useState("fistLevel");
+  const waterLevel = Math.min((mlDrinked / waterGoal) * 100, 100);
 
   useEffect(() => {
-    const waterLevel = (mlDrinked / waterGoal) * 100;
-
     const handleLevelStyle = (waterLevel: number) => {
       if (waterLevel < 25) {
         setLevelStyle("fistLevel");
@@ -42,28 +36,54 @@ const WaterButton = ({
       }
     };
     handleLevelStyle(waterLevel);
-  }, [mlDrinked, waterGoal]);
+    console.log(waterLevel)
+  }, [mlDrinked, waterGoal, waterLevel]);
 
   const dynamicWidthStyle: ViewStyle = width !== undefined ? { width } : {};
 
   return (
-    <TouchableOpacity
-      onPress={onPress}
-      style={[
-        styles.container,
-        styles[levelStyle as keyof typeof styles],
-        dynamicWidthStyle,
-      ]}
-    >
-      <GlassIcon />
-    </TouchableOpacity>
+    <View style={[styles.progressBorderContainer, dynamicWidthStyle]}>
+      <View
+        style={[
+          styles.progressBorder,
+          {
+            width: `${waterLevel}%`,
+            backgroundColor: "transparent",
+            borderColor: "#78F75F",
+          },
+        ]}
+      />
+      <TouchableOpacity
+        onPress={onPress}
+        style={[styles.container, styles[levelStyle as keyof typeof styles]]}
+        activeOpacity={0.8}
+      >
+        <GlassIcon />
+      </TouchableOpacity>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  progressBorderContainer: {
+    position: "relative",
+    width: "100%",
+    aspectRatio: 4 / 3,
+    justifyContent: "center",
+    alignItems: "flex-start",
+    borderRadius: 20,
+    overflow: "hidden",
+    backgroundColor: "transparent",
+  },
+  progressBorder: {
+    position: "absolute",
+    height: "100%",
+    borderWidth: 8,
+    borderRadius: 20,
+  },
   container: {
     width: '100%',
-    aspectRatio: 4 /3,
+    height: '95%',
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 20,
@@ -83,3 +103,4 @@ const styles = StyleSheet.create({
 });
 
 export default WaterButton;
+  
