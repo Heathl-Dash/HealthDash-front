@@ -30,6 +30,10 @@ const WaterButton = ({ waterGoal, mlDrinked, width, onPress }: WaterButtonProp) 
         setLevelStyle("thirdLevel");
         return;
       }
+       if (waterLevel < 100) {
+        setLevelStyle("fourthLevel");
+        return;
+      }
       if (waterLevel >= 100) {
         setLevelStyle("successLevel");
         return;
@@ -95,10 +99,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#FF9F41",
   },
   thirdLevel: {
+    backgroundColor: "#e4b92b"
+  },
+  fourthLevel:{
     backgroundColor: "#4FACF7",
   },
   successLevel: {
-    backgroundColor: "#78F75F",
+    backgroundColor: "#4dc236",
   },
 });
 
