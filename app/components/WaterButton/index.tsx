@@ -1,7 +1,8 @@
 import GlassIcon from "@/assets/images/bottles/glass.svg";
 import { Colors } from "@/constants/Colors";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { StyleSheet, TouchableOpacity, View, ViewStyle } from "react-native";
+import useWaterButton from "./useWaterButton";
 
 type WidthProp = number | `${number}%`;
 
@@ -13,35 +14,10 @@ interface WaterButtonProp {
 }
 
 const WaterButton = ({ waterGoal, mlDrinked, width, onPress }: WaterButtonProp) => {
-  const [levelStyle, setLevelStyle] = useState("fistLevel");
-  const waterLevel = Math.min((mlDrinked / waterGoal) * 100, 100);
-
-  useEffect(() => {
-    const handleLevelStyle = (waterLevel: number) => {
-      if (waterLevel < 25) {
-        setLevelStyle("fistLevel");
-        return;
-      }
-      if (waterLevel < 50) {
-        setLevelStyle("secondLevel");
-        return;
-      }
-      if (waterLevel < 75) {
-        setLevelStyle("thirdLevel");
-        return;
-      }
-       if (waterLevel < 100) {
-        setLevelStyle("fourthLevel");
-        return;
-      }
-      if (waterLevel >= 100) {
-        setLevelStyle("successLevel");
-        return;
-      }
-    };
-    handleLevelStyle(waterLevel);
-    console.log(waterLevel)
-  }, [mlDrinked, waterGoal, waterLevel]);
+  const { waterLevel, levelStyle } = useWaterButton({
+    mlDrinked,
+    waterGoal,
+  });
 
   const dynamicWidthStyle: ViewStyle = width !== undefined ? { width } : {};
 
@@ -52,8 +28,6 @@ const WaterButton = ({ waterGoal, mlDrinked, width, onPress }: WaterButtonProp) 
           styles.progressBorder,
           {
             width: `${waterLevel}%`,
-            backgroundColor: "transparent",
-            borderColor: "#78F75F",
           },
         ]}
       />
@@ -84,10 +58,11 @@ const styles = StyleSheet.create({
     height: "100%",
     borderWidth: 8,
     borderRadius: 20,
+    borderColor: "#78F75F",
   },
   container: {
-    width: '100%',
-    height: '95%',
+    width: "100%",
+    height: "95%",
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 20,
@@ -99,9 +74,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#FF9F41",
   },
   thirdLevel: {
-    backgroundColor: "#e4b92b"
+    backgroundColor: "#ecc02f",
   },
-  fourthLevel:{
+  fourthLevel: {
     backgroundColor: "#4FACF7",
   },
   successLevel: {
@@ -110,4 +85,3 @@ const styles = StyleSheet.create({
 });
 
 export default WaterButton;
-  
