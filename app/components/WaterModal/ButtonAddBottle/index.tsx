@@ -15,10 +15,12 @@ export default ButtonAddBottle;
 const styles = StyleSheet.create({
   container: {
     borderWidth: 1,
+    minWidth: 100,
+    minHeight: 144,
     borderColor: "white",
     paddingHorizontal: 10,
     paddingVertical: 30,
-    borderRadius: 20,
+    borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
   },

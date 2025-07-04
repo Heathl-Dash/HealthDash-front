@@ -33,13 +33,13 @@ const WaterModel = ({ bottles, visible, onClose }: WaterModelProps) => {
             )}
             {bottles.length == 1 && (
               <View style={styles.bottlesContent}>
-                <ButtonAddBottle />
                 <BottleButton
                   name={bottles[0].bottle_name}
                   mlCapacity={bottles[0].ml_bottle}
                   bottleStyle={bottles[0].id_bottle_style}
                   onPress={() => {}}
                 />
+                <ButtonAddBottle />
               </View>
             )}
             {bottles.length >= 2 && (
@@ -124,7 +124,6 @@ const styles = StyleSheet.create({
   bottlesContent: {
     flexDirection: "row",
     justifyContent: "center",
-    alignItems: "center",
     gap: 12,
     paddingVertical: 30,
     flexWrap: "wrap",
