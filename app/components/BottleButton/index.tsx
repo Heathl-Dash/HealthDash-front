@@ -48,7 +48,7 @@ export default BottleButton;
 const styles = StyleSheet.create({
   bottleButtonContainer: {
     alignSelf: "flex-start",
-    minWidth: 110,
+    minWidth: 100,
     padding: 10,
     borderWidth: 1,
     borderColor: "white",

@@ -1,7 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { Modal, StyleSheet, Text, View } from "react-native";
+import BottleButton from "../BottleButton";
 import CustomButton from "../CustomButton";
+import ButtonAddBottle from "./ButtonAddBottle";
 
 interface WaterModelProps {
   bottles: IBottle[];
@@ -15,24 +17,57 @@ const WaterModel = ({ bottles, visible, onClose }: WaterModelProps) => {
       <View style={styles.modalBackGround}>
         <View style={styles.container}>
           <Text style={styles.title}>Registre seu consumo de água</Text>
-          <View>
+          <View style={styles.bottlesContainer}>
             {bottles.length == 0 && (
               <View>
                 <Text style={styles.noBottleText}>Cadastre sua primeira garrafa!</Text>
-                <View></View>
+                <View style={styles.bottlesContent}>
+                  <ButtonAddBottle />
+                </View>
               </View>
             )}
+            {bottles.length == 1 && (
+              <View style={styles.bottlesContent}>
+                <ButtonAddBottle />
+                <BottleButton
+                  name={bottles[0].bottle_name}
+                  mlCapacity={bottles[0].ml_bottle}
+                  bottleStyle={bottles[0].id_bottle_style}
+                  onPress={() => {}}
+                />
+              </View>
+            )}
+            {bottles.length >= 2 && (
+              <>
+                <View
+                  style={[
+                    styles.bottlesContent,
+                    { justifyContent: "center"},
+                  ]}
+                >
+                  {bottles.map((bottle) => (
+                    <BottleButton
+                      key={bottle.water_bottle_id}
+                      mlCapacity={bottle.ml_bottle}
+                      name={bottle.bottle_name}
+                      bottleStyle={bottle.id_bottle_style}
+                      onPress={() => {}}
+                    />
+                  ))}
+                </View>
+                <View style={{ width: "100%", alignItems: "flex-end" }}>
+                  <CustomButton
+                    title="Adicionar garrafa"
+                    variant="outLine"
+                    style={{ borderColor: "white", width: 190, opacity: 0.9 }}
+                    styleText={{ color: "white" }}
+                    icon={<Ionicons name="add" color="white" size={24} />}
+                    onPress={() => {}}
+                  />
+                </View>
+              </>
+            )}
           </View>
-          {bottles.length > 2 && (
-            <CustomButton
-              title="Adicionar garrafa"
-              variant="outLine"
-              style={{ borderColor: "white" }}
-              styleText={{ color: "white" }}
-              icon={<Ionicons name="add" color="white" size={24} />}
-              onPress={() => {}}
-            />
-          )}
         </View>
       </View>
     </Modal>
@@ -50,12 +85,14 @@ const styles = StyleSheet.create({
   },
   container: {
     width: "90%",
-    justifyContent: "center",
+    justifyContent: "flex-start",
     alignItems: "center",
-    padding: 20,
+    paddingVertical: 20,
+    paddingHorizontal: 15,
     borderRadius: 20,
     textAlign: "center",
     backgroundColor: "#6CA1D7",
+    minHeight: 300,
   },
   title: {
     fontSize: 16,
@@ -66,5 +103,18 @@ const styles = StyleSheet.create({
     color: "white",
     textAlign: "center",
     marginVertical: 16,
+  },
+  bottlesContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    width: '100%'
+  },
+  bottlesContent: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 12,
+    paddingVertical: 30,
+    flexWrap: "wrap",
   },
 });
