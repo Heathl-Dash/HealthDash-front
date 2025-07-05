@@ -63,6 +63,7 @@ const WaterModel = ({ bottles, visible, onClose }: WaterModelProps) => {
                     styleText={{ color: "white" }}
                     icon={<Ionicons name="add" color="white" size={24} />}
                     onPress={() => {}}
+                    isDisable={bottles.length >= 6}
                   />
                 </View>
               </>
