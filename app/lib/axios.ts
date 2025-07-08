@@ -16,6 +16,15 @@ export const getWaterGoal = ()=> {
     throw err;
   });
 };
+export const editWaterGoal = (data:Partial<IWaterGoal>)=> {
+  return apiGateway
+  .patch<IWaterGoal>("nutri/water_goal/", data)
+  .then((res) => res.data)
+  .catch((err) => {
+    console.error("Erro ao buscar meta de agua: ", err);
+    throw err;
+  });
+};
 
 export const getBottles = () => {
   return apiGateway

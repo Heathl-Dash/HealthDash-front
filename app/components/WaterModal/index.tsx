@@ -9,10 +9,10 @@ interface WaterModalProps {
   bottles: IBottle[];
   visible: boolean;
   onClose: () => void;
+  onPressBottleButton: (bottle: IBottle) => void;
 }
 
-const WaterModal = ({ bottles, visible, onClose }: WaterModalProps) => {
-
+const WaterModal = ({ bottles, visible, onClose, onPressBottleButton }: WaterModalProps) => {
   return (
     <Modal visible={visible} onRequestClose={onClose} transparent>
       <Pressable style={styles.modalBackGround} onPress={onClose}>
@@ -38,7 +38,7 @@ const WaterModal = ({ bottles, visible, onClose }: WaterModalProps) => {
                   name={bottles[0].bottle_name}
                   mlCapacity={bottles[0].ml_bottle}
                   bottleStyle={bottles[0].id_bottle_style}
-                  onPress={() => {}}
+                  onPress={() => onPressBottleButton(bottles[0])}
                 />
                 <ButtonAddBottle />
               </View>
@@ -52,7 +52,7 @@ const WaterModal = ({ bottles, visible, onClose }: WaterModalProps) => {
                       mlCapacity={bottle.ml_bottle}
                       name={bottle.bottle_name}
                       bottleStyle={bottle.id_bottle_style}
-                      onPress={() => {}}
+                      onPress={() => onPressBottleButton(bottle)}
                     />
                   ))}
                 </View>

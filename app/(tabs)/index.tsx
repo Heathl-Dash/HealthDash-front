@@ -4,12 +4,8 @@ import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import WaterButton from "../components/WaterButton";
 import WaterModal from "../components/WaterModal";
-import { getWaterGoal } from "../lib/axios";
+import { editWaterGoal, getWaterGoal } from "../lib/axios";
 
-const WATER_GOAL: { ml_drinked: number; water_goal: number } = {
-  ml_drinked: 0,
-  water_goal: 3500,
-};
 
 export default function HomeScreen() {
   const [waterModalIsOpen, setWaterModalIsOpen] = useState(false);
@@ -19,16 +15,6 @@ export default function HomeScreen() {
     queryFn: getWaterGoal,
   });
 
-  // const {
-  //   data: bottles,
-  //   error,
-  //   isLoading,
-  //   refetch,
-  // } = useQuery({
-  //   queryKey: ["bottles"],
-  //   queryFn: getBottles,
-  //   enabled: false,
-  // });
 
   const queryClient = useQueryClient();
   const handleWaterButton = async () => {
@@ -37,6 +23,24 @@ export default function HomeScreen() {
     queryKey: ["waterGoal"],
   });
     
+  };
+
+  const handleBottleButton = async(bottle: IBottle) => {
+    if (!waterGoal) return
+
+    const newMlDrinked = waterGoal.ml_drinked + bottle.ml_bottle
+    
+    try {
+      await editWaterGoal({
+        ml_drinked: newMlDrinked,
+      });
+
+      await queryClient.invalidateQueries({
+        queryKey: ["waterGoal"],
+      });
+    } catch (err) {
+      console.error("Erro ao atualizar ml_drinked:", err);
+    }
   };
 
   const handleClose = () => {
@@ -60,9 +64,9 @@ export default function HomeScreen() {
         bottles={waterGoal?.bottles || []}
         onClose={handleClose}
         visible={waterModalIsOpen}
+        onPressBottleButton={handleBottleButton}
       />
 
-      {error && <Text style={styles.error}>Ocorreu um erro ao buscar dados: {String(error)}</Text>}
     </SafeAreaView>
   );
 }
@@ -76,23 +80,5 @@ const styles = StyleSheet.create({
   text: {
     color: "black",
     marginBottom: 20,
-  },
-  button: {
-    backgroundColor: "#007bff",
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 8,
-  },
-  buttonText: {
-    color: "#fff",
-    fontWeight: "bold",
-  },
-  error: {
-    color: "red",
-    marginTop: 20,
-  },
-  resultTitle: {
-    fontWeight: "bold",
-    marginBottom: 8,
   },
 });
