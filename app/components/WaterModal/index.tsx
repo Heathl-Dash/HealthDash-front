@@ -5,13 +5,14 @@ import BottleButton from "../BottleButton";
 import CustomButton from "../CustomButton";
 import ButtonAddBottle from "./ButtonAddBottle";
 
-interface WaterModelProps {
+interface WaterModalProps {
   bottles: IBottle[];
   visible: boolean;
   onClose: () => void;
 }
 
-const WaterModel = ({ bottles, visible, onClose }: WaterModelProps) => {
+const WaterModal = ({ bottles, visible, onClose }: WaterModalProps) => {
+
   return (
     <Modal visible={visible} onRequestClose={onClose} transparent>
       <Pressable style={styles.modalBackGround} onPress={onClose}>
@@ -23,7 +24,7 @@ const WaterModel = ({ bottles, visible, onClose }: WaterModelProps) => {
             </TouchableOpacity>
           </View>
           <View style={styles.bottlesContainer}>
-            {bottles.length == 0 && (
+            {bottles?.length == 0 && (
               <View>
                 <Text style={styles.noBottleText}>Cadastre sua primeira garrafa!</Text>
                 <View style={styles.bottlesContent}>
@@ -31,7 +32,7 @@ const WaterModel = ({ bottles, visible, onClose }: WaterModelProps) => {
                 </View>
               </View>
             )}
-            {bottles.length == 1 && (
+            {bottles?.length == 1 && (
               <View style={styles.bottlesContent}>
                 <BottleButton
                   name={bottles[0].bottle_name}
@@ -42,10 +43,10 @@ const WaterModel = ({ bottles, visible, onClose }: WaterModelProps) => {
                 <ButtonAddBottle />
               </View>
             )}
-            {bottles.length >= 2 && (
+            {bottles?.length >= 2 && (
               <>
                 <View style={[styles.bottlesContent, { justifyContent: "center" }]}>
-                  {bottles.map((bottle) => (
+                  {bottles?.map((bottle) => (
                     <BottleButton
                       key={bottle.water_bottle_id}
                       mlCapacity={bottle.ml_bottle}
@@ -74,7 +75,7 @@ const WaterModel = ({ bottles, visible, onClose }: WaterModelProps) => {
   );
 };
 
-export default WaterModel;
+export default WaterModal;
 
 const styles = StyleSheet.create({
   modalBackGround: {

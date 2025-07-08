@@ -7,6 +7,15 @@ const apiGateway = Axios.create({
   },
 });
 
+export const getWaterGoal = ()=> {
+  return apiGateway
+  .get<IWaterGoal>("nutri/water_goal/")
+  .then((res) => res.data)
+  .catch((err) => {
+    console.error("Erro ao buscar meta de agua: ", err);
+    throw err;
+  });
+};
 
 export const getBottles = () => {
   return apiGateway
