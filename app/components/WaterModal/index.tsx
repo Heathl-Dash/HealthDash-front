@@ -64,6 +64,7 @@ const WaterModal = ({ bottles, visible, onClose, onPressBottleButton }: WaterMod
                     styleText={{ color: "white" }}
                     icon={<Ionicons name="add" color="white" size={24} />}
                     onPress={() => {}}
+                    isDisable={bottles.length >= 6}
                   />
                 </View>
               </>
