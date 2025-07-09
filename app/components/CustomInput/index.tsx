@@ -8,12 +8,14 @@ import {
   TextInputProps,
   TextStyle,
   View,
+  ViewStyle,
 } from "react-native";
 
 interface CustomInputProps extends TextInputProps {
   label?: string;
   errorMessage?: string;
   style?: StyleProp<TextStyle>;
+  styleContainer?: StyleProp<ViewStyle>
 }
 
 const CustomInput = ({
@@ -25,12 +27,13 @@ const CustomInput = ({
   placeholder,
   secureTextEntry,
   keyboardType,
+  styleContainer,
   ...rest
 }: CustomInputProps) => {
   const flattenedStyle = StyleSheet.flatten(style) || {};
   const borderColor = flattenedStyle.borderColor;
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, styleContainer]}>
       {label && <Text style={[styles.label, { color: borderColor }]}>{label}:</Text>}
       <TextInput
         value={value}
@@ -51,7 +54,7 @@ export default CustomInput;
 
 const styles = StyleSheet.create({
   container: {
-    width: "100%",
+    width:'100%',
   },
   input: {
     width: "100%",

@@ -7,23 +7,23 @@ const apiGateway = Axios.create({
   },
 });
 
-export const getWaterGoal = ()=> {
+export const getWaterGoal = () => {
   return apiGateway
-  .get<IWaterGoal>("nutri/water_goal/")
-  .then((res) => res.data)
-  .catch((err) => {
-    console.error("Erro ao buscar meta de agua: ", err);
-    throw err;
-  });
+    .get<IWaterGoal>("nutri/water_goal/")
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("Erro ao buscar meta de agua: ", err);
+      throw err;
+    });
 };
-export const editWaterGoal = (data:Partial<IWaterGoal>)=> {
+export const editWaterGoal = (data: Partial<IWaterGoal>) => {
   return apiGateway
-  .patch<IWaterGoal>("nutri/water_goal/", data)
-  .then((res) => res.data)
-  .catch((err) => {
-    console.error("Erro ao buscar meta de agua: ", err);
-    throw err;
-  });
+    .patch<IWaterGoal>("nutri/water_goal/", data)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("Erro ao buscar meta de agua: ", err);
+      throw err;
+    });
 };
 
 export const getBottles = () => {
@@ -41,7 +41,17 @@ export const createBottles = (data: Partial<IBottle>) => {
     .post("nutri/water_bottle/", data)
     .then((res) => res.data)
     .catch((err) => {
-      console.error("Erro ao buscar garrafas: ", err);
+      console.error("Erro ao criar garrafas: ", err);
+      throw err;
+    });
+};
+
+export const postNutritionInfo = (data: { aliment: string }) => {
+  return apiGateway
+    .post("nutri/nutrition-info-ai-request", data)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("Erro ao pesquisar informações nutricionais: ", err);
       throw err;
     });
 };
