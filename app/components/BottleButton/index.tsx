@@ -4,11 +4,13 @@ import PlasticBottle from "@/assets/images/bottles/platicBottle.svg";
 import SportBottle from "@/assets/images/bottles/sportBottle.svg";
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Variant, VariantIcon } from "./variant";
 
 interface BottleButtonProps {
   name: string;
   mlCapacity: number;
   bottleStyle?: number;
+  variant?: keyof typeof Variant;
   onPress: () => void;
 }
 
@@ -19,17 +21,21 @@ const BOTTLES = [
   { id: 4, image: Bottle },
 ];
 
-const BottleButton = ({ name, mlCapacity, bottleStyle, onPress }: BottleButtonProps) => {
+const BottleButton = ({ name, mlCapacity, bottleStyle, onPress, variant }: BottleButtonProps) => {
   const BottleIcon = BOTTLES.find((bottle) => bottleStyle === bottle.id)?.image;
   return (
     <Pressable
       onPress={onPress}
-      style={({ pressed }) => [styles.bottleButtonContainer, pressed && styles.buttonPressed]}
+      style={({ pressed }) => [
+        styles.bottleButtonContainer,
+        variant && Variant[variant],
+        pressed && styles.buttonPressed,
+      ]}
     >
       <Text style={styles.bottleTitle}>{name}</Text>
-      <View style={{ height: 65 }}>
+      <View style={[variant ? VariantIcon[variant] : {height: 65}]}>
         {BottleIcon ? (
-          <BottleIcon height={65} preserveAspectRatio="xMidYMid meet" />
+          <BottleIcon height={[variant ? VariantIcon[variant].height : 65]} stpreserveAspectRatio="xMidYMid meet" />
         ) : (
           <Glass height={65} preserveAspectRatio="xMidYMid meet" />
         )}
