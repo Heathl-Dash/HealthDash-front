@@ -170,7 +170,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   container: {
-    position: "fixed",
     width: "90%",
     justifyContent: "flex-start",
     alignItems: "center",

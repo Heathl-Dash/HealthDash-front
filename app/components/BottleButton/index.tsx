@@ -11,7 +11,7 @@ interface BottleButtonProps {
   mlCapacity: number;
   bottleStyle?: number;
   variant?: keyof typeof Variant;
-  isSelected?: boolean
+  isSelected?: boolean;
   onPress: () => void;
 }
 
@@ -22,7 +22,14 @@ const BOTTLES = [
   { id: 4, image: Bottle },
 ];
 
-const BottleButton = ({ name, mlCapacity, bottleStyle, onPress, variant, isSelected }: BottleButtonProps) => {
+const BottleButton = ({
+  name,
+  mlCapacity,
+  bottleStyle,
+  onPress,
+  variant,
+  isSelected,
+}: BottleButtonProps) => {
   const BottleIcon = BOTTLES.find((bottle) => bottleStyle === bottle.id)?.image;
   return (
     <Pressable
@@ -35,11 +42,17 @@ const BottleButton = ({ name, mlCapacity, bottleStyle, onPress, variant, isSelec
       ]}
     >
       <Text style={styles.bottleTitle}>{name}</Text>
-      <View style={[variant ? VariantIcon[variant] : {height: 65}]}>
+      <View style={[variant ? VariantIcon[variant] : { height: 65 }]}>
         {BottleIcon ? (
-          <BottleIcon height={[variant ? VariantIcon[variant].height : 65]} stpreserveAspectRatio="xMidYMid meet" />
+          <BottleIcon
+            height={[variant ? VariantIcon[variant].height : 65]}
+            stpreserveAspectRatio="xMidYMid meet"
+          />
         ) : (
-          <Glass height={65} preserveAspectRatio="xMidYMid meet" />
+          <Glass
+            height={[variant ? VariantIcon[variant].height : 65]}
+            preserveAspectRatio="xMidYMid meet"
+          />
         )}
       </View>
       {mlCapacity >= 1000 ? (
@@ -56,7 +69,6 @@ export default BottleButton;
 const styles = StyleSheet.create({
   bottleButtonContainer: {
     alignSelf: "flex-start",
-    minWidth: 100,
     padding: 10,
     borderWidth: 1,
     borderColor: "white",
@@ -78,7 +90,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   selected: {
-    borderWidth:3,
+    borderWidth: 3,
     borderColor: "#fffde7",
   },
 });
