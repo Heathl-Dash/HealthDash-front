@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Alert, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import WaterButton from "../components/WaterButton";
 import WaterModal from "../components/WaterModal";
@@ -17,12 +17,16 @@ export default function HomeScreen() {
 
 
   const queryClient = useQueryClient();
+
   const handleWaterButton = async () => {
     setWaterModalIsOpen(true);
     await queryClient.refetchQueries({
-    queryKey: ["waterGoal"],
-  });
+      queryKey: ["waterGoal"],
+    });
     
+    if(error){
+      Alert.alert('Ops, aconteceu algum erro :(')
+    }
   };
 
   const handleBottleButton = async(bottle: IBottle) => {
