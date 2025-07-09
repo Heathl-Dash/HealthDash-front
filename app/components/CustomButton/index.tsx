@@ -8,9 +8,10 @@ import {
   TextStyle,
   ViewStyle,
 } from "react-native";
-import { DisabledButton, Variants, VariantText } from "./variants";
+import { DisabledButton, Shapes, Variants, VariantText } from "./variants";
 
 type ButtonVariants = keyof typeof Variants;
+type ShapeVariants = keyof typeof Shapes;
 
 interface ButtonProps {
   title: string;
@@ -21,6 +22,7 @@ interface ButtonProps {
   isLoading?: boolean;
   icon?: React.ReactNode;
   iconPosition?: "start" | "end";
+  shape?: ShapeVariants;
   onPress: () => void;
 }
 
@@ -34,16 +36,18 @@ const CustomButton = ({
   iconPosition = "start",
   style,
   styleText,
+  shape = 'rounded'
 }: ButtonProps) => {
   return (
     <Pressable
       style={({ pressed }) => [
         styles.button,
         Variants[variant],
+        Shapes[shape],
         style,
         isDisable && DisabledButton.container,
         pressed && styles.buttonPressed,
-        isLoading && styles.buttonLoading
+        isLoading && styles.buttonLoading,
       ]}
       onPress={onPress}
       disabled={isDisable}
@@ -66,7 +70,6 @@ export default CustomButton;
 
 const styles = StyleSheet.create({
   button: {
-    width: "100%",
     flexDirection: "row",
     gap: 10,
     padding: 8,
@@ -77,7 +80,7 @@ const styles = StyleSheet.create({
   buttonPressed: {
     opacity: 0.7,
   },
-  buttonLoading:{
+  buttonLoading: {
     opacity: 0.7,
-  }
+  },
 });
