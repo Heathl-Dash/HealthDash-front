@@ -11,6 +11,7 @@ interface BottleButtonProps {
   mlCapacity: number;
   bottleStyle?: number;
   variant?: keyof typeof Variant;
+  isSelected?: boolean
   onPress: () => void;
 }
 
@@ -21,7 +22,7 @@ const BOTTLES = [
   { id: 4, image: Bottle },
 ];
 
-const BottleButton = ({ name, mlCapacity, bottleStyle, onPress, variant }: BottleButtonProps) => {
+const BottleButton = ({ name, mlCapacity, bottleStyle, onPress, variant, isSelected }: BottleButtonProps) => {
   const BottleIcon = BOTTLES.find((bottle) => bottleStyle === bottle.id)?.image;
   return (
     <Pressable
@@ -30,6 +31,7 @@ const BottleButton = ({ name, mlCapacity, bottleStyle, onPress, variant }: Bottl
         styles.bottleButtonContainer,
         variant && Variant[variant],
         pressed && styles.buttonPressed,
+        isSelected && styles.selected,
       ]}
     >
       <Text style={styles.bottleTitle}>{name}</Text>
@@ -74,5 +76,9 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "bold",
     fontSize: 20,
+  },
+  selected: {
+    borderWidth:3,
+    borderColor: "#fffde7",
   },
 });

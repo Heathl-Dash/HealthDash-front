@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
-import React from "react";
+import React, { useState } from "react";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import BottleButton from "../BottleButton";
 import CustomButton from "../CustomButton";
 import CustomInput from "../CustomInput";
@@ -38,59 +39,57 @@ interface AddBottleModalProps {
 }
 
 const AddBottleModal = ({ visible, onClose }: AddBottleModalProps) => {
+  const [selectedBottleStyle, setSelectedBottleStyle] = useState(1);
   return (
     <Modal visible={visible} onRequestClose={onClose} transparent>
       <View style={styles.modalBackGround}>
         <View style={styles.container}>
-          <View style={styles.titleContainer}>
-            <Text style={styles.title}>Crie uma nova garrafa</Text>
-            <TouchableOpacity style={styles.closeIcon} onPress={onClose}>
-              <Ionicons name="close-outline" color="white" size={28} />
-            </TouchableOpacity>
-          </View>
-          <View style={styles.formContainer}>
-            <CustomInput
-              label="Nome"
-              style={{ borderColor: "white" }}
-              placeholder="nome da garrafa"
-            />
-
-            <Text style={{ color: "white", fontWeight: "bold", marginTop: 20 }}>
-              Selecione o estilo da garrafa:
-            </Text>
-
-            <View style={styles.bottlesContainer}>
-              {BOTTLES.map((bottle) => (
-                <View style={styles.bottlesContent} key={bottle.idBottleStyle}>
-                  <BottleButton
-                    name={`Estilo ${bottle.bottleName}`}
-                    mlCapacity={bottle.mlBottle}
-                    bottleStyle={bottle.idBottleStyle}
-                    onPress={() => {}}
-                    variant="large"
-                    // onPress={() => setSelectedBottleStyle(bottle.idBottleStyle)}
-                    // isSelected={selectedBottleStyle === bottle.idBottleStyle}
-                  />
-                </View>
-              ))}
+          <KeyboardAwareScrollView>
+            <View style={styles.titleContainer}>
+              <Text style={styles.title}>Crie uma nova garrafa</Text>
+              <TouchableOpacity style={styles.closeIcon} onPress={onClose}>
+                <Ionicons name="close-outline" color="white" size={28} />
+              </TouchableOpacity>
             </View>
-
-            <CustomInput
-              label="Capacidade (ml)"
-              style={{ borderColor: "white" }}
-              placeholder="ex: 500"
-            />
-
-            <View style={styles.buttonRow}>
-              <CustomButton
-                title="Adicionar garrafa"
-                variant="outLine"
-                style={{ borderColor: "white", width: 190, opacity: 0.9 }}
-                styleText={{ color: "white" }}
-                onPress={() => {}}
+            <View style={styles.formContainer}>
+              <CustomInput
+                label="Nome"
+                style={{ borderColor: "white" }}
+                placeholder="nome da garrafa"
               />
+              <Text style={{ color: "white", fontWeight: "bold", marginTop: 20 }}>
+                Selecione o estilo da garrafa:
+              </Text>
+              <View style={styles.bottlesContainer}>
+                {BOTTLES.map((bottle) => (
+                  <View style={styles.bottlesContent} key={bottle.idBottleStyle}>
+                    <BottleButton
+                      name={`Estilo ${bottle.bottleName}`}
+                      mlCapacity={bottle.mlBottle}
+                      bottleStyle={bottle.idBottleStyle}
+                      variant="large"
+                      onPress={() => setSelectedBottleStyle(bottle.idBottleStyle)}
+                      isSelected={selectedBottleStyle === bottle.idBottleStyle}
+                    />
+                  </View>
+                ))}
+              </View>
+              <CustomInput
+                label="Capacidade (ml)"
+                style={{ borderColor: "white" }}
+                placeholder="ex: 500"
+              />
+              <View style={styles.buttonRow}>
+                <CustomButton
+                  title="Adicionar garrafa"
+                  variant="outLine"
+                  style={{ borderColor: "white", width: 190, opacity: 0.9 }}
+                  styleText={{ color: "white" }}
+                  onPress={() => {}}
+                />
+              </View>
             </View>
-          </View>
+          </KeyboardAwareScrollView>
         </View>
       </View>
     </Modal>
@@ -106,6 +105,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   container: {
+    position: "fixed",
     width: "90%",
     justifyContent: "flex-start",
     alignItems: "center",
@@ -113,7 +113,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 20,
     backgroundColor: "#6CA1D7",
-    minHeight: 300,
+    minHeight: 100,
+    maxHeight: "80%",
+    overflow: "hidden",
   },
   titleContainer: {
     position: "relative",
@@ -150,10 +152,6 @@ const styles = StyleSheet.create({
   bottlesContent: {
     width: "48%",
     borderRadius: 12,
-  },
-  selected: {
-    borderWidth: 3,
-    borderColor: "#e0d9ff",
   },
   buttonRow: {
     width: "100%",
