@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     paddingHorizontal: 15,
     borderRadius: 20,
-    backgroundColor: "#6CA1D7",
+    backgroundColor: "#4288ca",
     minHeight: 100,
   },
   titleContainer: {

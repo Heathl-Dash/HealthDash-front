@@ -39,7 +39,42 @@ interface AddBottleModalProps {
 }
 
 const AddBottleModal = ({ visible, onClose }: AddBottleModalProps) => {
+  const [nameBottleValue, setNameBottleValue] = useState("");
   const [selectedBottleStyle, setSelectedBottleStyle] = useState(1);
+  const [mlBottleValue, setMLBottleValue] = useState("0");
+
+  const [nameBottleError, setNameBottleError] = useState("");
+  const [mlBottleError, setMLBottleError] = useState("");
+
+  const onSaveBottle = () => {
+    let isValid = true;
+
+    setNameBottleError('')
+    setMLBottleError('')
+
+    if (nameBottleValue.trim() === "") {
+      setNameBottleError("O nome da garrafa é obrigatório.");
+      isValid = false;
+    }
+    if (mlBottleValue.trim() === "" || Number(mlBottleError) <= 0) {
+      setMLBottleError("Informe um valor válido em mL.");
+      isValid = false;
+    }
+
+    if (!isValid) return;
+
+    setNameBottleError('')
+    setMLBottleError('')
+
+    const bottleData = {
+      bottle_name: nameBottleValue,
+      ml_bottle: Number(mlBottleValue),
+      water_bottle_id: selectedBottleStyle,
+    };
+
+    console.log('enviar')
+  };
+
   return (
     <Modal visible={visible} onRequestClose={onClose} transparent>
       <View style={styles.modalBackGround}>
@@ -54,8 +89,11 @@ const AddBottleModal = ({ visible, onClose }: AddBottleModalProps) => {
             <View style={styles.formContainer}>
               <CustomInput
                 label="Nome"
+                value={nameBottleValue}
+                onChangeText={setNameBottleValue}
                 style={{ borderColor: "white" }}
                 placeholder="nome da garrafa"
+                errorMessage={nameBottleError}
               />
               <Text style={{ color: "white", fontWeight: "bold", marginTop: 20 }}>
                 Selecione o estilo da garrafa:
@@ -64,8 +102,8 @@ const AddBottleModal = ({ visible, onClose }: AddBottleModalProps) => {
                 {BOTTLES.map((bottle) => (
                   <View style={styles.bottlesContent} key={bottle.idBottleStyle}>
                     <BottleButton
-                      name={`Estilo ${bottle.bottleName}`}
-                      mlCapacity={bottle.mlBottle}
+                      name={nameBottleValue}
+                      mlCapacity={Number(mlBottleValue)}
                       bottleStyle={bottle.idBottleStyle}
                       variant="large"
                       onPress={() => setSelectedBottleStyle(bottle.idBottleStyle)}
@@ -78,6 +116,10 @@ const AddBottleModal = ({ visible, onClose }: AddBottleModalProps) => {
                 label="Capacidade (ml)"
                 style={{ borderColor: "white" }}
                 placeholder="ex: 500"
+                keyboardType="numeric"
+                value={mlBottleValue}
+                onChangeText={setMLBottleValue}
+                errorMessage={mlBottleError}
               />
               <View style={styles.buttonRow}>
                 <CustomButton
@@ -85,7 +127,7 @@ const AddBottleModal = ({ visible, onClose }: AddBottleModalProps) => {
                   variant="outLine"
                   style={{ borderColor: "white", width: 190, opacity: 0.9 }}
                   styleText={{ color: "white" }}
-                  onPress={() => {}}
+                  onPress={onSaveBottle}
                 />
               </View>
             </View>
@@ -112,7 +154,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     paddingHorizontal: 20,
     borderRadius: 20,
-    backgroundColor: "#6CA1D7",
+    backgroundColor: "#4288ca",
     minHeight: 100,
     maxHeight: "80%",
     overflow: "hidden",
