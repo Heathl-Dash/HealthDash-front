@@ -5,10 +5,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import WaterButton from "../components/WaterButton";
 import WaterModal from "../components/WaterModal";
 import { editWaterGoal, getWaterGoal } from "../lib/axios";
+import AddBottleModal from "../components/AddBottleModal";
 
 
 export default function HomeScreen() {
   const [waterModalIsOpen, setWaterModalIsOpen] = useState(false);
+  const [addBottleModalIsOpen, setAddBottleModalIsOpen] = useState(false);
 
   const { data: waterGoal, error, refetch} = useQuery({
     queryKey: ["waterGoal"],
@@ -18,7 +20,7 @@ export default function HomeScreen() {
 
   const queryClient = useQueryClient();
 
-  const handleWaterButton = async () => {
+  const openWaterModal = async () => {
     setWaterModalIsOpen(true);
     await queryClient.refetchQueries({
       queryKey: ["waterGoal"],
@@ -29,7 +31,7 @@ export default function HomeScreen() {
     }
   };
 
-  const handleBottleButton = async(bottle: IBottle) => {
+  const updateWaterGoalWithBottle = async(bottle: IBottle) => {
     if (!waterGoal) return
 
     const newMlDrinked = waterGoal.ml_drinked + bottle.ml_bottle
@@ -47,9 +49,16 @@ export default function HomeScreen() {
     }
   };
 
-  const handleClose = () => {
+  const handleCloseWaterModal = () => {
     setWaterModalIsOpen(false);
   };
+  const handleCloseAddBottleModal = () => {
+    setAddBottleModalIsOpen(false);
+  };
+
+  const openAddBottle = () =>{
+    setAddBottleModalIsOpen(true)
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -59,16 +68,21 @@ export default function HomeScreen() {
           <WaterButton
             mlDrinked={waterGoal?.ml_drinked ?? 0}
             waterGoal={waterGoal?.ml_goal ?? 2000}
-            onPress={handleWaterButton}
+            onPress={openWaterModal}
           />
         </View>
       </View>
 
       <WaterModal
         bottles={waterGoal?.bottles || []}
-        onClose={handleClose}
+        onClose={handleCloseWaterModal}
         visible={waterModalIsOpen}
-        onPressBottleButton={handleBottleButton}
+        onPressBottleButton={updateWaterGoalWithBottle}
+        onPressAddBottle={openAddBottle}
+      />
+      <AddBottleModal
+        onClose={handleCloseAddBottleModal}
+        visible={addBottleModalIsOpen}
       />
 
     </SafeAreaView>

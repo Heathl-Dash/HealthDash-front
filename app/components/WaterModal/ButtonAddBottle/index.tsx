@@ -2,9 +2,13 @@ import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
 
-const ButtonAddBottle = () => {
+interface ButtonAddBottleProps{
+  onPress: () => void
+}
+
+const ButtonAddBottle = ({onPress}:ButtonAddBottleProps) => {
   return (
-    <TouchableOpacity style={styles.container}>
+    <TouchableOpacity style={styles.container} onPress={onPress}>
       <Ionicons name="add" color="white" size={45} />
     </TouchableOpacity>
   );

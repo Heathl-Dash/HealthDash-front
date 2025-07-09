@@ -10,9 +10,10 @@ interface WaterModalProps {
   visible: boolean;
   onClose: () => void;
   onPressBottleButton: (bottle: IBottle) => void;
+  onPressAddBottle: () => void
 }
 
-const WaterModal = ({ bottles, visible, onClose, onPressBottleButton }: WaterModalProps) => {
+const WaterModal = ({ bottles, visible, onClose, onPressBottleButton, onPressAddBottle }: WaterModalProps) => {
   return (
     <Modal visible={visible} onRequestClose={onClose} transparent>
       <Pressable style={styles.modalBackGround} onPress={onClose}>
@@ -28,7 +29,7 @@ const WaterModal = ({ bottles, visible, onClose, onPressBottleButton }: WaterMod
               <View>
                 <Text style={styles.noBottleText}>Cadastre sua primeira garrafa!</Text>
                 <View style={styles.bottlesContent}>
-                  <ButtonAddBottle />
+                  <ButtonAddBottle onPress={onPressAddBottle}/>
                 </View>
               </View>
             )}
@@ -40,7 +41,7 @@ const WaterModal = ({ bottles, visible, onClose, onPressBottleButton }: WaterMod
                   bottleStyle={bottles[0].id_bottle_style}
                   onPress={() => onPressBottleButton(bottles[0])}
                 />
-                <ButtonAddBottle />
+                <ButtonAddBottle onPress={onPressAddBottle}/>
               </View>
             )}
             {bottles?.length >= 2 && (
@@ -63,7 +64,7 @@ const WaterModal = ({ bottles, visible, onClose, onPressBottleButton }: WaterMod
                     style={{ borderColor: "white", width: 190, opacity: 0.9 }}
                     styleText={{ color: "white" }}
                     icon={<Ionicons name="add" color="white" size={24} />}
-                    onPress={() => {}}
+                    onPress={onPressAddBottle}
                     isDisable={bottles.length >= 6}
                   />
                 </View>
@@ -93,7 +94,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     borderRadius: 20,
     backgroundColor: "#6CA1D7",
-    minHeight: 300,
+    minHeight: 100,
   },
   titleContainer: {
     position: "relative",

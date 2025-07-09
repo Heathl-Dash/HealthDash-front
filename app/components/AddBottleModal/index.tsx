@@ -81,7 +81,7 @@ const AddBottleModal = ({ visible, onClose }: AddBottleModalProps) => {
               />
               <View style={styles.buttonRow}>
                 <CustomButton
-                  title="Adicionar garrafa"
+                  title="Salvar garrafa"
                   variant="outLine"
                   style={{ borderColor: "white", width: 190, opacity: 0.9 }}
                   styleText={{ color: "white" }}
