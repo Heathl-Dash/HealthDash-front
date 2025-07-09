@@ -10,9 +10,16 @@ interface WaterModalProps {
   visible: boolean;
   onClose: () => void;
   onPressBottleButton: (bottle: IBottle) => void;
+  onPressAddBottle: () => void;
 }
 
-const WaterModal = ({ bottles, visible, onClose, onPressBottleButton }: WaterModalProps) => {
+const WaterModal = ({
+  bottles,
+  visible,
+  onClose,
+  onPressBottleButton,
+  onPressAddBottle,
+}: WaterModalProps) => {
   return (
     <Modal visible={visible} onRequestClose={onClose} transparent>
       <Pressable style={styles.modalBackGround} onPress={onClose}>
@@ -28,7 +35,7 @@ const WaterModal = ({ bottles, visible, onClose, onPressBottleButton }: WaterMod
               <View>
                 <Text style={styles.noBottleText}>Cadastre sua primeira garrafa!</Text>
                 <View style={styles.bottlesContent}>
-                  <ButtonAddBottle />
+                  <ButtonAddBottle onPress={onPressAddBottle} />
                 </View>
               </View>
             )}
@@ -40,20 +47,22 @@ const WaterModal = ({ bottles, visible, onClose, onPressBottleButton }: WaterMod
                   bottleStyle={bottles[0].id_bottle_style}
                   onPress={() => onPressBottleButton(bottles[0])}
                 />
-                <ButtonAddBottle />
+                <ButtonAddBottle onPress={onPressAddBottle} />
               </View>
             )}
             {bottles?.length >= 2 && (
               <>
-                <View style={[styles.bottlesContent, { justifyContent: "center" }]}>
+                <View style={[styles.bottlesContent]}>
                   {bottles?.map((bottle) => (
-                    <BottleButton
-                      key={bottle.water_bottle_id}
-                      mlCapacity={bottle.ml_bottle}
-                      name={bottle.bottle_name}
-                      bottleStyle={bottle.id_bottle_style}
-                      onPress={() => onPressBottleButton(bottle)}
-                    />
+                    <View style={{ width: "48%" }} key={bottle.water_bottle_id}>
+                      <BottleButton
+                        mlCapacity={bottle.ml_bottle}
+                        name={bottle.bottle_name}
+                        bottleStyle={bottle.id_bottle_style}
+                        onPress={() => onPressBottleButton(bottle)}
+                        variant="large"
+                      />
+                    </View>
                   ))}
                 </View>
                 <View style={styles.buttonRow}>
@@ -63,8 +72,8 @@ const WaterModal = ({ bottles, visible, onClose, onPressBottleButton }: WaterMod
                     style={{ borderColor: "white", width: 190, opacity: 0.9 }}
                     styleText={{ color: "white" }}
                     icon={<Ionicons name="add" color="white" size={24} />}
-                    onPress={() => {}}
-                    isDisable={bottles.length >= 6}
+                    onPress={onPressAddBottle}
+                    isDisable={bottles.length >= 4}
                   />
                 </View>
               </>
@@ -92,8 +101,10 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     paddingHorizontal: 15,
     borderRadius: 20,
-    backgroundColor: "#6CA1D7",
-    minHeight: 300,
+    backgroundColor: "#4288ca",
+    minHeight: 100,
+    maxHeight: "80%",
+    overflow: "hidden",
   },
   titleContainer: {
     position: "relative",
@@ -125,7 +136,7 @@ const styles = StyleSheet.create({
   },
   bottlesContent: {
     flexDirection: "row",
-    justifyContent: "center",
+    justifyContent: "space-between",
     gap: 12,
     paddingVertical: 30,
     flexWrap: "wrap",

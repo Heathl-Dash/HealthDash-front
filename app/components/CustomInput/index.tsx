@@ -69,6 +69,6 @@ const styles = StyleSheet.create({
     fontWeight: 500,
   },
   error:{
-    color: Colors.light.redColor
+    color: '#ff0000'
   },
 });

@@ -1,55 +1,21 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
-import { Alert, StyleSheet, Text, View } from "react-native";
+import useWater from "@/hooks/useWater";
+import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import AddBottleModal from "../components/AddBottleModal";
 import WaterButton from "../components/WaterButton";
 import WaterModal from "../components/WaterModal";
-import { editWaterGoal, getWaterGoal } from "../lib/axios";
-
 
 export default function HomeScreen() {
-  const [waterModalIsOpen, setWaterModalIsOpen] = useState(false);
-
-  const { data: waterGoal, error, refetch} = useQuery({
-    queryKey: ["waterGoal"],
-    queryFn: getWaterGoal,
-  });
-
-
-  const queryClient = useQueryClient();
-
-  const handleWaterButton = async () => {
-    setWaterModalIsOpen(true);
-    await queryClient.refetchQueries({
-      queryKey: ["waterGoal"],
-    });
-    
-    if(error){
-      Alert.alert('Ops, aconteceu algum erro :(')
-    }
-  };
-
-  const handleBottleButton = async(bottle: IBottle) => {
-    if (!waterGoal) return
-
-    const newMlDrinked = waterGoal.ml_drinked + bottle.ml_bottle
-    
-    try {
-      await editWaterGoal({
-        ml_drinked: newMlDrinked,
-      });
-
-      await queryClient.invalidateQueries({
-        queryKey: ["waterGoal"],
-      });
-    } catch (err) {
-      console.error("Erro ao atualizar ml_drinked:", err);
-    }
-  };
-
-  const handleClose = () => {
-    setWaterModalIsOpen(false);
-  };
+  const {
+    handleCloseAddBottleModal,
+    handleCloseWaterModal,
+    openAddBottle,
+    openWaterModal,
+    updateWaterGoalWithBottle,
+    waterGoal,
+    waterModalIsOpen,
+    addBottleModalIsOpen,
+  } = useWater();
 
   return (
     <SafeAreaView style={styles.container}>
@@ -59,18 +25,19 @@ export default function HomeScreen() {
           <WaterButton
             mlDrinked={waterGoal?.ml_drinked ?? 0}
             waterGoal={waterGoal?.ml_goal ?? 2000}
-            onPress={handleWaterButton}
+            onPress={openWaterModal}
           />
         </View>
       </View>
 
       <WaterModal
         bottles={waterGoal?.bottles || []}
-        onClose={handleClose}
+        onClose={handleCloseWaterModal}
         visible={waterModalIsOpen}
-        onPressBottleButton={handleBottleButton}
+        onPressBottleButton={updateWaterGoalWithBottle}
+        onPressAddBottle={openAddBottle}
       />
-
+      <AddBottleModal onClose={handleCloseAddBottleModal} visible={addBottleModalIsOpen} />
     </SafeAreaView>
   );
 }

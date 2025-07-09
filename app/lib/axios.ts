@@ -35,3 +35,13 @@ export const getBottles = () => {
       throw err;
     });
 };
+
+export const createBottles = (data: Partial<IBottle>) => {
+  return apiGateway
+    .post("nutri/water_bottle/", data)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("Erro ao buscar garrafas: ", err);
+      throw err;
+    });
+};
