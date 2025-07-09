@@ -18,7 +18,19 @@ export default function Nutri() {
   } = useMutation({
     mutationFn: postNutritionInfo,
   });
-  
+
+  const handleSearch = () => {
+    const trimmedValue = alimentValue.trim();
+
+    if (!trimmedValue) {
+      console.warn("Valor inválido para pesquisa.");
+      return;
+    }
+
+    const data = { aliment: trimmedValue };
+
+    searchAliment(data);
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, alignItems: "center" }}>
@@ -32,9 +44,7 @@ export default function Nutri() {
             styleContainer={{ width: "75%" }}
           />
           <CustomButton
-            onPress={() => {
-              searchAliment({ aliment: alimentValue });
-            }}
+            onPress={handleSearch}
             title="Buscar"
             isLoading={isPending}
             variant="primary"
@@ -46,6 +56,12 @@ export default function Nutri() {
 
       {isError && <Text style={{ color: "red" }}>Algo deu errado :(</Text>}
 
+      {data && (
+        <View >
+          <Text >Resultado:</Text>
+          <Text >{JSON.stringify(data, null, 2)}</Text>
+        </View>
+      )}
     </SafeAreaView>
   );
 }
