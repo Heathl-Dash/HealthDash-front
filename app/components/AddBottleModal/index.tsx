@@ -1,12 +1,12 @@
-import { createBottles } from "@/app/lib/axios";
 import { Ionicons } from "@expo/vector-icons";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import React, { useState } from "react";
+import React from "react";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import BottleButton from "../BottleButton";
 import CustomButton from "../CustomButton";
 import CustomInput from "../CustomInput";
+import useAddBottleModel from "./useAddBottleModel";
+import {styles} from './style'
 
 const BOTTLES = [
   {
@@ -41,62 +41,17 @@ interface AddBottleModalProps {
 }
 
 const AddBottleModal = ({ visible, onClose }: AddBottleModalProps) => {
-  const [nameBottleValue, setNameBottleValue] = useState("");
-  const [selectedBottleStyle, setSelectedBottleStyle] = useState(1);
-  const [mlBottleValue, setMLBottleValue] = useState("0");
-
-  const [nameBottleError, setNameBottleError] = useState("");
-  const [mlBottleError, setMLBottleError] = useState("");
-
-  const queryClient = useQueryClient();
-
-  const mutation = useMutation({
-    mutationFn: createBottles,
-    onSuccess: () => {
-      console.log("Garrafa criada com sucesso!");
-
-      setNameBottleValue("");
-      setMLBottleValue("0");
-      setSelectedBottleStyle(1);
-      setNameBottleError("");
-      setMLBottleError("");
-      onClose();
-
-      queryClient.invalidateQueries({ queryKey: ["waterGoal"] });
-    },
-    onError: (error) => {
-      console.log("Erro ao criar garrafa:", error);
-    },
-  });
-
-  const onSaveBottle = () => {
-    let isValid = true;
-
-    setNameBottleError("");
-    setMLBottleError("");
-
-    if (nameBottleValue.trim() === "") {
-      setNameBottleError("O nome da garrafa é obrigatório.");
-      isValid = false;
-    }
-    if (mlBottleValue.trim() === "" || Number(mlBottleValue) <= 0) {
-      setMLBottleError("Informe um valor válido em mL.");
-      isValid = false;
-    }
-
-    if (!isValid) return;
-
-    setNameBottleError("");
-    setMLBottleError("");
-
-    const bottleData = {
-      bottle_name: nameBottleValue,
-      ml_bottle: Number(mlBottleValue),
-      water_bottle_id: selectedBottleStyle,
-    };
-
-    mutation.mutate(bottleData);
-  };
+  const {
+    mlBottleError,
+    nameBottleError,
+    nameBottleValue,
+    mlBottleValue,
+    onSaveBottle,
+    selectedBottleStyle,
+    setSelectedBottleStyle,
+    setMLBottleValue,
+    setNameBottleValue,
+  } = useAddBottleModel({ onClose });
 
   return (
     <Modal visible={visible} onRequestClose={onClose} transparent>
@@ -163,63 +118,3 @@ const AddBottleModal = ({ visible, onClose }: AddBottleModalProps) => {
 
 export default AddBottleModal;
 
-const styles = StyleSheet.create({
-  modalBackGround: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  container: {
-    width: "90%",
-    justifyContent: "flex-start",
-    alignItems: "center",
-    paddingVertical: 20,
-    paddingHorizontal: 20,
-    borderRadius: 20,
-    backgroundColor: "#4288ca",
-    minHeight: 100,
-    maxHeight: "80%",
-    overflow: "hidden",
-  },
-  titleContainer: {
-    position: "relative",
-    width: "100%",
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  title: {
-    width: "100%",
-    fontSize: 16,
-    fontWeight: "bold",
-    textAlign: "center",
-    color: "white",
-  },
-  closeIcon: {
-    position: "absolute",
-    right: 0,
-    top: 0,
-  },
-  formContainer: {
-    width: "100%",
-    gap: 10,
-    alignItems: "center",
-  },
-  bottlesContainer: {
-    width: "100%",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    gap: 12,
-    paddingVertical: 10,
-    flexWrap: "wrap",
-  },
-  bottlesContent: {
-    width: "48%",
-    borderRadius: 12,
-  },
-  buttonRow: {
-    width: "100%",
-    alignItems: "flex-end",
-    marginTop: 20,
-  },
-});
