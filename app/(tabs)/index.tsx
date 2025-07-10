@@ -1,9 +1,9 @@
 import useWater from "@/hooks/useWater";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import AddBottleModal from "../components/AddBottleModal";
-import WaterButton from "../components/WaterButton";
-import WaterModal from "../components/WaterModal";
+import AddBottleModal from "../../components/AddBottleModal";
+import WaterButton from "../../components/WaterButton";
+import WaterModal from "../../components/WaterModal";
 
 export default function HomeScreen() {
   const {

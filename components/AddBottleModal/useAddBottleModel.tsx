@@ -1,4 +1,4 @@
-import { createBottles } from "@/app/lib/axios";
+import { createBottles } from "@/lib/axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 
