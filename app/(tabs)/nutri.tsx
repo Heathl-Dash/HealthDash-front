@@ -1,14 +1,23 @@
 import { Colors } from "@/constants/Colors";
+import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import { useMutation } from "@tanstack/react-query";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import CustomButton from "../components/CustomButton";
-import CustomInput from "../components/CustomInput";
-import { postNutritionInfo } from "../lib/axios";
+import CustomButton from "../../components/CustomButton";
+import CustomInput from "../../components/CustomInput";
+import ResultNutritionSearch from "../../components/ResultNutritionSearch";
+import { postNutritionInfo } from "../../lib/axios";
 
 export default function Nutri() {
   const [alimentValue, setAlimentValue] = useState("");
+  const [searchedAliment, setSearchedAliment] = useState("");
+
+  const bottomSheetRef = useRef<BottomSheetMethods | null>(null);
+
+  const openSheet = () => {
+    bottomSheetRef.current?.expand();
+  };
 
   const {
     mutate: searchAliment,
@@ -17,6 +26,10 @@ export default function Nutri() {
     data,
   } = useMutation({
     mutationFn: postNutritionInfo,
+    onSuccess: (_, variables) => {
+      setSearchedAliment(variables.aliment); // Atualiza somente quando a busca é bem-sucedida
+      openSheet();
+    },
   });
 
   const handleSearch = () => {
@@ -27,9 +40,7 @@ export default function Nutri() {
       return;
     }
 
-    const data = { aliment: trimmedValue };
-
-    searchAliment(data);
+    searchAliment({ aliment: trimmedValue });
   };
 
   return (
@@ -53,15 +64,13 @@ export default function Nutri() {
           />
         </View>
       </View>
-
       {isError && <Text style={{ color: "red" }}>Algo deu errado :(</Text>}
-
-      {data && (
-        <View >
-          <Text >Resultado:</Text>
-          <Text >{JSON.stringify(data, null, 2)}</Text>
-        </View>
-      )}
+      <ResultNutritionSearch
+        aliment={searchedAliment}
+        nutritionResult={data}
+        ref={bottomSheetRef}
+        isLoading={isPending}
+      />
     </SafeAreaView>
   );
 }
