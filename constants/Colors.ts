@@ -12,6 +12,7 @@ export const Colors = {
     darkGray: "#444444",
     lightGray: "#BEBEBE",
     redColor: "#e65750",
+    surface: '#D4ECDE'
   },
   dark: {},
 };
