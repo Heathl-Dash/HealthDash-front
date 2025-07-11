@@ -11,6 +11,9 @@ export const Variants = StyleSheet.create({
     borderColor: Colors.light.primary,
     backgroundColor: "transparent",
   },
+  ghost: {
+    backgroundColor: "transparent",
+  },
 });
 
 export const VariantText = StyleSheet.create({
@@ -22,6 +25,9 @@ export const VariantText = StyleSheet.create({
     color: Colors.light.primary,
     fontWeight: "800",
   },
+  ghost: {
+    color: Colors.light.darkGray,
+  },
 });
 
 export const DisabledButton = StyleSheet.create({
@@ -32,7 +38,6 @@ export const DisabledButton = StyleSheet.create({
     opacity: 1,
   },
 });
-
 
 export const Shapes = StyleSheet.create({
   rounded: {
