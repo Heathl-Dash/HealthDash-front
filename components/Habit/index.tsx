@@ -26,7 +26,11 @@ const Habit = ({ habit, onPressNegative, onPressPositive, onPressEdit }: HabitPr
         </TouchableOpacity>
       )}
       <TouchableOpacity
-        style={[styles.content, habit.negative && !habit.positive && { paddingLeft: 75 }]}
+        style={[
+          styles.content,
+          habit.negative && !habit.positive && { paddingLeft: 75 },
+          !habit.description?.trim() && { paddingVertical: 25 },
+        ]}
         onPress={onPressEdit}
       >
         <Text style={styles.title}>{habit.title}</Text>
