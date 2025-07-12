@@ -1,50 +1,43 @@
+import Habit from "@/components/Habit";
+import Tabs, { TabItem } from "@/components/Tabs";
 import { Colors } from "@/constants/Colors";
-import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
-import { useMutation } from "@tanstack/react-query";
-import React, { useRef, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import useSearchAliment from "@/hooks/useSearchAliment";
+import { getNutriHabits } from "@/lib/axios";
+import { useQuery } from "@tanstack/react-query";
+import React, { useState } from "react";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CustomButton from "../../components/CustomButton";
 import CustomInput from "../../components/CustomInput";
 import ResultNutritionSearch from "../../components/ResultNutritionSearch";
-import { postNutritionInfo } from "../../lib/axios";
 
 export default function Nutri() {
-  const [alimentValue, setAlimentValue] = useState("");
-  const [searchedAliment, setSearchedAliment] = useState("");
+  const [currentTab, setCurrentTab] = useState("habit");
 
-  const bottomSheetRef = useRef<BottomSheetMethods | null>(null);
-
-  const openSheet = () => {
-    bottomSheetRef.current?.expand();
-  };
+  const TABS: TabItem[] = [
+    { key: "habit", label: "Hábitos" },
+    { key: "todo", label: "tarefas" },
+  ];
 
   const {
-    mutate: searchAliment,
-    isPending,
-    isError,
+    alimentValue,
+    setAlimentValue,
+    searchedAliment,
+    bottomSheetRef,
     data,
-  } = useMutation({
-    mutationFn: postNutritionInfo,
-    onSuccess: (_, variables) => {
-      setSearchedAliment(variables.aliment); // Atualiza somente quando a busca é bem-sucedida
-      openSheet();
-    },
-  });
+    handleSearch,
+    isError,
+    isPending,
+  } = useSearchAliment();
 
-  const handleSearch = () => {
-    const trimmedValue = alimentValue.trim();
-
-    if (!trimmedValue) {
-      console.warn("Valor inválido para pesquisa.");
-      return;
-    }
-
-    searchAliment({ aliment: trimmedValue });
-  };
+  const {
+    data: nutriHabits,
+    error,
+    isLoading,
+  } = useQuery({ queryKey: ["nutriHabit"], queryFn: getNutriHabits });
 
   return (
-    <SafeAreaView style={{ flex: 1, alignItems: "center" }}>
+    <SafeAreaView style={{ flex: 1, alignItems: "center", paddingHorizontal: 30 }}>
       <View style={styles.alimentSearchContainer}>
         <Text style={styles.alimentSearchTitle}>Pesquisa Nutricional</Text>
         <View style={styles.inputContainer}>
@@ -71,6 +64,34 @@ export default function Nutri() {
         ref={bottomSheetRef}
         isLoading={isPending}
       />
+
+      <View style={{ marginTop: 50 }}>
+        <Tabs tabs={TABS} initialTabKey="habit" onTabChange={(key: string) => setCurrentTab(key)} />
+      </View>
+
+      {isLoading  && (
+        <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+          <ActivityIndicator size={50} />
+        </View>
+      )}
+
+      {currentTab === "habit" ? (
+        <View style={{ gap: 10, marginTop: 20 }}>
+          {nutriHabits?.map((habit: IHabit) => (
+            <Habit
+              key={habit.habit_id}
+              habit={habit}
+              onPressPositive={() => {}}
+              onPressEdit={() => {}}
+              onPressNegative={() => {}}
+            />
+          ))}
+        </View>
+      ) : (
+        <View>
+          <Text style={{ color: "black" }}>Tarefas</Text>
+        </View>
+      )}
     </SafeAreaView>
   );
 }
@@ -85,7 +106,6 @@ const styles = StyleSheet.create({
     color: Colors.light.darkGray,
   },
   inputContainer: {
-    width: "90%",
     flexDirection: "row",
     gap: 5,
     marginTop: 20,
