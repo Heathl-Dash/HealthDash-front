@@ -32,8 +32,8 @@ export default function Nutri() {
 
   const {
     data: nutriHabits,
-    error,
-    isLoading,
+    error: habitError,
+    isLoading: habitIsLoading,
   } = useQuery({ queryKey: ["nutriHabit"], queryFn: getNutriHabits });
 
   return (
@@ -65,11 +65,11 @@ export default function Nutri() {
         isLoading={isPending}
       />
 
-      <View style={{ marginTop: 35, marginBottom:25 }}>
+      <View style={{ marginTop: 35, marginBottom: 25 }}>
         <Tabs tabs={TABS} initialTabKey="habit" onTabChange={(key: string) => setCurrentTab(key)} />
       </View>
 
-      {isLoading && (
+      {habitIsLoading && (
         <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
           <ActivityIndicator size={50} />
         </View>
@@ -77,7 +77,7 @@ export default function Nutri() {
 
       <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 75 }}>
         {currentTab === "habit" ? (
-          <View style={{ gap: 10, width: '100%' }}>
+          <View style={styles.habitTodoContainer}>
             {nutriHabits?.map((habit: IHabit) => (
               <Habit
                 key={habit.habit_id}
@@ -89,8 +89,14 @@ export default function Nutri() {
             ))}
           </View>
         ) : (
-          <View>
+          <View style={styles.habitTodoContainer}>
             <Text style={{ color: "black" }}>Tarefas</Text>
+          </View>
+        )}
+
+        {habitError && (
+          <View style={styles.errorContent}>
+            <Text style={{color: Colors.light.redColor}}>Não foi possível carregar os hábitos</Text>
           </View>
         )}
       </ScrollView>
@@ -113,5 +119,12 @@ const styles = StyleSheet.create({
     marginTop: 10,
     alignItems: "center",
     justifyContent: "center",
+  },
+  habitTodoContainer: {
+    gap: 10,
+    width: "100%",
+  },
+  errorContent: {
+    alignItems: "center",
   },
 });
