@@ -5,7 +5,7 @@ import useSearchAliment from "@/hooks/useSearchAliment";
 import { getNutriHabits } from "@/lib/axios";
 import { useQuery } from "@tanstack/react-query";
 import React, { useState } from "react";
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CustomButton from "../../components/CustomButton";
 import CustomInput from "../../components/CustomInput";
@@ -37,7 +37,7 @@ export default function Nutri() {
   } = useQuery({ queryKey: ["nutriHabit"], queryFn: getNutriHabits });
 
   return (
-    <SafeAreaView style={{ flex: 1, alignItems: "center", paddingHorizontal: 30 }}>
+    <SafeAreaView style={{ flex: 1, paddingHorizontal: 30 }}>
       <View style={styles.alimentSearchContainer}>
         <Text style={styles.alimentSearchTitle}>Pesquisa Nutricional</Text>
         <View style={styles.inputContainer}>
@@ -65,33 +65,35 @@ export default function Nutri() {
         isLoading={isPending}
       />
 
-      <View style={{ marginTop: 50 }}>
+      <View style={{ marginTop: 35, marginBottom:25 }}>
         <Tabs tabs={TABS} initialTabKey="habit" onTabChange={(key: string) => setCurrentTab(key)} />
       </View>
 
-      {isLoading  && (
+      {isLoading && (
         <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
           <ActivityIndicator size={50} />
         </View>
       )}
 
-      {currentTab === "habit" ? (
-        <View style={{ gap: 10, marginTop: 20 }}>
-          {nutriHabits?.map((habit: IHabit) => (
-            <Habit
-              key={habit.habit_id}
-              habit={habit}
-              onPressPositive={() => {}}
-              onPressEdit={() => {}}
-              onPressNegative={() => {}}
-            />
-          ))}
-        </View>
-      ) : (
-        <View>
-          <Text style={{ color: "black" }}>Tarefas</Text>
-        </View>
-      )}
+      <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 75 }}>
+        {currentTab === "habit" ? (
+          <View style={{ gap: 10, width: '100%' }}>
+            {nutriHabits?.map((habit: IHabit) => (
+              <Habit
+                key={habit.habit_id}
+                habit={habit}
+                onPressPositive={() => {}}
+                onPressEdit={() => {}}
+                onPressNegative={() => {}}
+              />
+            ))}
+          </View>
+        ) : (
+          <View>
+            <Text style={{ color: "black" }}>Tarefas</Text>
+          </View>
+        )}
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -108,7 +110,7 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: "row",
     gap: 5,
-    marginTop: 20,
+    marginTop: 10,
     alignItems: "center",
     justifyContent: "center",
   },
