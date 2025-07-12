@@ -55,3 +55,13 @@ export const postNutritionInfo = (data: { aliment: string }) => {
       throw err;
     });
 };
+
+export const getNutriHabits = () => {
+  return apiGateway
+    .get<IHabit[]>("nutri/habits/")
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("erro ao buscar hábitos de exercícios: ", err);
+      throw err;
+    });
+};
