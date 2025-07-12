@@ -15,8 +15,8 @@ const ResultNutritionSearch = forwardRef<BottomSheetMethods, ResultNutritionSear
     const snapPoints = useMemo(() => ["15%", "80%"], []);
 
     return (
-      <BottomSheet ref={ref} index={-1} snapPoints={snapPoints} enableDynamicSizing={false}>
-        <View style={{ padding: 16, paddingHorizontal: 25, marginBottom: 20 }}>
+      <BottomSheet ref={ref} index={-1} snapPoints={snapPoints} enableDynamicSizing={false}  containerStyle={{ zIndex: 1000 }}>
+        <View style={styles.container}>
           <View style={styles.titleContainer}>
             <Text style={styles.title}>Informações nutricionais</Text>
             <Text style={styles.alimentTitle}>{aliment}</Text>
@@ -94,6 +94,11 @@ const ResultNutritionSearch = forwardRef<BottomSheetMethods, ResultNutritionSear
 export default ResultNutritionSearch;
 
 const styles = StyleSheet.create({
+  container: {
+    padding: 16,
+    paddingHorizontal: 25,
+    marginBottom: 20,
+  },
   titleContainer: {
     width: "100%",
     marginBottom: 20,

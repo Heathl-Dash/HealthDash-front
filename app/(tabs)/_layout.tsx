@@ -28,7 +28,7 @@ export default function TabLayout() {
               <MaterialCommunityIcons
                 size={32}
                 name="home-heart"
-                color={focused ? "white" : Colors.light.darkgray}
+                color={focused ? "white" : Colors.light.darkGray}
               />
             </View>
           ),
@@ -46,7 +46,7 @@ export default function TabLayout() {
               <FontAwesome5
                 size={24}
                 name="apple-alt"
-                color={focused ? "white" : Colors.light.darkgray}
+                color={focused ? "white" : Colors.light.darkGray}
               />
             </View>
           ),
@@ -63,7 +63,7 @@ export default function TabLayout() {
           title: "Nutri",
           tabBarIcon: ({ focused }) => (
             <View style={[styles.tab_selected_base, focused && styles.tab_selected_active]}>
-              <TennisShoe fill={focused ? "white": Colors.light.darkgray}/>
+              <TennisShoe fill={focused ? "white": Colors.light.darkGray}/>
             </View>
           ),
           tabBarLabel: ({ focused }) => (
@@ -82,7 +82,7 @@ export default function TabLayout() {
               <FontAwesome6
                 size={20}
                 name="user-large"
-                color={focused ? "white" : Colors.light.darkgray}
+                color={focused ? "white" : Colors.light.darkGray}
               />
             </View>
           ),
@@ -112,6 +112,6 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
   tab_label: {
-    color: Colors.light.darkgray,
+    color: Colors.light.darkGray,
   },
 });

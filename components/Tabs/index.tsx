@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { ReactNode, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import Tab from "../Tab";
 
 export interface TabItem {
   key: string;
   label: string;
+  component?: ReactNode
 }
 
 interface TabsProps {
@@ -38,6 +39,8 @@ export default Tabs;
 
 const styles = StyleSheet.create({
   container: {
+    position: 'relative',
+    zIndex: 0,
     width: '100%',
     flexDirection: "row",
     justifyContent: "space-between",

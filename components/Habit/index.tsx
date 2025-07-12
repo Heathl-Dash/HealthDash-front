@@ -18,6 +18,10 @@ const Habit = ({ habit, onPressNegative, onPressPositive, onPressEdit }: HabitPr
     setIsTruncated(e.nativeEvent.lines.length > 2);
   };
 
+  if(!habit){
+    return
+  }
+
   return (
     <View style={styles.container}>
       {habit.positive && (
@@ -28,12 +32,12 @@ const Habit = ({ habit, onPressNegative, onPressPositive, onPressEdit }: HabitPr
       <TouchableOpacity
         style={[
           styles.content,
-          habit.negative && !habit.positive && { paddingLeft: 75 },
+          habit.negative && !habit.positive && { paddingLeft: 70 },
           !habit.description?.trim() && { paddingVertical: 25 },
         ]}
         onPress={onPressEdit}
       >
-        <Text style={styles.title}>{habit.title}</Text>
+        <Text style={styles.title}>{habit?.title}</Text>
         {habit.description && (
           <>
             <Text
@@ -42,7 +46,7 @@ const Habit = ({ habit, onPressNegative, onPressPositive, onPressEdit }: HabitPr
               ellipsizeMode="tail"
               style={styles.description}
             >
-              {habit.description}
+              {habit?.description}
             </Text>
             {isTruncated && (
               <TouchableOpacity onPress={() => setShowFullDescription(!showFullDescription)}>
@@ -68,6 +72,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     backgroundColor: Colors.light.surface,
     borderRadius: 12,
+    width: "100%",
   },
   content: {
     flex: 1,
