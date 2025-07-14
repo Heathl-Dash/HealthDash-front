@@ -12,31 +12,28 @@ interface HabitProps {
 }
 
 const Habit = ({ habit, onPressNegative, onPressPositive, onPressEdit }: HabitProps) => {
-  const [showFullDescription, setShowFullDescription] = useState(false);
-  const [hasOverflow, setHasOverflow] = useState(false);
-
-  const handleTextLayout = (e: any) => {
-    if (!hasOverflow) {
-      const lines = e.nativeEvent.lines;
-      if (lines.length > 2) {
-        setHasOverflow(true);
-      }
-    }
-  };
-
-  const toggleFullDescription = () => {
-    setShowFullDescription((prev) => !prev);
-    setHasOverflow((prev) => !prev);
-  };
-
   if (!habit) {
     return null;
   }
 
+  const [habitCounter, setHabitCounter] = useState<number>(
+    habit.positive_count - habit.negative_count
+  );
+
+  const handlePositive = () => {
+    onPressPositive();
+    setHabitCounter((prev) => prev + 1);
+  };
+
+  const handleNegative = () => {
+    onPressNegative();
+    setHabitCounter((prev) => prev - 1);
+  };
+
   return (
     <View style={styles.container}>
       {habit.positive && (
-        <TouchableOpacity style={styles.actionButton} onPress={onPressPositive}>
+        <TouchableOpacity style={styles.actionButton} onPress={handlePositive}>
           <MaterialIcons size={30} color={Colors.light.primary} name="add" />
         </TouchableOpacity>
       )}
@@ -49,7 +46,7 @@ const Habit = ({ habit, onPressNegative, onPressPositive, onPressEdit }: HabitPr
         ]}
       >
         <View style={{ flex: 1 }}>
-          <TouchableOpacity onPress={onPressEdit} activeOpacity={0.7} >
+          <TouchableOpacity onPress={onPressEdit} activeOpacity={0.7}>
             <Text style={styles.title}>{habit?.title}</Text>
           </TouchableOpacity>
           {habit.description?.trim() ? (
@@ -59,15 +56,24 @@ const Habit = ({ habit, onPressNegative, onPressPositive, onPressEdit }: HabitPr
               seeMoreText="Ver mais"
               style={styles.description}
               animate={false}
+              seeMoreStyle={{ color: Colors.light.primary, fontWeight: "700" }}
             >
               {habit?.description}
             </ReadMore>
           ) : null}
+          <View style={[styles.habitCounterContainer, !habit.negative && { paddingRight: 60 }]}>
+            {habitCounter !== 0 && (
+              <Text style={{ color: Colors.light.primary, fontSize: 12 }}>
+                {habitCounter > 0 ? "+" : "-"}
+                {habitCounter}
+              </Text>
+            )}
+          </View>
         </View>
       </View>
 
       {habit.negative && (
-        <TouchableOpacity style={styles.actionButton} onPress={onPressNegative}>
+        <TouchableOpacity style={styles.actionButton} onPress={handleNegative}>
           <MaterialIcons size={30} color={Colors.light.redColor} name="remove" />
         </TouchableOpacity>
       )}
@@ -117,5 +123,9 @@ const styles = StyleSheet.create({
   seeMore: {
     color: Colors.light.primary,
     fontWeight: "500",
+  },
+  habitCounterContainer: {
+    width: "100%",
+    alignItems: "flex-end",
   },
 });

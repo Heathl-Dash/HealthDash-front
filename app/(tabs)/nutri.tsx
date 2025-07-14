@@ -46,79 +46,85 @@ export default function Nutri() {
 
   return (
     <>
-    <SafeAreaView style={{ flex: 1, paddingHorizontal: 30 }}>
-      <View style={styles.alimentSearchContainer}>
-        <Text style={styles.alimentSearchTitle}>Pesquisa Nutricional</Text>
-        <View style={styles.inputContainer}>
-          <CustomInput
-            value={alimentValue}
-            onChangeText={setAlimentValue}
-            placeholder="ex:Tomate"
-            styleContainer={{ width: "75%" }}
-          />
-          <CustomButton
-            onPress={handleSearch}
-            title="Buscar"
-            isLoading={isPending}
-            variant="primary"
-            style={{ width: "25%" }}
-            shape="rect"
-          />
-        </View>
-      </View>
-      {isError && <Text style={{ color: "red" }}>Algo deu errado :(</Text>}
-
-      <View style={{ marginTop: 35, marginBottom: 25 }}>
-        <Tabs tabs={TABS} initialTabKey="habit" onTabChange={(key: string) => setCurrentTab(key)} />
-      </View>
-
-      {habitIsLoading && (
-        <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-          <ActivityIndicator size={50} />
-        </View>
-      )}
-
-      {currentTab === "habit" ? (
-        <FlatList
-          data={nutriHabits || []}
-          keyExtractor={(item) => item.habit_id.toString()}
-          contentContainerStyle={styles.habitTodoContainer}
-          renderItem={({ item }) => (
-            <Habit
-              habit={item}
-              onPressPositive={() => {
-                addPositiveCounterMutation.mutate(item.habit_id);
-              }}
-              onPressEdit={() => {}}
-              onPressNegative={() => {
-                addNegativeCounterMutation.mutate(item.habit_id);
-              }}
+      <SafeAreaView style={{ flex: 1, paddingHorizontal: 30 }}>
+        <View style={styles.alimentSearchContainer}>
+          <Text style={styles.alimentSearchTitle}>Pesquisa Nutricional</Text>
+          <View style={styles.inputContainer}>
+            <CustomInput
+              value={alimentValue}
+              onChangeText={setAlimentValue}
+              placeholder="ex:Tomate"
+              styleContainer={{ width: "75%" }}
             />
-          )}
-          ListEmptyComponent={
-            <Text style={{ color: Colors.light.darkGray }}>Nenhum hábito encontrado.</Text>
-          }
-        />
-      ) : (
-        <View style={styles.habitTodoContainer}>
-          <Text style={{ color: "black" }}>Tarefas</Text>
+            <CustomButton
+              onPress={handleSearch}
+              title="Buscar"
+              isLoading={isPending}
+              variant="primary"
+              style={{ width: "25%" }}
+              shape="rect"
+            />
+          </View>
         </View>
-      )}
+        {isError && <Text style={{ color: "red" }}>Algo deu errado :(</Text>}
 
-      {habitError && (
-        <View style={styles.errorContent}>
-          <Text style={{ color: Colors.light.redColor }}>Não foi possível carregar os hábitos</Text>
+        <View style={{ marginTop: 35, marginBottom: 25 }}>
+          <Tabs
+            tabs={TABS}
+            initialTabKey="habit"
+            onTabChange={(key: string) => setCurrentTab(key)}
+          />
         </View>
-      )}
 
-    </SafeAreaView>
+        {habitIsLoading && (
+          <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+            <ActivityIndicator size={50} />
+          </View>
+        )}
+
+        {currentTab === "habit" ? (
+          <FlatList
+            data={nutriHabits || []}
+            keyExtractor={(item) => item.habit_id.toString()}
+            contentContainerStyle={styles.habitTodoContainer}
+            showsVerticalScrollIndicator={false}
+            renderItem={({ item }) => (
+              <Habit
+                habit={item}
+                onPressPositive={() => {
+                  addPositiveCounterMutation.mutate(item.habit_id);
+                }}
+                onPressEdit={() => {}}
+                onPressNegative={() => {
+                  addNegativeCounterMutation.mutate(item.habit_id);
+                }}
+              />
+            )}
+            ListEmptyComponent={
+              <Text style={{ color: Colors.light.darkGray }}>Nenhum hábito encontrado.</Text>
+            }
+          />
+        ) : (
+          <View style={styles.habitTodoContainer}>
+            <Text style={{ color: "black" }}>Tarefas</Text>
+          </View>
+        )}
+
+        {habitError && (
+          <View style={styles.errorContent}>
+            <Text style={{ color: Colors.light.redColor }}>
+              Não foi possível carregar os hábitos
+            </Text>
+          </View>
+        )}
+      </SafeAreaView>
       <ResultNutritionSearch
         aliment={searchedAliment}
         nutritionResult={data}
         ref={bottomSheetRef}
         isLoading={isPending}
       />
-      </>
+    </>
   );
 }
 
