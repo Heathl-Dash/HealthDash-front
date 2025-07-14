@@ -61,7 +61,27 @@ export const getNutriHabits = () => {
     .get<IHabit[]>("nutri/habits/")
     .then((res) => res.data)
     .catch((err) => {
-      console.error("erro ao buscar hábitos de exercícios: ", err);
+      console.error("erro ao buscar hábitos nutricionais: ", err);
+      throw err;
+    });
+};
+
+export const addPositiveCounter = (id: number) => {
+  return apiGateway
+    .patch(`nutri/habits/${id}/add-positive-counter`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("erro ao somar contador positivo de habito nutricional: ", err);
+      throw err;
+    });
+};
+
+export const addNegativeCounter = (id: number) => {
+  return apiGateway
+    .patch(`nutri/habits/${id}/add-negative-counter`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("erro ao somar contador negativo de habito nutricional: ", err);
       throw err;
     });
 };

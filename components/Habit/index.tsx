@@ -10,7 +10,12 @@ interface HabitProps {
   onPressEdit: () => void;
 }
 
-const Habit = ({ habit, onPressNegative, onPressPositive, onPressEdit }: HabitProps) => {
+const Habit = ({
+  habit,
+  onPressNegative,
+  onPressPositive,
+  onPressEdit,
+}: HabitProps) => {
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [isTruncated, setIsTruncated] = useState(false);
 
@@ -18,27 +23,37 @@ const Habit = ({ habit, onPressNegative, onPressPositive, onPressEdit }: HabitPr
     setIsTruncated(e.nativeEvent.lines.length > 2);
   };
 
-  if(!habit){
-    return
+  if (!habit) {
+    return null;
   }
 
   return (
     <View style={styles.container}>
       {habit.positive && (
-        <TouchableOpacity style={styles.actionButton} onPress={onPressPositive}>
-          <MaterialIcons size={30} color={Colors.light.primary} name="add" />
+        <TouchableOpacity
+          style={styles.actionButton}
+          onPress={onPressPositive}
+        >
+          <MaterialIcons
+            size={30}
+            color={Colors.light.primary}
+            name="add"
+          />
         </TouchableOpacity>
       )}
+
       <TouchableOpacity
         style={[
           styles.content,
-          habit.negative && !habit.positive && { paddingLeft: 70 },
-          !habit.description?.trim() && { paddingVertical: 25 },
+          habit.negative && !habit.positive && { paddingLeft: 60 },
+          !habit.description?.trim() && styles.emptyContent,
         ]}
         onPress={onPressEdit}
+        activeOpacity={0.7}
       >
         <Text style={styles.title}>{habit?.title}</Text>
-        {habit.description && (
+
+        {habit.description?.trim() ? (
           <>
             <Text
               onTextLayout={handleTextLayout}
@@ -49,16 +64,28 @@ const Habit = ({ habit, onPressNegative, onPressPositive, onPressEdit }: HabitPr
               {habit?.description}
             </Text>
             {isTruncated && (
-              <TouchableOpacity onPress={() => setShowFullDescription(!showFullDescription)}>
-                <Text style={styles.seeMore}>{showFullDescription ? "Ver menos" : "Ver mais"}</Text>
+              <TouchableOpacity
+                onPress={() => setShowFullDescription(!showFullDescription)}
+              >
+                <Text style={styles.seeMore}>
+                  {showFullDescription ? "Ver menos" : "Ver mais"}
+                </Text>
               </TouchableOpacity>
             )}
           </>
-        )}
+        ) : null}
       </TouchableOpacity>
+
       {habit.negative && (
-        <TouchableOpacity style={styles.actionButton} onPress={onPressNegative}>
-          <MaterialIcons size={30} color={Colors.light.redColor} name="remove" />
+        <TouchableOpacity
+          style={styles.actionButton}
+          onPress={onPressNegative}
+        >
+          <MaterialIcons
+            size={30}
+            color={Colors.light.redColor}
+            name="remove"
+          />
         </TouchableOpacity>
       )}
     </View>
@@ -73,17 +100,23 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.surface,
     borderRadius: 12,
     width: "100%",
+    minHeight: 70,
+    alignItems: "center",
+    paddingVertical: 8,
+    paddingHorizontal: 10,
   },
   content: {
     flex: 1,
-    padding: 8,
-    paddingHorizontal: 10,
+    justifyContent: "center",
+  },
+  emptyContent: {
+    minHeight: 50,
+    justifyContent: "center",
   },
   actionButton: {
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 15,
-    // height: "100%",
     backgroundColor: "transparent",
   },
   title: {
@@ -92,6 +125,7 @@ const styles = StyleSheet.create({
   },
   description: {
     color: Colors.light.darkGray,
+    marginTop: 4,
   },
   seeMore: {
     color: Colors.light.primary,

@@ -2,8 +2,8 @@ import Habit from "@/components/Habit";
 import Tabs, { TabItem } from "@/components/Tabs";
 import { Colors } from "@/constants/Colors";
 import useSearchAliment from "@/hooks/useSearchAliment";
-import { getNutriHabits } from "@/lib/axios";
-import { useQuery } from "@tanstack/react-query";
+import { addNegativeCounter, addPositiveCounter, getNutriHabits } from "@/lib/axios";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import React, { useState } from "react";
 import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -35,6 +35,14 @@ export default function Nutri() {
     error: habitError,
     isLoading: habitIsLoading,
   } = useQuery({ queryKey: ["nutriHabit"], queryFn: getNutriHabits });
+
+  const addPositiveCounterMutation = useMutation({
+    mutationFn: (id: number) => addPositiveCounter(id),
+  });
+
+  const addNegativeCounterMutation = useMutation({
+    mutationFn: (id: number) => addNegativeCounter(id),
+  });
 
   return (
     <SafeAreaView style={{ flex: 1, paddingHorizontal: 30 }}>
@@ -82,9 +90,13 @@ export default function Nutri() {
               <Habit
                 key={habit.habit_id}
                 habit={habit}
-                onPressPositive={() => {}}
+                onPressPositive={() => {
+                  addPositiveCounterMutation.mutate(habit.habit_id);
+                }}
                 onPressEdit={() => {}}
-                onPressNegative={() => {}}
+                onPressNegative={() => {
+                  addNegativeCounterMutation.mutate(habit.habit_id);
+                }}
               />
             ))}
           </View>
@@ -96,7 +108,9 @@ export default function Nutri() {
 
         {habitError && (
           <View style={styles.errorContent}>
-            <Text style={{color: Colors.light.redColor}}>Não foi possível carregar os hábitos</Text>
+            <Text style={{ color: Colors.light.redColor }}>
+              Não foi possível carregar os hábitos
+            </Text>
           </View>
         )}
       </ScrollView>
