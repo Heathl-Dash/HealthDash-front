@@ -1,7 +1,7 @@
 import { Colors } from "@/constants/Colors";
 import { MaterialIcons } from "@expo/vector-icons";
 import ReadMore from "@fawazahmed/react-native-read-more";
-import React, { useState } from "react";
+import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 interface HabitProps {
@@ -16,24 +16,10 @@ const Habit = ({ habit, onPressNegative, onPressPositive, onPressEdit }: HabitPr
     return null;
   }
 
-  const [habitCounter, setHabitCounter] = useState<number>(
-    habit.positive_count - habit.negative_count
-  );
-
-  const handlePositive = () => {
-    onPressPositive();
-    setHabitCounter((prev) => prev + 1);
-  };
-
-  const handleNegative = () => {
-    onPressNegative();
-    setHabitCounter((prev) => prev - 1);
-  };
-
   return (
     <View style={styles.container}>
       {habit.positive && (
-        <TouchableOpacity style={styles.actionButton} onPress={handlePositive}>
+        <TouchableOpacity style={styles.actionButton} onPress={onPressPositive}>
           <MaterialIcons size={30} color={Colors.light.primary} name="add" />
         </TouchableOpacity>
       )}
@@ -62,10 +48,14 @@ const Habit = ({ habit, onPressNegative, onPressPositive, onPressEdit }: HabitPr
             </ReadMore>
           ) : null}
           <View style={[styles.habitCounterContainer, !habit.negative && { paddingRight: 60 }]}>
-            {habitCounter !== 0 && (
+            {habit.positive_count !== 0 && (
               <Text style={{ color: Colors.light.primary, fontSize: 12 }}>
-                {habitCounter > 0 ? "+" : "-"}
-                {habitCounter}
+                +{habit.positive_count}
+              </Text>
+            )}
+            {habit.negative_count !== 0 && (
+              <Text style={{ color: Colors.light.primary, fontSize: 12 }}>
+                -{habit.negative_count}
               </Text>
             )}
           </View>
@@ -73,7 +63,7 @@ const Habit = ({ habit, onPressNegative, onPressPositive, onPressEdit }: HabitPr
       </View>
 
       {habit.negative && (
-        <TouchableOpacity style={styles.actionButton} onPress={handleNegative}>
+        <TouchableOpacity style={styles.actionButton} onPress={onPressNegative}>
           <MaterialIcons size={30} color={Colors.light.redColor} name="remove" />
         </TouchableOpacity>
       )}
@@ -125,7 +115,9 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   habitCounterContainer: {
+    flexDirection: "row",
+    gap: 7,
     width: "100%",
-    alignItems: "flex-end",
+    justifyContent: "flex-end",
   },
 });

@@ -66,7 +66,7 @@ export const getNutriHabits = () => {
     });
 };
 
-export const addPositiveCounter = (id: number) => {
+export const addNutriPositiveCounter = (id: number) => {
   return apiGateway
     .patch(`nutri/habits/${id}/add-positive-counter`)
     .then((res) => res.data)
@@ -76,7 +76,7 @@ export const addPositiveCounter = (id: number) => {
     });
 };
 
-export const addNegativeCounter = (id: number) => {
+export const addNutriNegativeCounter = (id: number) => {
   return apiGateway
     .patch(`nutri/habits/${id}/add-negative-counter`)
     .then((res) => res.data)

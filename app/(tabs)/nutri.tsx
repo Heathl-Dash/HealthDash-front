@@ -2,8 +2,8 @@ import Habit from "@/components/Habit";
 import Tabs, { TabItem } from "@/components/Tabs";
 import { Colors } from "@/constants/Colors";
 import useSearchAliment from "@/hooks/useSearchAliment";
-import { addNegativeCounter, addPositiveCounter, getNutriHabits } from "@/lib/axios";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { addNutriNegativeCounter, addNutriPositiveCounter, getNutriHabits } from "@/lib/axios";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useState } from "react";
 import { ActivityIndicator, FlatList, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -36,12 +36,20 @@ export default function Nutri() {
     isLoading: habitIsLoading,
   } = useQuery({ queryKey: ["nutriHabit"], queryFn: getNutriHabits });
 
+  const queryClient = useQueryClient();
+
   const addPositiveCounterMutation = useMutation({
-    mutationFn: (id: number) => addPositiveCounter(id),
+    mutationFn: (id: number) => addNutriPositiveCounter(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["nutriHabit"] });
+    },
   });
 
   const addNegativeCounterMutation = useMutation({
-    mutationFn: (id: number) => addNegativeCounter(id),
+    mutationFn: (id: number) => addNutriNegativeCounter(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["nutriHabit"] });
+    },
   });
 
   return (
