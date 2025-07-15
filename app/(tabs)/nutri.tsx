@@ -93,23 +93,23 @@ export default function Nutri() {
         {currentTab === "habit" ? (
           <FlatList
             data={nutriHabits || []}
-            keyExtractor={(item) => item.habit_id.toString()}
+            keyExtractor={(item) => item.id.toString()}
             contentContainerStyle={styles.habitTodoContainer}
             showsVerticalScrollIndicator={false}
             renderItem={({ item }) => (
               <Habit
                 habit={item}
                 onPressPositive={() => {
-                  addPositiveCounterMutation.mutate(item.habit_id);
+                  addPositiveCounterMutation.mutate(item.id);
                 }}
                 onPressEdit={() => {}}
                 onPressNegative={() => {
-                  addNegativeCounterMutation.mutate(item.habit_id);
+                  addNegativeCounterMutation.mutate(item.id);
                 }}
               />
             )}
             ListEmptyComponent={
-              <Text style={{ color: Colors.light.darkGray }}>Nenhum hábito encontrado.</Text>
+              <Text style={{ color: Colors.light.darkGray, textAlign:"center" }}>Nenhum hábito encontrado.</Text>
             }
           />
         ) : (
