@@ -58,7 +58,7 @@ export const postNutritionInfo = (data: { aliment: string }) => {
 
 export const getNutriHabits = () => {
   return apiGateway
-    .get<IHabit[]>("nutri/habits/")
+    .get<IHabit[]>("nutri/habit/")
     .then((res) => res.data)
     .catch((err) => {
       console.error("erro ao buscar hábitos nutricionais: ", err);
@@ -68,7 +68,7 @@ export const getNutriHabits = () => {
 
 export const addNutriPositiveCounter = (id: number) => {
   return apiGateway
-    .patch(`nutri/habits/${id}/add-positive-counter`)
+    .patch(`nutri/habit/${id}/add-positive-counter`)
     .then((res) => res.data)
     .catch((err) => {
       console.error("erro ao somar contador positivo de habito nutricional: ", err);
@@ -78,10 +78,41 @@ export const addNutriPositiveCounter = (id: number) => {
 
 export const addNutriNegativeCounter = (id: number) => {
   return apiGateway
-    .patch(`nutri/habits/${id}/add-negative-counter`)
+    .patch(`nutri/habit/${id}/add-negative-counter`)
     .then((res) => res.data)
     .catch((err) => {
       console.error("erro ao somar contador negativo de habito nutricional: ", err);
+      throw err;
+    });
+};
+
+
+export const getFitHabits = () => {
+  return apiGateway
+    .get("fit/habit/")
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("erro ao buscar hábitos de exercício: ", err);
+      throw err;
+    });
+};
+
+export const addFitPositiveCounter = (id: number) => {
+  return apiGateway
+    .patch(`fit/habit/${id}/add-positive-counter/`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("erro ao somar contador positivo de habito de exercício: ", err);
+      throw err;
+    });
+};
+
+export const addFitNegativeCounter = (id: number) => {
+  return apiGateway
+    .patch(`fit/habit/${id}/add-negative-counter/`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("erro ao somar contador negativo de habito de exercício: ", err);
       throw err;
     });
 };
