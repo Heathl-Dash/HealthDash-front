@@ -8,6 +8,7 @@ import CustomButton from "../../components/CustomButton";
 import CustomInput from "../../components/CustomInput";
 import ResultNutritionSearch from "../../components/ResultNutritionSearch";
 import { postNutritionInfo } from "../../lib/axios";
+import Header from "../../components/Header";
 
 export default function Nutri() {
   const [alimentValue, setAlimentValue] = useState("");
@@ -45,6 +46,7 @@ export default function Nutri() {
 
   return (
     <SafeAreaView style={{ flex: 1, alignItems: "center" }}>
+      <Header/>
       <View style={styles.alimentSearchContainer}>
         <Text style={styles.alimentSearchTitle}>Pesquisa Nutricional</Text>
         <View style={styles.inputContainer}>
