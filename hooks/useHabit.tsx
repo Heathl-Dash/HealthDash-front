@@ -60,6 +60,14 @@ const useHabit = () => {
     },
   });
 
+  const normalizedNutriHabits =
+    nutriHabits?.map((habit: IHabit) => ({ ...habit, source: "nutri" })) || [];
+  const normalizedFitHabits =
+    fitHabits?.map((habit: IHabit) => ({ ...habit, source: "fit" })) || [];
+
+  const allHabits = [...normalizedNutriHabits, ...normalizedFitHabits].sort(
+    (a, b) => new Date(b.created).getTime() - new Date(a.created).getTime()
+  );
 
 
   return {
@@ -76,6 +84,7 @@ const useHabit = () => {
     habitFitIsLoading,
     addFitPositiveCounterMutation,
     addFitNegativeCounterMutation,
+    allHabits,
   };
 };
 

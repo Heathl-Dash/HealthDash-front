@@ -20,7 +20,7 @@ export default function Fit() {
   } = useHabit();
 
   return (
-    <SafeAreaView style={{ flex: 1, paddingHorizontal: 30 }}>
+    <SafeAreaView style={{ flex: 1, paddingHorizontal: 30, flexGrow: 1 }}>
       <View style={{ marginTop: 35, marginBottom: 25 }}>
         <Tabs tabs={TABS} initialTabKey="habit" onTabChange={(key: string) => setCurrentTab(key)} />
       </View>
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
   habitTodoContainer: {
     gap: 10,
     width: "100%",
-    paddingBottom: 150,
+    paddingBottom: 230,
   },
   errorContent: {
     alignItems: "center",

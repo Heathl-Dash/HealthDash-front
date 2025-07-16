@@ -100,6 +100,7 @@ export default function TabLayout() {
 const styles = StyleSheet.create({
   tabBar: {
     paddingTop: 10,
+    height: 120
   },
   tab_selected_base: {
     width: 36,
