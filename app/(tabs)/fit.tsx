@@ -6,6 +6,7 @@ import React from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Header from "../../components/Header";
 
 export default function Fit() {
   const {
@@ -21,6 +22,7 @@ export default function Fit() {
 
   return (
     <SafeAreaView style={{ flex: 1, paddingHorizontal: 30, flexGrow: 1 }}>
+      <Header/>
       <View style={{ marginTop: 35, marginBottom: 25 }}>
         <Tabs tabs={TABS} initialTabKey="habit" onTabChange={(key: string) => setCurrentTab(key)} />
       </View>

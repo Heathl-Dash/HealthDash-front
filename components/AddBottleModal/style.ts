@@ -55,8 +55,9 @@ export const styles = StyleSheet.create({
     borderRadius: 12,
   },
   buttonRow: {
+    flexDirection: 'row-reverse',
     width: "100%",
-    alignItems: "flex-end",
+    justifyContent: 'space-between',
     marginTop: 20,
   },
 });

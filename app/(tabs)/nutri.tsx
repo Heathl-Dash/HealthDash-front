@@ -8,6 +8,7 @@ import { ActivityIndicator, FlatList, StyleSheet, Text, View } from "react-nativ
 import { SafeAreaView } from "react-native-safe-area-context";
 import CustomButton from "../../components/CustomButton";
 import CustomInput from "../../components/CustomInput";
+import Header from "../../components/Header";
 import ResultNutritionSearch from "../../components/ResultNutritionSearch";
 
 export default function Nutri() {
@@ -36,6 +37,7 @@ export default function Nutri() {
   return (
     <>
       <SafeAreaView style={{ flex: 1, paddingHorizontal: 30 }}>
+        <Header />
         <View style={styles.alimentSearchContainer}>
           <Text style={styles.alimentSearchTitle}>Pesquisa Nutricional</Text>
           <View style={styles.inputContainer}>

@@ -1,12 +1,12 @@
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Modal, Text, TouchableOpacity, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import BottleButton from "../BottleButton";
 import CustomButton from "../CustomButton";
 import CustomInput from "../CustomInput";
+import { styles } from './style';
 import useAddBottleModel from "./useAddBottleModel";
-import {styles} from './style'
 
 const BOTTLES = [
   {
@@ -103,10 +103,17 @@ const AddBottleModal = ({ visible, onClose }: AddBottleModalProps) => {
                 <CustomButton
                   title="Salvar garrafa"
                   variant="outLine"
-                  style={{ borderColor: "white", width: 190, opacity: 0.9 }}
+                  style={{ borderColor: "white", width: '45%', opacity: 0.9 }}
                   styleText={{ color: "white" }}
                   onPress={onSaveBottle}
                 />
+                <CustomButton 
+                  title="Cancelar"
+                  variant="ghost"
+                  style={{width:'45%'}}
+                  styleText={{ color: "white"}}
+                  onPress={onClose}
+                  />
               </View>
             </View>
           </KeyboardAwareScrollView>
