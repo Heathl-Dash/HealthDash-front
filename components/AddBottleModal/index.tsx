@@ -103,14 +103,15 @@ const AddBottleModal = ({ visible, onClose }: AddBottleModalProps) => {
                 <CustomButton
                   title="Salvar garrafa"
                   variant="outLine"
-                  style={{ borderColor: "white", width: 190, opacity: 0.9 }}
+                  style={{ borderColor: "white", width: '45%', opacity: 0.9 }}
                   styleText={{ color: "white" }}
                   onPress={onSaveBottle}
                 />
                 <CustomButton 
                   title="Cancelar"
                   variant="ghost"
-                  styleText={{ color: "white", }}
+                  style={{width:'45%'}}
+                  styleText={{ color: "white"}}
                   onPress={onClose}
                   />
               </View>
