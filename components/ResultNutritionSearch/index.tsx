@@ -22,7 +22,7 @@ const ResultNutritionSearch = forwardRef<BottomSheetMethods, ResultNutritionSear
         enableDynamicSizing={false}
         containerStyle={{ zIndex: 1000 }}
       >
-        <View style={[styles.container, {paddingBottom: 200}]}>
+        <View style={[styles.container, {paddingBottom: 100}]}>
           <View style={styles.titleContainer}>
             <Text style={styles.title}>Informações nutricionais</Text>
             <Text style={styles.alimentTitle}>{aliment}</Text>
