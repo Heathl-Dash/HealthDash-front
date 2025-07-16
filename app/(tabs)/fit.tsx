@@ -1,42 +1,23 @@
 import Habit from "@/components/Habit";
-import Tabs, { TabItem } from "@/components/Tabs";
+import Tabs from "@/components/Tabs";
 import { Colors } from "@/constants/Colors";
-import { addFitNegativeCounter, addFitPositiveCounter, getFitHabits } from "@/lib/axios";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import React, { useState } from "react";
+import useHabit from "@/hooks/useHabit";
+import React from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Fit() {
-  const [currentTab, setCurrentTab] = useState("habit");
-
-  const TABS: TabItem[] = [
-    { key: "habit", label: "Hábitos" },
-    { key: "todo", label: "tarefas" },
-  ];
-
   const {
-    data: fitHabits,
-    error: habitError,
-    isLoading: habitIsLoading,
-  } = useQuery({ queryKey: ["fitHabit"], queryFn: getFitHabits });
-
-  const queryClient = useQueryClient();
-
-  const addPositiveCounterMutation = useMutation({
-    mutationFn: (id: number) => addFitPositiveCounter(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["fitHabit"] });
-    },
-  });
-
-  const addNegativeCounterMutation = useMutation({
-    mutationFn: (id: number) => addFitNegativeCounter(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["fitHabit"] });
-    },
-  });
+    TABS,
+    currentTab,
+    setCurrentTab,
+    fitHabits,
+    habitFitError,
+    habitFitIsLoading,
+    addFitPositiveCounterMutation,
+    addFitNegativeCounterMutation,
+  } = useHabit();
 
   return (
     <SafeAreaView style={{ flex: 1, paddingHorizontal: 30 }}>
@@ -44,7 +25,7 @@ export default function Fit() {
         <Tabs tabs={TABS} initialTabKey="habit" onTabChange={(key: string) => setCurrentTab(key)} />
       </View>
 
-      {habitIsLoading && (
+      {habitFitIsLoading && (
         <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
           <ActivityIndicator size={50} />
         </View>
@@ -59,17 +40,19 @@ export default function Fit() {
           renderItem={({ item }) => (
             <Habit
               habit={item}
-              onPressPositive={() => {
-                addPositiveCounterMutation.mutate(item.id);
+              onPressPositive={() => { 
+                addFitPositiveCounterMutation.mutate(item.id);
               }}
               onPressEdit={() => {}}
               onPressNegative={() => {
-                addNegativeCounterMutation.mutate(item.id);
+                addFitNegativeCounterMutation.mutate(item.id);
               }}
             />
           )}
           ListEmptyComponent={
-            <Text style={{ color: Colors.light.darkGray, textAlign: "center" }}>Nenhum hábito encontrado.</Text>
+            <Text style={{ color: Colors.light.darkGray, textAlign: "center" }}>
+              Nenhum hábito encontrado.
+            </Text>
           }
         />
       ) : (
@@ -78,7 +61,7 @@ export default function Fit() {
         </View>
       )}
 
-      {habitError && (
+      {habitFitError && (
         <View style={styles.errorContent}>
           <Text style={{ color: Colors.light.redColor }}>Não foi possível carregar os hábitos</Text>
         </View>

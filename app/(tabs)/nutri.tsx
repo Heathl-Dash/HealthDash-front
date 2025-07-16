@@ -1,10 +1,9 @@
 import Habit from "@/components/Habit";
-import Tabs, { TabItem } from "@/components/Tabs";
+import Tabs from "@/components/Tabs";
 import { Colors } from "@/constants/Colors";
+import useHabit from "@/hooks/useHabit";
 import useSearchAliment from "@/hooks/useSearchAliment";
-import { addNutriNegativeCounter, addNutriPositiveCounter, getNutriHabits } from "@/lib/axios";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import React, { useState } from "react";
+import React from "react";
 import { ActivityIndicator, FlatList, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CustomButton from "../../components/CustomButton";
@@ -12,13 +11,6 @@ import CustomInput from "../../components/CustomInput";
 import ResultNutritionSearch from "../../components/ResultNutritionSearch";
 
 export default function Nutri() {
-  const [currentTab, setCurrentTab] = useState("habit");
-
-  const TABS: TabItem[] = [
-    { key: "habit", label: "Hábitos" },
-    { key: "todo", label: "tarefas" },
-  ];
-
   const {
     alimentValue,
     setAlimentValue,
@@ -31,26 +23,15 @@ export default function Nutri() {
   } = useSearchAliment();
 
   const {
-    data: nutriHabits,
-    error: habitError,
-    isLoading: habitIsLoading,
-  } = useQuery({ queryKey: ["nutriHabit"], queryFn: getNutriHabits });
-
-  const queryClient = useQueryClient();
-
-  const addPositiveCounterMutation = useMutation({
-    mutationFn: (id: number) => addNutriPositiveCounter(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["nutriHabit"] });
-    },
-  });
-
-  const addNegativeCounterMutation = useMutation({
-    mutationFn: (id: number) => addNutriNegativeCounter(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["nutriHabit"] });
-    },
-  });
+    TABS,
+    currentTab,
+    setCurrentTab,
+    nutriHabits,
+    habitNutriError,
+    habitNutriIsLoading,
+    addNutriPositiveCounterMutation,
+    addNutriNegativeCounterMutation,
+  } = useHabit();
 
   return (
     <>
@@ -84,7 +65,7 @@ export default function Nutri() {
           />
         </View>
 
-        {habitIsLoading && (
+        {habitNutriIsLoading && (
           <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
             <ActivityIndicator size={50} />
           </View>
@@ -100,16 +81,18 @@ export default function Nutri() {
               <Habit
                 habit={item}
                 onPressPositive={() => {
-                  addPositiveCounterMutation.mutate(item.id);
+                  addNutriPositiveCounterMutation.mutate(item.id);
                 }}
                 onPressEdit={() => {}}
                 onPressNegative={() => {
-                  addNegativeCounterMutation.mutate(item.id);
+                  addNutriNegativeCounterMutation.mutate(item.id);
                 }}
               />
             )}
             ListEmptyComponent={
-              <Text style={{ color: Colors.light.darkGray, textAlign:"center" }}>Nenhum hábito encontrado.</Text>
+              <Text style={{ color: Colors.light.darkGray, textAlign: "center" }}>
+                Nenhum hábito encontrado.
+              </Text>
             }
           />
         ) : (
@@ -118,7 +101,7 @@ export default function Nutri() {
           </View>
         )}
 
-        {habitError && (
+        {habitNutriError && (
           <View style={styles.errorContent}>
             <Text style={{ color: Colors.light.redColor }}>
               Não foi possível carregar os hábitos
