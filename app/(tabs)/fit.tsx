@@ -1,9 +1,10 @@
 import Habit from "@/components/Habit";
+import StepCounter from "@/components/StepCounter";
 import Tabs from "@/components/Tabs";
 import { Colors } from "@/constants/Colors";
 import useHabit from "@/hooks/useHabit";
-import React from "react";
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import React, { useState } from "react";
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Header from "../../components/Header";
@@ -20,9 +21,22 @@ export default function Fit() {
     addFitNegativeCounterMutation,
   } = useHabit();
 
+  const [steps, setSteps] = useState(3247);
+  const [goal] = useState(10000);
+
+
   return (
     <SafeAreaView style={{ flex: 1, paddingHorizontal: 30, flexGrow: 1 }}>
-      <Header/>
+      <Header />
+      <View style={{justifyContent: "center", alignItems: "center", marginTop: 20}}>
+        <StepCounter
+          steps={steps}
+          goal={goal}
+          size={250}
+          strokeWidth={15}
+        />
+      </View>
+
       <View style={{ marginTop: 35, marginBottom: 25 }}>
         <Tabs tabs={TABS} initialTabKey="habit" onTabChange={(key: string) => setCurrentTab(key)} />
       </View>
@@ -42,7 +56,7 @@ export default function Fit() {
           renderItem={({ item }) => (
             <Habit
               habit={item}
-              onPressPositive={() => { 
+              onPressPositive={() => {
                 addFitPositiveCounterMutation.mutate(item.id);
               }}
               onPressEdit={() => {}}
