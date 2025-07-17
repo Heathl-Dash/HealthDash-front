@@ -42,7 +42,8 @@ const Habit = ({ habit, onPressNegative, onPressPositive, onPressEdit }: HabitPr
               seeMoreText="Ver mais"
               style={styles.description}
               animate={false}
-              seeMoreStyle={{ color: Colors.light.primary, fontWeight: "700" }}
+              seeMoreStyle={styles.seeMore}
+              seeLessStyle={styles.seeMore}
             >
               {habit?.description}
             </ReadMore>
@@ -112,7 +113,7 @@ const styles = StyleSheet.create({
   },
   seeMore: {
     color: Colors.light.primary,
-    fontWeight: "500",
+    fontWeight: "700",
   },
   habitCounterContainer: {
     flexDirection: "row",
