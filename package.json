@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
+    "@fawazahmed/react-native-read-more": "^3.0.4",
     "@gorhom/bottom-sheet": "^5.1.6",
     "@react-navigation/bottom-tabs": "^7.3.10",
     "@react-navigation/elements": "^2.3.8",

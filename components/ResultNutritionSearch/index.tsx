@@ -12,11 +12,17 @@ interface ResultNutritionSearchProps {
 
 const ResultNutritionSearch = forwardRef<BottomSheetMethods, ResultNutritionSearchProps>(
   ({ nutritionResult, aliment, isLoading }, ref) => {
-    const snapPoints = useMemo(() => ["15%", "80%"], []);
+    const snapPoints = useMemo(() => ["13%", "80%"], []);
 
     return (
-      <BottomSheet ref={ref} index={-1} snapPoints={snapPoints} enableDynamicSizing={false}>
-        <View style={{ padding: 16, paddingHorizontal: 25, marginBottom: 20 }}>
+      <BottomSheet
+        ref={ref}
+        index={-1}
+        snapPoints={snapPoints}
+        enableDynamicSizing={false}
+        containerStyle={{ zIndex: 1000 }}
+      >
+        <View style={[styles.container, {paddingBottom: 100}]}>
           <View style={styles.titleContainer}>
             <Text style={styles.title}>Informações nutricionais</Text>
             <Text style={styles.alimentTitle}>{aliment}</Text>
@@ -25,7 +31,11 @@ const ResultNutritionSearch = forwardRef<BottomSheetMethods, ResultNutritionSear
           {isLoading && <Text>Carregando...</Text>}
 
           {nutritionResult && (
-            <BottomSheetScrollView contentContainerStyle={{ paddingBottom: 80 }}>
+            <BottomSheetScrollView
+              contentContainerStyle={{
+                flexGrow: 1,
+              }}
+            >
               <>
                 <View style={styles.section}>
                   <Text style={styles.sectionTitle}>Macronutrientes</Text>
@@ -94,6 +104,11 @@ const ResultNutritionSearch = forwardRef<BottomSheetMethods, ResultNutritionSear
 export default ResultNutritionSearch;
 
 const styles = StyleSheet.create({
+  container: {
+    padding: 16,
+    paddingHorizontal: 25,
+    marginBottom: 20,
+  },
   titleContainer: {
     width: "100%",
     marginBottom: 20,

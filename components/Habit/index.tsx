@@ -1,6 +1,7 @@
 import { Colors } from "@/constants/Colors";
 import { MaterialIcons } from "@expo/vector-icons";
-import React, { useState } from "react";
+import ReadMore from "@fawazahmed/react-native-read-more";
+import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 interface HabitProps {
@@ -11,12 +12,9 @@ interface HabitProps {
 }
 
 const Habit = ({ habit, onPressNegative, onPressPositive, onPressEdit }: HabitProps) => {
-  const [showFullDescription, setShowFullDescription] = useState(false);
-  const [isTruncated, setIsTruncated] = useState(false);
-
-  const handleTextLayout = (e: any) => {
-    setIsTruncated(e.nativeEvent.lines.length > 2);
-  };
+  if (!habit) {
+    return null;
+  }
 
   return (
     <View style={styles.container}>
@@ -25,33 +23,46 @@ const Habit = ({ habit, onPressNegative, onPressPositive, onPressEdit }: HabitPr
           <MaterialIcons size={30} color={Colors.light.primary} name="add" />
         </TouchableOpacity>
       )}
-      <TouchableOpacity
+
+      <View
         style={[
           styles.content,
-          habit.negative && !habit.positive && { paddingLeft: 75 },
-          !habit.description?.trim() && { paddingVertical: 25 },
+          habit.negative && !habit.positive && { paddingLeft: 60 },
+          !habit.description?.trim() && styles.emptyContent,
         ]}
-        onPress={onPressEdit}
       >
-        <Text style={styles.title}>{habit.title}</Text>
-        {habit.description && (
-          <>
-            <Text
-              onTextLayout={handleTextLayout}
-              numberOfLines={showFullDescription ? undefined : 2}
-              ellipsizeMode="tail"
+        <View style={{ flex: 1 }}>
+          <TouchableOpacity onPress={onPressEdit} activeOpacity={0.7}>
+            <Text style={styles.title}>{habit?.title}</Text>
+          </TouchableOpacity>
+          {habit.description?.trim() ? (
+            <ReadMore
+              numberOfLines={2}
+              seeLessText="Ver menos"
+              seeMoreText="Ver mais"
               style={styles.description}
+              animate={false}
+              seeMoreStyle={styles.seeMore}
+              seeLessStyle={styles.seeMore}
             >
-              {habit.description}
-            </Text>
-            {isTruncated && (
-              <TouchableOpacity onPress={() => setShowFullDescription(!showFullDescription)}>
-                <Text style={styles.seeMore}>{showFullDescription ? "Ver menos" : "Ver mais"}</Text>
-              </TouchableOpacity>
+              {habit?.description}
+            </ReadMore>
+          ) : null}
+          <View style={[styles.habitCounterContainer, !habit.negative && { paddingRight: 60 }]}>
+            {habit.positive_count !== 0 && (
+              <Text style={{ color: Colors.light.primary, fontSize: 12 }}>
+                +{habit.positive_count}
+              </Text>
             )}
-          </>
-        )}
-      </TouchableOpacity>
+            {habit.negative_count !== 0 && (
+              <Text style={{ color: Colors.light.primary, fontSize: 12 }}>
+                -{habit.negative_count}
+              </Text>
+            )}
+          </View>
+        </View>
+      </View>
+
       {habit.negative && (
         <TouchableOpacity style={styles.actionButton} onPress={onPressNegative}>
           <MaterialIcons size={30} color={Colors.light.redColor} name="remove" />
@@ -68,17 +79,24 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     backgroundColor: Colors.light.surface,
     borderRadius: 12,
+    width: "100%",
+    minHeight: 70,
+    alignItems: "center",
+    paddingVertical: 8,
+    paddingHorizontal: 10,
   },
   content: {
     flex: 1,
-    padding: 8,
-    paddingHorizontal: 10,
+    justifyContent: "center",
+  },
+  emptyContent: {
+    minHeight: 50,
+    justifyContent: "center",
   },
   actionButton: {
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 15,
-    // height: "100%",
     backgroundColor: "transparent",
   },
   title: {
@@ -87,10 +105,20 @@ const styles = StyleSheet.create({
   },
   description: {
     color: Colors.light.darkGray,
+    marginTop: 4,
+  },
+  seeMoreContainer: {
+    marginTop: 4,
+    alignSelf: "flex-start",
   },
   seeMore: {
     color: Colors.light.primary,
-    fontWeight: "500",
-    marginTop: 4,
+    fontWeight: "700",
+  },
+  habitCounterContainer: {
+    flexDirection: "row",
+    gap: 7,
+    width: "100%",
+    justifyContent: "flex-end",
   },
 });

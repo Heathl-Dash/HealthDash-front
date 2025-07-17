@@ -13,7 +13,7 @@ const Tab = ({ label, isActive, onPress }: TabProps) => {
     <CustomButton
       title={label}
       onPress={onPress}
-      variant={isActive ? "primary" : "ghost"}
+      variant={isActive ? "secondary" : "ghost"}
       style={{ flex: 1 }}
     />
   );

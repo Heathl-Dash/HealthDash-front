@@ -4,7 +4,9 @@ import { StyleSheet } from "react-native";
 export const Variants = StyleSheet.create({
   primary: {
     backgroundColor: Colors.light.primary,
-    color: "white",
+  },
+  secondary:{
+    backgroundColor: Colors.light.secondary
   },
   outLine: {
     borderWidth: 1,
@@ -21,12 +23,17 @@ export const VariantText = StyleSheet.create({
     color: "white",
     fontWeight: "800",
   },
+  secondary: {
+    color: "white",
+    fontWeight: "800",
+  },
   outLine: {
     color: Colors.light.primary,
     fontWeight: "800",
   },
   ghost: {
     color: Colors.light.darkGray,
+    fontWeight: "800"
   },
 });
 

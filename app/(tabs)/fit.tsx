@@ -1,13 +1,84 @@
-import { View, Text } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import React from 'react'
+import Habit from "@/components/Habit";
+import Tabs from "@/components/Tabs";
+import { Colors } from "@/constants/Colors";
+import useHabit from "@/hooks/useHabit";
+import React from "react";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { FlatList } from "react-native-gesture-handler";
+import { SafeAreaView } from "react-native-safe-area-context";
 import Header from "../../components/Header";
 
 export default function Fit() {
+  const {
+    TABS,
+    currentTab,
+    setCurrentTab,
+    fitHabits,
+    habitFitError,
+    habitFitIsLoading,
+    addFitPositiveCounterMutation,
+    addFitNegativeCounterMutation,
+  } = useHabit();
+
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{ flex: 1, paddingHorizontal: 30, flexGrow: 1 }}>
       <Header/>
-      <Text>pagina Fit</Text>
+      <View style={{ marginTop: 35, marginBottom: 25 }}>
+        <Tabs tabs={TABS} initialTabKey="habit" onTabChange={(key: string) => setCurrentTab(key)} />
+      </View>
+
+      {habitFitIsLoading && (
+        <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+          <ActivityIndicator size={50} />
+        </View>
+      )}
+
+      {currentTab === "habit" ? (
+        <FlatList
+          data={fitHabits || []}
+          keyExtractor={(item) => item.id.toString()}
+          contentContainerStyle={styles.habitTodoContainer}
+          showsVerticalScrollIndicator={false}
+          renderItem={({ item }) => (
+            <Habit
+              habit={item}
+              onPressPositive={() => { 
+                addFitPositiveCounterMutation.mutate(item.id);
+              }}
+              onPressEdit={() => {}}
+              onPressNegative={() => {
+                addFitNegativeCounterMutation.mutate(item.id);
+              }}
+            />
+          )}
+          ListEmptyComponent={
+            <Text style={{ color: Colors.light.darkGray, textAlign: "center" }}>
+              Nenhum hábito encontrado.
+            </Text>
+          }
+        />
+      ) : (
+        <View style={styles.habitTodoContainer}>
+          <Text style={{ color: "black" }}>Tarefas</Text>
+        </View>
+      )}
+
+      {habitFitError && (
+        <View style={styles.errorContent}>
+          <Text style={{ color: Colors.light.redColor }}>Não foi possível carregar os hábitos</Text>
+        </View>
+      )}
     </SafeAreaView>
-  )
+  );
 }
+
+const styles = StyleSheet.create({
+  habitTodoContainer: {
+    gap: 10,
+    width: "100%",
+    paddingBottom: 230,
+  },
+  errorContent: {
+    alignItems: "center",
+  },
+});
