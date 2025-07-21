@@ -35,17 +35,6 @@ export default function Nutri() {
     addNutriNegativeCounterMutation,
   } = useHabit();
 
-  const TODO = [
-    {
-      title: "Teste",
-      description:
-        "Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste",
-      user_id: 1,
-      id: 1,
-      done: false,
-    },
-  ];
-
   return (
     <SafeAreaView style={{ flex: 1, paddingHorizontal: 30 }}>
       <Header />
@@ -109,26 +98,6 @@ export default function Nutri() {
         ) : (
           <View style={styles.habitTodoContainer}>
             <Text style={{ color: "black" }}>Tarefas</Text>
-          </View>
-        )}
-        {currentTab === "todo" ? (
-          <FlatList
-            data={TODO || []}
-            keyExtractor={(item) => item.id.toString()}
-            contentContainerStyle={styles.habitTodoContainer}
-            showsVerticalScrollIndicator={false}
-            renderItem={({ item }) => (
-              <ToDo todo={item} onPressMarkToggle={() => {}} onPressEdit={() => {}} />
-            )}
-            ListEmptyComponent={
-              <Text style={{ color: Colors.light.darkGray, textAlign: "center" }}>
-                Nenhuma tarefa encontrada.
-              </Text>
-            }
-          />
-        ) : (
-          <View style={styles.habitTodoContainer}>
-            <Text style={{ color: "black" }}>Hábitos</Text>
           </View>
         )}
         {habitNutriError && (
