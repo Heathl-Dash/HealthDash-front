@@ -116,3 +116,13 @@ export const addFitNegativeCounter = (id: number) => {
       throw err;
     });
 };
+
+export const getNutriToDo = () => {
+  return apiGateway
+    .get<IToDo[]>("nutri/todo/")
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("erro ao buscar tarefas nutricionais: ", err);
+      throw err;
+    });
+};
