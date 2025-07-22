@@ -99,7 +99,7 @@ export const getFitHabits = () => {
 
 export const addFitPositiveCounter = (id: number) => {
   return apiGateway
-    .patch(`fit/habit/${id}/add-positive-counter/`)
+    .patch(`fit/habit/${id}/add_positive_counter/`)
     .then((res) => res.data)
     .catch((err) => {
       console.error("erro ao somar contador positivo de habito de exercício: ", err);
@@ -109,7 +109,7 @@ export const addFitPositiveCounter = (id: number) => {
 
 export const addFitNegativeCounter = (id: number) => {
   return apiGateway
-    .patch(`fit/habit/${id}/add-negative-counter/`)
+    .patch(`fit/habit/${id}/add_negative_counter/`)
     .then((res) => res.data)
     .catch((err) => {
       console.error("erro ao somar contador negativo de habito de exercício: ", err);
