@@ -4,4 +4,5 @@ declare interface IToDo {
   user_id: number;
   id: number;
   done: boolean;
+  created: string;
 }

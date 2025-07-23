@@ -1,7 +1,9 @@
 import Habit from "@/components/Habit";
+import Header from "@/components/Header";
 import Tabs from "@/components/Tabs";
 import { Colors } from "@/constants/Colors";
 import useHabit from "@/hooks/useHabit";
+import useTodo from "@/hooks/useToDo";
 import useWater from "@/hooks/useWater";
 import { StyleSheet, Text, View } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
@@ -9,7 +11,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import AddBottleModal from "../../components/AddBottleModal";
 import WaterButton from "../../components/WaterButton";
 import WaterModal from "../../components/WaterModal";
-import Header from "@/components/Header";
+import ToDo from "@/components/ToDo";
 
 export default function HomeScreen() {
   const {
@@ -34,9 +36,11 @@ export default function HomeScreen() {
     addNutriPositiveCounterMutation,
   } = useHabit();
 
+  const { nutriToDo, toDoNutriError, NutriToDoIsLoading, toggleMarkToDoNutri, allTodos } = useTodo();
+
   return (
-    <SafeAreaView style={[styles.container, {flexGrow: 1}]}>
-      <Header/>
+    <SafeAreaView style={[styles.container, { flexGrow: 1 }]}>
+      <Header />
       <View style={{ flexDirection: "row" }}>
         <View style={{ width: "50%", padding: 5 }}></View>
         <View style={{ width: "50%", padding: 5 }}>
@@ -52,7 +56,7 @@ export default function HomeScreen() {
         <Tabs tabs={TABS} initialTabKey="habit" onTabChange={(key: string) => setCurrentTab(key)} />
       </View>
 
-      {currentTab === "habit" ? (
+      {currentTab === "habit" && (
         <FlatList
           data={allHabits || []}
           keyExtractor={(item) => `${item.source}-${item.id}`}
@@ -84,11 +88,27 @@ export default function HomeScreen() {
             </Text>
           }
         />
-      ) : (
-        <View style={styles.habitTodoContainer}>
-          <Text style={{ color: "black" }}>Tarefas</Text>
-        </View>
       )}
+      {currentTab === "todo" && (
+          <FlatList
+            data={allTodos || []}
+            keyExtractor={(item) => `${item.source}-${item.id}`}
+            contentContainerStyle={styles.habitTodoContainer}
+            showsVerticalScrollIndicator={false}
+            renderItem={({ item }) => (
+              <ToDo
+                todo={item}
+                onPressEdit={() => {}}
+                onPressMarkToggle={() => toggleMarkToDoNutri.mutate(item.id)}
+              />
+            )}
+            ListEmptyComponent={
+              <Text style={{ color: Colors.light.darkGray, textAlign: "center" }}>
+                Nenhuma tarefa encontrado.
+              </Text>
+            }
+          />
+        )}
 
       <WaterModal
         bottles={waterGoal?.bottles || []}

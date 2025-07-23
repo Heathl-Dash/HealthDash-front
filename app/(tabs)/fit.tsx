@@ -1,4 +1,5 @@
 import Habit from "@/components/Habit";
+import ToDo from "@/components/ToDo";
 import StepCounter from "@/components/StepCounter";
 import Tabs from "@/components/Tabs";
 import { Colors } from "@/constants/Colors";
@@ -8,6 +9,7 @@ import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "rea
 import { FlatList } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Header from "../../components/Header";
+import useTodo from "@/hooks/useToDo";
 
 export default function Fit() {
   const {
@@ -24,6 +26,12 @@ export default function Fit() {
   const [steps, setSteps] = useState(3247);
   const [goal] = useState(10000);
 
+  const {
+    fitToDo,
+    fitToDoIsLoading,
+    toDoFitError,
+    toggleMarkToDoFit
+  } = useTodo()
 
   return (
     <SafeAreaView style={{ flex: 1, paddingHorizontal: 30, flexGrow: 1 }}>
@@ -47,7 +55,7 @@ export default function Fit() {
         </View>
       )}
 
-      {currentTab === "habit" ? (
+      {currentTab === "habit" && (
         <FlatList
           data={fitHabits || []}
           keyExtractor={(item) => item.id.toString()}
@@ -71,12 +79,26 @@ export default function Fit() {
             </Text>
           }
         />
-      ) : (
-        <View style={styles.habitTodoContainer}>
-          <Text style={{ color: "black" }}>Tarefas</Text>
-        </View>
-      )}
-
+      )}{currentTab === "todo" && (
+          <FlatList
+            data={fitToDo || []}
+            keyExtractor={(item) => item.id.toString()}
+            contentContainerStyle={styles.habitTodoContainer}
+            showsVerticalScrollIndicator={false}
+            renderItem={({ item }) => (
+              <ToDo
+                todo={item}
+                onPressEdit={() => {}}
+                onPressMarkToggle={() => toggleMarkToDoFit.mutate(item.id)}
+              />
+            )}
+            ListEmptyComponent={
+              <Text style={{ color: Colors.light.darkGray, textAlign: "center" }}>
+                Nenhuma tarefa encontrado.
+              </Text>
+            }
+          />
+        )}
       {habitFitError && (
         <View style={styles.errorContent}>
           <Text style={{ color: Colors.light.redColor }}>Não foi possível carregar os hábitos</Text>
