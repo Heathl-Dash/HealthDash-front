@@ -5,11 +5,17 @@ import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { initDB } from "@/storage/sqliteHelpers";
+import { useEffect } from "react";
 
 export default function RootLayout() {
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
+
+  useEffect(() => {
+    initDB();
+  }, []);
 
   if (!loaded) {
     // Async font loading only occurs in development.
