@@ -1,7 +1,10 @@
 import Habit from "@/components/Habit";
+import Header from "@/components/Header";
+import IMCCard from "@/components/IMCCard";
 import Tabs from "@/components/Tabs";
 import { Colors } from "@/constants/Colors";
 import useHabit from "@/hooks/useHabit";
+import useIMC from "@/hooks/useIMC";
 import useWater from "@/hooks/useWater";
 import { StyleSheet, Text, View } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
@@ -9,7 +12,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import AddBottleModal from "../../components/AddBottleModal";
 import WaterButton from "../../components/WaterButton";
 import WaterModal from "../../components/WaterModal";
-import Header from "@/components/Header";
 
 export default function HomeScreen() {
   const {
@@ -34,11 +36,18 @@ export default function HomeScreen() {
     addNutriPositiveCounterMutation,
   } = useHabit();
 
+  const { imcData, loading } = useIMC();
+
   return (
-    <SafeAreaView style={[styles.container, {flexGrow: 1}]}>
-      <Header/>
+    <SafeAreaView style={[styles.container, { flexGrow: 1 }]}>
+      <Header />
       <View style={{ flexDirection: "row" }}>
-        <View style={{ width: "50%", padding: 5 }}></View>
+        <View style={{ width: "50%", padding: 5 }}>
+          <IMCCard
+            calc_IMC={imcData?.calc_IMC}
+            imc_classification={imcData?.imc_classification}
+          />
+        </View>
         <View style={{ width: "50%", padding: 5 }}>
           <WaterButton
             mlDrinked={waterGoal?.ml_drinked ?? 0}
