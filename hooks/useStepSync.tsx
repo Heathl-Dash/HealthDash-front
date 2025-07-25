@@ -2,6 +2,7 @@ import { AppState, AppStateStatus } from 'react-native';
 import { useEffect, useRef, useState } from 'react';
 import NetInfo from '@react-native-community/netinfo';
 import {FitData, getFitInfosDataForToday, insertOrUpdateFitInfos} from '../storage/sqliteHelpers';
+import { useSQLiteContext } from 'expo-sqlite';
 
 interface Props {
   steps: number;
@@ -12,12 +13,13 @@ interface Props {
 const useStepSync = ({ steps, kcal, distance }: Props) => {
   const appState = useRef(AppState.currentState);
   const [isConnected, setIsConnected] = useState(false);
+  const db = useSQLiteContext()
 
   useEffect(() => {
     const today = new Date().toISOString().split('T')[0]; // formato YYYY-MM-DD
 
     const saveToSQLite = async () => {
-      await insertOrUpdateFitInfos(today, { steps, kcal, distance });
+      await insertOrUpdateFitInfos(today, { steps, kcal, distance }, db);
     };
 
     const subscription = AppState.addEventListener(

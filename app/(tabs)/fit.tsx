@@ -19,6 +19,7 @@ import { ActivityIndicator, Platform, StyleSheet, Text, View } from "react-nativ
 import { FlatList } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Header from "../../components/Header";
+import { useSQLiteContext } from "expo-sqlite";
 
 type SensorType<T = typeof Platform.OS> = T extends "ios"
   ? "CMPedometer"
@@ -70,6 +71,7 @@ export default function Fit() {
   const [sensorType, setSensorType] = React.useState<SensorName>("NONE");
   const [stepCount, setStepCount] = React.useState(0);
   const [additionalInfo, setAdditionalInfo] = React.useState<AdditionalInfo>(initState);
+  const db = useSQLiteContext()
 
   /**
    * Get user's motion permission and check pedometer is available.
@@ -89,27 +91,31 @@ export default function Fit() {
    * The function startStepCounter is called when the user clicks the "Start" button.
    * It starts the step counter.
    */
-  const startStepCounter = async () => {
-    const today = new Date().toISOString().split("T")[0];
-    const savedData = await getFitInfosDataForToday(today);
-    const previousSteps = savedData.steps ?? 0;
+  const startStepCounter = async() => {
+    const loadStepsFromDB = async () => {
+      isPedometerSupported(); // verifica suporte ao sensor
+
+      const today = new Date().toISOString().split("T")[0];
+      const data = await getFitInfosDataForToday(today, db); // lê do SQLite
+
+      setStepCount(data.steps);
+      setAdditionalInfo({
+        stepsString: `${data.steps} steps`,
+        calories: `${data.kcal} kCal`,
+        distance: `${data.distance} m`,
+      });
+    };
+
+    await loadStepsFromDB();
 
     startStepCounterUpdate(new Date(), (data) => {
       setSensorType(data.counterType as SensorName);
       const parsedData = parseStepData(data);
-
-      const difference = parsedData.steps - previousSteps;
-      const updatedSteps = previousSteps + (difference > 0 ? difference : 0);
-
-      setStepCount(updatedSteps);
-
+      setStepCount(parsedData.steps);
       setAdditionalInfo({
-        stepsString: `${updatedSteps} steps`,
-        calories: parsedData.calories,
-        distance: parsedData.distance,
+        ...parsedData,
       });
     });
-
     setLoaded(true);
   };
 
@@ -148,27 +154,13 @@ export default function Fit() {
    * This effect runs when the component is first mounted
    * and then runs again when the `count` variable changes.
    */
-  React.useEffect(() => {
-    const loadStepsFromDB = async () => {
-      isPedometerSupported(); // verifica suporte ao sensor
+  // React.useEffect(() => {
+    
 
-      const today = new Date().toISOString().split("T")[0];
-      const data = await getFitInfosDataForToday(today); // lê do SQLite
-
-      setStepCount(data.steps);
-      setAdditionalInfo({
-        stepsString: `${data.steps} steps`,
-        calories: `${data.kcal} kCal`,
-        distance: `${data.distance} m`,
-      });
-    };
-
-    loadStepsFromDB();
-
-    return () => {
-      stopStepCounter();
-    };
-  }, []);
+  //   return () => {
+  //     stopStepCounter();
+  //   };
+  // }, []);
 
   /**
    * A hook that runs when the component mounts.
@@ -205,7 +197,7 @@ export default function Fit() {
         <StepCounter steps={stepCount} goal={1050} size={250} strokeWidth={15} />
       </View>
       <View>
-        <Text>{additionalInfo.calories}</Text> 
+        <Text>{additionalInfo.calories}</Text>
         <Text>{additionalInfo.distance}</Text>
       </View>
 

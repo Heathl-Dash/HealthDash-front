@@ -7,15 +7,13 @@ import "react-native-reanimated";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { initDB } from "@/storage/sqliteHelpers";
 import { useEffect } from "react";
+import { SQLiteProvider, useSQLiteContext, type SQLiteDatabase } from 'expo-sqlite';
 
 export default function RootLayout() {
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
 
-  useEffect(() => {
-    initDB();
-  }, []);
 
   if (!loaded) {
     // Async font loading only occurs in development.
@@ -27,15 +25,17 @@ export default function RootLayout() {
   return (
     <>
       <QueryClientProvider client={queryClient}>
-        <GestureHandlerRootView style={{flex: 1}}>
-          <SafeAreaProvider>
-            <Stack>
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen name="+not-found" />
-            </Stack>
-            <StatusBar style="auto" />
-          </SafeAreaProvider>
-        </GestureHandlerRootView>
+        <SQLiteProvider databaseName="fit.db" onInit={initDB}>
+          <GestureHandlerRootView style={{flex: 1}}>
+            <SafeAreaProvider>
+              <Stack>
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="+not-found" />
+              </Stack>
+              <StatusBar style="auto" />
+            </SafeAreaProvider>
+          </GestureHandlerRootView>
+        </SQLiteProvider>
       </QueryClientProvider>
     </>
   );
