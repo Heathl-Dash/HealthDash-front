@@ -18,6 +18,7 @@ import { ActivityIndicator, Platform, StyleSheet, Text, View } from "react-nativ
 import { FlatList } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Header from "../../components/Header";
+import { requestStepPermissions } from "@/hooks/permission";
 
 type SensorType<T = typeof Platform.OS> = T extends "ios"
   ? "CMPedometer"
@@ -93,7 +94,16 @@ export default function Fit() {
   }, [db]);
 
   useEffect(() => {
+  const checkPermissionAndStart = async () => {
+    const granted = await requestStepPermissions();
+    setGranted(granted);
     isPedometerSupported();
+
+    if (!granted) {
+      console.warn("Permissão de passos não concedida");
+      return;
+    }
+
     const startStepCounter = () => {
       startStepCounterUpdate(new Date(), (data) => {
         if (initialSensorValue.current === null) {
@@ -101,7 +111,6 @@ export default function Fit() {
           return;
         }
         const delta = data.steps - initialSensorValue.current;
-
         if (delta >= 0) {
           setStepsFromSensor(delta);
         }
@@ -109,18 +118,19 @@ export default function Fit() {
         const parsedData = parseStepData(data);
 
         setSensorType(data.counterType as SensorName);
-        setAdditionalInfo({
-          ...parsedData,
-        });
+        setAdditionalInfo({ ...parsedData });
       });
     };
 
     startStepCounter();
+  };
 
-    return () => {
-      stopStepCounter();
-    };
-  }, []);
+  checkPermissionAndStart();
+
+  return () => {
+    stopStepCounter();
+  };
+}, []);
 
   const totalSteps = stepsFromDB + stepsFromSensor;
   const totalDistance = distanceFromDB + parseValidFitInfo(additionalInfo.distance);
