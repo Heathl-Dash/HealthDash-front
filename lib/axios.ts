@@ -86,7 +86,6 @@ export const addNutriNegativeCounter = (id: number) => {
     });
 };
 
-
 export const getFitHabits = () => {
   return apiGateway
     .get("fit/habit/")
@@ -124,5 +123,35 @@ export const getNutriToDo = () => {
     .catch((err) => {
       console.error("erro ao buscar tarefas nutricionais: ", err);
       throw err;
+    });
+};
+
+export const nutriToggleMarkTodoDone = (id: number) => {
+  return apiGateway
+    .patch(`nutri/todo/${id}/done-toggle`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("erro ao trocar o valor do marcador de feito em tarefas nutricionais: ", err);
+      throw err;
+    });
+};
+
+export const getFitToDo = () => {
+  return apiGateway
+    .get<IToDo[]>("fit/todo/")
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("erro ao buscar tarefas de exercícios: ", err);
+      throw err;
+    });
+};
+
+export const fitToggleMarkTodoDone = (id: number) => {
+  return apiGateway
+    .patch(`fit/todo/${id}/done_toggle/`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("erro ao trocar o valor do marcador de feito em tarefas de exercícios: ", err);
+      throw err;  
     });
 };
