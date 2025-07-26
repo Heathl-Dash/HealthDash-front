@@ -128,7 +128,7 @@ export const getNutriToDo = () => {
 
 export const nutriToggleMarkTodoDone = (id: number) => {
   return apiGateway
-    .patch(`nutri/todo/${id}/done-toggle/`)
+    .patch(`nutri/todo/${id}/done-toggle`)
     .then((res) => res.data)
     .catch((err) => {
       console.error("erro ao trocar o valor do marcador de feito em tarefas nutricionais: ", err);

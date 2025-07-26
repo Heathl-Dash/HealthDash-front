@@ -36,7 +36,12 @@ export default function Nutri() {
     addNutriNegativeCounterMutation,
   } = useHabit();
 
-  const { nutriToDo, toDoNutriError, NutriToDoIsLoading, toggleMarkToDoNutri } = useTodo();
+  const {
+    nutriToDo,
+    toDoNutriError,
+    isNutriToDoLoading,
+    toggleMarkToDoNutri,
+  } = useTodo();
 
   return (
     <SafeAreaView style={{ flex: 1, paddingHorizontal: 30 }}>
@@ -101,7 +106,7 @@ export default function Nutri() {
         )}
         {currentTab === "todo" && (
           <FlatList
-            data={nutriToDo || []}
+            data={nutriToDo}
             keyExtractor={(item) => item.id.toString()}
             contentContainerStyle={styles.habitTodoContainer}
             showsVerticalScrollIndicator={false}
@@ -114,7 +119,7 @@ export default function Nutri() {
             )}
             ListEmptyComponent={
               <Text style={{ color: Colors.light.darkGray, textAlign: "center" }}>
-                Nenhuma tarefa encontrado.
+                Nenhuma tarefa encontrada.
               </Text>
             }
           />

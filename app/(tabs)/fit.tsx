@@ -81,7 +81,7 @@ export default function Fit() {
         />
       )}{currentTab === "todo" && (
           <FlatList
-            data={fitToDo || []}
+            data={fitToDo}
             keyExtractor={(item) => item.id.toString()}
             contentContainerStyle={styles.habitTodoContainer}
             showsVerticalScrollIndicator={false}

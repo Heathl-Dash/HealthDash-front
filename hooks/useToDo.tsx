@@ -8,10 +8,16 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const useTodo = () => {
   const {
-    data: nutriToDo,
+    data: nutriToDo = [],
     error: toDoNutriError,
-    isLoading: NutriToDoIsLoading,
-  } = useQuery({ queryKey: ["nutriToDo"], queryFn: getNutriToDo });
+    isLoading: isNutriToDoLoading,
+  } = useQuery<IToDo[]>({ queryKey: ["nutriToDo"], queryFn: getNutriToDo });
+
+  const {
+    data: fitToDo = [],
+    error: toDoFitError,
+    isLoading: isFitToDoLoading,
+  } = useQuery<IToDo[]>({ queryKey: ["fitToDo"], queryFn: getFitToDo });
 
   const queryClient = useQueryClient();
 
@@ -22,12 +28,6 @@ const useTodo = () => {
     },
   });
 
-  const {
-    data: fitToDo,
-    error: toDoFitError,
-    isLoading: fitToDoIsLoading,
-  } = useQuery({ queryKey: ["fitToDo"], queryFn: getFitToDo });
-
   const toggleMarkToDoFit = useMutation({
     mutationFn: (id: number) => fitToggleMarkTodoDone(id),
     onSuccess: () => {
@@ -35,25 +35,32 @@ const useTodo = () => {
     },
   });
 
-  const normalizedNutriTodos =
-    nutriToDo?.map((todo: IToDo) => ({ ...todo, source: "nutri" })) || [];
-  const normalizedFitTodos =
-    fitToDo?.map((todo: IToDo) => ({ ...todo, source: "fit" })) || [];
+  const normalizedNutriTodos = nutriToDo.map((todo) => ({
+    ...todo,
+    source: "nutri" as const,
+  }));
 
-  const allTodos = [...normalizedNutriTodos, ...normalizedFitTodos].sort(
-    (a, b) => new Date(b.created).getTime() - new Date(a.created).getTime()
-  );
+  const normalizedFitTodos = fitToDo.map((todo) => ({
+    ...todo,
+    source: "fit" as const,
+  }));
+
+  const allTodos = [...normalizedNutriTodos, ...normalizedFitTodos].sort((a, b) => {
+    const dateA = new Date(a.created ?? 0).getTime();
+    const dateB = new Date(b.created ?? 0).getTime();
+    return dateB - dateA;
+  });
 
   return {
     nutriToDo,
     toDoNutriError,
-    NutriToDoIsLoading,
+    isNutriToDoLoading,
     toggleMarkToDoNutri,
     fitToDo,
-    fitToDoIsLoading,
+    isFitToDoLoading,
     toDoFitError,
     toggleMarkToDoFit,
-    allTodos
+    allTodos,
   };
 };
 
