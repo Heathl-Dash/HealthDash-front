@@ -55,11 +55,16 @@ export default function Fit() {
   const [distanceFromDB, setDistanceFromDB] = useState(0);
   const [kcalFromDB, setKcalFromDB] = useState(0);
 
-
-
   const initialSensorValue = useRef<number | null>(null);
   const [additionalInfo, setAdditionalInfo] = React.useState<AdditionalInfo>(initState);
+
   const db = useSQLiteContext();
+
+  const parseValidFitInfo = (value: string | undefined): number => {
+    if (!value) return 0;
+    const match = value.match(/^([\d.]+)/);
+    return match ? Number(match[1]) : 0;
+  };
 
   const isPedometerSupported = () => {
     isStepCountingSupported().then((result) => {
@@ -76,13 +81,13 @@ export default function Fit() {
   useEffect(() => {
     const loadStepsFromDB = async () => {
       const today = new Date().toISOString().split("T")[0];
-      const data = await getFitInfosDataForToday(today, db); // lê do SQLite
+      const data = await getFitInfosDataForToday(today, db);
 
       console.log("database data", data.steps, data.sensorStepsRaw, today);
 
       setStepsFromDB(data.steps);
-      setDistanceFromDB(data.distance)
-      setKcalFromDB(data.kcal)
+      setDistanceFromDB(data.distance);
+      setKcalFromDB(data.kcal);
     };
     loadStepsFromDB();
   }, [db]);
@@ -118,22 +123,8 @@ export default function Fit() {
   }, []);
 
   const totalSteps = stepsFromDB + stepsFromSensor;
-
-
-  // useEffect(() => {
-  //   startStepCounter();
-  // }, [granted, startStepCounter, supported]);
-
-  const parseValidFitInfo = (value: string | undefined): number => {
-    if (!value) return 0;
-    // Extrai números antes de qualquer letra (kCal, m, etc)
-    const match = value.match(/^([\d.]+)/);
-    return match ? Number(match[1]) : 0;
-  };
-
   const totalDistance = distanceFromDB + parseValidFitInfo(additionalInfo.distance);
-  const totalCalories = kcalFromDB + parseValidFitInfo(additionalInfo.calories)
-
+  const totalCalories = kcalFromDB + parseValidFitInfo(additionalInfo.calories);
 
   const fitInfo = useMemo(() => {
     return {
@@ -146,17 +137,23 @@ export default function Fit() {
   useStepSync(fitInfo);
 
   return (
-    <SafeAreaView style={{ flex: 1, paddingHorizontal: 30, flexGrow: 1 }}>
+    <SafeAreaView style={{ paddingHorizontal: 30, flexGrow: 1 }}>
       <Header />
       <View style={{ justifyContent: "center", alignItems: "center", marginTop: 20 }}>
-        <StepCounter steps={totalSteps} goal={1050} size={250} strokeWidth={15} />
+        <StepCounter steps={totalSteps} goal={1050} size={210} strokeWidth={15} />
       </View>
-      <View>
-        <Text>{totalCalories.toFixed(2)} KCal</Text>
-        <Text>{totalDistance.toFixed(2)} m</Text>
+      <View style={styles.otherFitInfoContainer}>
+        <View style={styles.otherFitInfoContent}>
+          <Text style={styles.otherFitInfoText}>{totalCalories.toFixed(2)}</Text>
+          <Text style={styles.otherFitInfoUnitText}>KCal</Text>
+        </View>
+        <View style={styles.otherFitInfoContent}>
+          <Text style={styles.otherFitInfoText}>{totalDistance.toFixed(2)}</Text>
+          <Text style={styles.otherFitInfoUnitText}>m</Text>
+        </View>
       </View>
 
-      <View style={{ marginTop: 35, marginBottom: 25 }}>
+      <View style={{ marginTop: 30, marginBottom: 25 }}>
         <Tabs tabs={TABS} initialTabKey="habit" onTabChange={(key: string) => setCurrentTab(key)} />
       </View>
 
@@ -213,5 +210,32 @@ const styles = StyleSheet.create({
   },
   errorContent: {
     alignItems: "center",
+  },
+  otherFitInfoContainer: {
+    flexDirection: "row",
+    width: "100%",
+    paddingHorizontal: 30,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 15,
+    gap: 20,
+  },
+  otherFitInfoContent: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 20,
+    paddingVertical: 5,
+    backgroundColor: Colors.light.lightGray,
+  },
+  otherFitInfoText: {
+    color: "white",
+    fontSize: 15,
+    fontWeight: "bold",
+  },
+  otherFitInfoUnitText: {
+    color: "white",
+    fontSize: 13,
+    fontWeight: "bold",
   },
 });
