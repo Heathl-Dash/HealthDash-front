@@ -1,8 +1,8 @@
-import { AppState, AppStateStatus } from 'react-native';
-import { useEffect, useRef, useState } from 'react';
-import NetInfo from '@react-native-community/netinfo';
-import {FitData, getFitInfosDataForToday, insertOrUpdateFitInfos} from '../storage/sqliteHelpers';
-import { useSQLiteContext } from 'expo-sqlite';
+import NetInfo from "@react-native-community/netinfo";
+import { useSQLiteContext } from "expo-sqlite";
+import { useEffect, useRef, useState } from "react";
+import { AppState, AppStateStatus } from "react-native";
+import { insertOrUpdateFitInfos } from "../storage/sqliteHelpers";
 
 interface Props {
   steps: number;
@@ -13,29 +13,29 @@ interface Props {
 const useStepSync = ({ steps, kcal, distance }: Props) => {
   const appState = useRef(AppState.currentState);
   const [isConnected, setIsConnected] = useState(false);
-  const db = useSQLiteContext()
+  const db = useSQLiteContext();
 
   useEffect(() => {
-    const today = new Date().toISOString().split('T')[0]; // formato YYYY-MM-DD
+    if (steps === 0 && kcal === 0 && distance === 0) return;
+
+    const today = new Date().toISOString().split("T")[0]; // formato YYYY-MM-DD
 
     const saveToSQLite = async () => {
+      console.log("saving to database", today, steps, kcal, distance);
       await insertOrUpdateFitInfos(today, { steps, kcal, distance }, db);
     };
 
     const subscription = AppState.addEventListener(
-      'change',
+      "change",
       async (nextAppState: AppStateStatus) => {
-        if (
-          appState.current.match(/active/) &&
-          nextAppState.match(/inactive|background/)
-        ) {
+        if (appState.current.match(/active/) && nextAppState.match(/inactive|background/)) {
           await saveToSQLite();
         }
         appState.current = nextAppState;
       }
     );
 
-    const netInfoUnsubscribe = NetInfo.addEventListener(state => {
+    const netInfoUnsubscribe = NetInfo.addEventListener((state) => {
       setIsConnected(!!(state.isConnected && state.isInternetReachable));
     });
 
@@ -48,12 +48,8 @@ const useStepSync = ({ steps, kcal, distance }: Props) => {
     return () => {
       subscription.remove();
       netInfoUnsubscribe();
-    }
+    };
+  }, [steps, kcal, distance, isConnected, db]);
+};
 
-
-  }, [steps, kcal, distance, isConnected])
-
-    
-}
-
-export default useStepSync
+export default useStepSync;
