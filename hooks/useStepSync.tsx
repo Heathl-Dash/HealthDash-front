@@ -21,7 +21,6 @@ const useStepSync = ({ steps, kcal, distance }: Props) => {
     const today = new Date().toISOString().split("T")[0]; // formato YYYY-MM-DD
 
     const saveToSQLite = async () => {
-      console.log("saving to database", today, steps, kcal, distance);
       await insertOrUpdateFitInfos(today, { steps, kcal, distance }, db);
     };
 
