@@ -52,6 +52,10 @@ export default function Fit() {
   const [sensorType, setSensorType] = React.useState<SensorName>("NONE");
   const [stepsFromDB, setStepsFromDB] = useState(0);
   const [stepsFromSensor, setStepsFromSensor] = useState(0);
+  const [distanceFromDB, setDistanceFromDB] = useState(0);
+  const [kcalFromDB, setKcalFromDB] = useState(0);
+
+
 
   const initialSensorValue = useRef<number | null>(null);
   const [additionalInfo, setAdditionalInfo] = React.useState<AdditionalInfo>(initState);
@@ -77,6 +81,8 @@ export default function Fit() {
       console.log("database data", data.steps, data.sensorStepsRaw, today);
 
       setStepsFromDB(data.steps);
+      setDistanceFromDB(data.distance)
+      setKcalFromDB(data.kcal)
     };
     loadStepsFromDB();
   }, [db]);
@@ -113,6 +119,7 @@ export default function Fit() {
 
   const totalSteps = stepsFromDB + stepsFromSensor;
 
+
   // useEffect(() => {
   //   startStepCounter();
   // }, [granted, startStepCounter, supported]);
@@ -124,11 +131,15 @@ export default function Fit() {
     return match ? Number(match[1]) : 0;
   };
 
+  const totalDistance = distanceFromDB + parseValidFitInfo(additionalInfo.distance);
+  const totalCalories = kcalFromDB + parseValidFitInfo(additionalInfo.calories)
+
+
   const fitInfo = useMemo(() => {
     return {
       steps: totalSteps,
-      kcal: parseValidFitInfo(additionalInfo.calories),
-      distance: parseValidFitInfo(additionalInfo.distance),
+      kcal: totalCalories,
+      distance: totalDistance,
     };
   }, [additionalInfo.calories, additionalInfo.distance, totalSteps]);
 
@@ -141,8 +152,8 @@ export default function Fit() {
         <StepCounter steps={totalSteps} goal={1050} size={250} strokeWidth={15} />
       </View>
       <View>
-        <Text>{additionalInfo.calories}</Text>
-        <Text>{additionalInfo.distance}</Text>
+        <Text>{totalCalories.toFixed(2)} KCal</Text>
+        <Text>{totalDistance.toFixed(2)} m</Text>
       </View>
 
       <View style={{ marginTop: 35, marginBottom: 25 }}>
