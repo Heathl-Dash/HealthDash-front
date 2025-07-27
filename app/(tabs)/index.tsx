@@ -14,7 +14,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import AddBottleModal from "../../components/AddBottleModal";
 import WaterButton from "../../components/WaterButton";
 import WaterModal from "../../components/WaterModal";
-import { fitToggleMarkTodoDone } from "@/lib/axios";
 
 export default function HomeScreen() {
   const {
