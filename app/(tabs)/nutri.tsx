@@ -4,6 +4,7 @@ import ToDo from "@/components/ToDo";
 import { Colors } from "@/constants/Colors";
 import useHabit from "@/hooks/useHabit";
 import useSearchAliment from "@/hooks/useSearchAliment";
+import useTodo from "@/hooks/useToDo";
 import React from "react";
 import { ActivityIndicator, FlatList, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -34,6 +35,13 @@ export default function Nutri() {
     addNutriPositiveCounterMutation,
     addNutriNegativeCounterMutation,
   } = useHabit();
+
+  const {
+    nutriToDo,
+    toDoNutriError,
+    isNutriToDoLoading,
+    toggleMarkToDoNutri,
+  } = useTodo();
 
   return (
     <SafeAreaView style={{ flex: 1, paddingHorizontal: 30 }}>
@@ -71,7 +79,7 @@ export default function Nutri() {
             <ActivityIndicator size={50} />
           </View>
         )}
-        {currentTab === "habit" ? (
+        {currentTab === "habit" && (
           <FlatList
             data={nutriHabits || []}
             keyExtractor={(item) => item.id.toString()}
@@ -91,14 +99,30 @@ export default function Nutri() {
             )}
             ListEmptyComponent={
               <Text style={{ color: Colors.light.darkGray, textAlign: "center" }}>
-                Nenhum hábito encontrado.
+                Nenhum tarefa encontrado.
               </Text>
             }
           />
-        ) : (
-          <View style={styles.habitTodoContainer}>
-            <Text style={{ color: "black" }}>Tarefas</Text>
-          </View>
+        )}
+        {currentTab === "todo" && (
+          <FlatList
+            data={nutriToDo}
+            keyExtractor={(item) => item.id.toString()}
+            contentContainerStyle={styles.habitTodoContainer}
+            showsVerticalScrollIndicator={false}
+            renderItem={({ item }) => (
+              <ToDo
+                todo={item}
+                onPressEdit={() => {}}
+                onPressMarkToggle={() => toggleMarkToDoNutri.mutate(item.id)}
+              />
+            )}
+            ListEmptyComponent={
+              <Text style={{ color: Colors.light.darkGray, textAlign: "center" }}>
+                Nenhuma tarefa encontrada.
+              </Text>
+            }
+          />
         )}
         {habitNutriError && (
           <View style={styles.errorContent}>
