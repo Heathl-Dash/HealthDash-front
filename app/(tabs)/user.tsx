@@ -1,17 +1,17 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Header from "../../components/Header";
-import CustomInput from "@/components/CustomInput";
-import { Colors } from "@/constants/Colors";
-import { FlatList } from "react-native-gesture-handler";
-import { FontAwesome6, FontAwesome5, MaterialIcons } from "@expo/vector-icons";
 import CustomButton from "@/components/CustomButton";
+import { FontAwesome6 } from "@expo/vector-icons";
+import { Colors } from "@/constants/Colors";
+import { View, Text, StyleSheet } from "react-native";
 
 export default function User() {
-  const userInfoInputFields = [{ label: "Altura" }, { label: "Peso" }, { label: "Idade" }];
+  const userInfoText = [{label:"Nome"},{ label: "Altura" }, { label: "Peso" }, { label: "Idade" }];
 
-  const IMCInfoInputFields = [{ label: "Classificação" }, { label: "Grau IMC" }];
+  const IMCInfoText = [{ label: "Classificação" }, { label: "Grau IMC" }];
+
+  
 
   return (
     <SafeAreaView>
@@ -26,113 +26,7 @@ export default function User() {
           onPress={() => {}}
         />
       </View>
-      <View style={styles.inputsContainer}>
-        <CustomInput label="Nome" style={{ height: 42 }} />
-        <FlatList
-          data={userInfoInputFields}
-          numColumns={2}
-          keyExtractor={(item, index) => index.toString()}
-          columnWrapperStyle={styles.columnWrapper}
-          contentContainerStyle={styles.flatListContent}
-          renderItem={({ item }) => (
-            <View style={styles.inputItem}>
-              <CustomInput label={item.label} style={{ width: 146, height: 42 }} />
-            </View>
-          )}
-        />
-      </View>
-      <View style={styles.imcInfos}>
-        <Text
-          style={{
-            fontSize: 24,
-            fontWeight: "bold",
-            marginTop: -20,
-            padding: 0.5,
-            backgroundColor: Colors.light.reactNativeWhite,
-          }}
-        >
-          IMC
-        </Text>
-        <View style={styles.imcSituation}>
-          <FontAwesome6 name={"person-circle-check"} size={60} color={Colors.light.darkGray} />
-          <Text style={{ fontSize: 20, fontWeight: "bold" }}>18,5</Text>
-        </View>
-        <FlatList
-          data={IMCInfoInputFields}
-          style={{ width: "90%" }}
-          numColumns={2}
-          keyExtractor={(item, index) => index.toString()}
-          columnWrapperStyle={styles.columnWrapper}
-          contentContainerStyle={styles.flatListContent}
-          renderItem={({ item }) => (
-            <View style={styles.inputItem}>
-              <CustomInput label={item.label} style={{ width: 127, height: 42 }} />
-            </View>
-          )}
-        />
-      </View>
-      <View style={styles.actionButtonsContainer}>
-        <CustomButton
-          title="Excluir conta"
-          variant="secondary"
-          shape="rect"
-          iconPosition="end"
-          icon={<FontAwesome5 name="trash" color={Colors.light.reactNativeWhite} />}
-          onPress={() => {}}
-        />
-        <CustomButton
-          title="Sair"
-          variant="primary"
-          shape="rect"
-          iconPosition="end"
-          icon={
-            <MaterialIcons name="exit-to-app" color={Colors.light.reactNativeWhite} size={18} />
-          }
-          onPress={() => {}}
-        />
-      </View>
     </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  inputsContainer: {
-    width: "88%",
-    marginLeft: 24,
-    marginTop: 8,
-  },
-  inputItem: {
-    marginRight: 68,
-    marginBottom: 22,
-  },
-  columnWrapper: {
-    flex: 1,
-    justifyContent: "flex-start",
-  },
-  flatListContent: {
-    marginTop: 24,
-  },
-  imcInfos: {
-    alignItems: "center",
-    borderWidth: 1,
-    width: "88%",
-    marginLeft: 24,
-    borderRadius: 8,
-    marginTop: 26,
-  },
-  imcSituation: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "baseline",
-    gap: 20,
-  },
-  actionButtonsContainer: {
-    width: "88%",
-    marginLeft: 24,
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    marginTop: 32,
-    gap: 24,
-  },
-});
