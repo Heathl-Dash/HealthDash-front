@@ -12,6 +12,7 @@ export const Colors = {
     secondary: "#6CA1D7",
     darkGray: "#444444",
     lightGray: "#BEBEBE",
+    mediumGray: "#828282",
     redColor: "#e65750",
     surface: '#D4ECDE',
     reactNativeWhite: '#F2F2F2',
