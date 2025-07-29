@@ -16,7 +16,13 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.gabriella_aquino.HealthDash",
+      "permissions": [
+        "ACTIVITY_RECOGNITION",
+        "BODY_SENSORS",
+        "FOREGROUND_SERVICE"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -33,10 +39,29 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ]
+      ],
+      ["expo-sqlite",
+      {
+        "enableFTS": true,
+        "useSQLCipher": true,
+        "android": {
+          "enableFTS": false,
+          "useSQLCipher": false
+        },
+        "ios": {
+          "customBuildFlags": ["-DSQLITE_ENABLE_DBSTAT_VTAB=1 -DSQLITE_ENABLE_SNAPSHOT=1"]
+        }
+      }]
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "255efddd-d08f-485b-880b-6d5fdf41a09c"
+      }
+    },
+    "owner": "gabriella_aquino"
   }
 }

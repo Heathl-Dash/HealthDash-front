@@ -3,9 +3,9 @@ import ToDo from "@/components/ToDo";
 import StepCounter from "@/components/StepCounter";
 import Tabs from "@/components/Tabs";
 import { Colors } from "@/constants/Colors";
+import useFit from "@/hooks/useFit";
 import useHabit from "@/hooks/useHabit";
-import React, { useState } from "react";
-import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Header from "../../components/Header";
@@ -23,9 +23,7 @@ export default function Fit() {
     addFitNegativeCounterMutation,
   } = useHabit();
 
-  const [steps, setSteps] = useState(3247);
-  const [goal] = useState(10000);
-
+  const { totalCalories, totalDistance, totalSteps } = useFit();
   const {
     fitToDo,
     fitToDoIsLoading,
@@ -33,19 +31,25 @@ export default function Fit() {
     toggleMarkToDoFit
   } = useTodo()
 
+
   return (
-    <SafeAreaView style={{ flex: 1, paddingHorizontal: 30, flexGrow: 1 }}>
+    <SafeAreaView style={{ paddingHorizontal: 30, flexGrow: 1 }}>
       <Header />
-      <View style={{justifyContent: "center", alignItems: "center", marginTop: 20}}>
-        <StepCounter
-          steps={steps}
-          goal={goal}
-          size={250}
-          strokeWidth={15}
-        />
+      <View style={{ justifyContent: "center", alignItems: "center", marginTop: 20 }}>
+        <StepCounter steps={totalSteps} goal={1050} size={210} strokeWidth={15} />
+      </View>
+      <View style={styles.otherFitInfoContainer}>
+        <View style={styles.otherFitInfoContent}>
+          <Text style={styles.otherFitInfoText}>{totalCalories.toFixed(2)}</Text>
+          <Text style={styles.otherFitInfoUnitText}>KCal</Text>
+        </View>
+        <View style={styles.otherFitInfoContent}>
+          <Text style={styles.otherFitInfoText}>{totalDistance.toFixed(2)}</Text>
+          <Text style={styles.otherFitInfoUnitText}>m</Text>
+        </View>
       </View>
 
-      <View style={{ marginTop: 35, marginBottom: 25 }}>
+      <View style={{ marginTop: 30, marginBottom: 25 }}>
         <Tabs tabs={TABS} initialTabKey="habit" onTabChange={(key: string) => setCurrentTab(key)} />
       </View>
 
@@ -116,5 +120,32 @@ const styles = StyleSheet.create({
   },
   errorContent: {
     alignItems: "center",
+  },
+  otherFitInfoContainer: {
+    flexDirection: "row",
+    width: "100%",
+    paddingHorizontal: 30,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 15,
+    gap: 20,
+  },
+  otherFitInfoContent: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 20,
+    paddingVertical: 5,
+    backgroundColor: Colors.light.lightGray,
+  },
+  otherFitInfoText: {
+    color: "white",
+    fontSize: 15,
+    fontWeight: "bold",
+  },
+  otherFitInfoUnitText: {
+    color: "white",
+    fontSize: 13,
+    fontWeight: "bold",
   },
 });
