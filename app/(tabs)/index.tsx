@@ -8,12 +8,13 @@ import useHabit from "@/hooks/useHabit";
 import useIMC from "@/hooks/useIMC";
 import useTodo from "@/hooks/useToDo";
 import useWater from "@/hooks/useWater";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AddBottleModal from "../../components/AddBottleModal";
 import WaterButton from "../../components/WaterButton";
 import WaterModal from "../../components/WaterModal";
+import { router } from "expo-router"
 
 export default function HomeScreen() {
   const {
