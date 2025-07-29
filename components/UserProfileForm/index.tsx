@@ -1,95 +1,92 @@
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CustomInput from "@/components/CustomInput";
 import { Colors } from "@/constants/Colors";
-import { FlatList } from "react-native-gesture-handler";
 import { FontAwesome6, MaterialIcons } from "@expo/vector-icons";
 import CustomButton from "@/components/CustomButton";
+import useUpdateUserProfile from "@/hooks/useUserProfileForm";
 
-const UserProfileForm = () => {
-  const userInfoInputFields = [{ label: "Altura" }, { label: "Peso" }, { label: "Idade" }];
+interface UserProfileFormProps {
+  initialData?: IProfile | null;
+  onCancel: () => void;
+  onSaved: () => void;
+}
 
-  const IMCInfoInputFields = [{ label: "Classificação" }, { label: "Grau IMC" }];
+const UserProfileForm: React.FC<UserProfileFormProps> = ({ initialData, onCancel, onSaved }) => {
+  const [name, setName] = useState(initialData?.name ?? "");
+  const [weigth, setWeigth] = useState(initialData?.weigth ?? "");
+  const [heigth, setHeigth] = useState(initialData?.heigth ?? "");
+  const [age, setAge] = useState(initialData?.age.toString() ?? "");
+
+  const updateMutation = useUpdateUserProfile();
+
+  const handleUpdateProfile = () => {
+    console.log("Botão clicado");
+    updateMutation.mutate(
+      {
+        name,
+        weigth,
+        heigth,
+        age: Number(age),
+      },
+      {
+        onSuccess: () => {
+          console.log("Perfil atualizado com sucesso");
+          onSaved();
+        },
+        onError: (error) => {
+          console.error("Erro ao atualizar perfil:", error);
+        },
+      }
+    );
+  };
 
   return (
     <SafeAreaView>
-      <View style={{ width: "88%", marginLeft: 24, alignItems: "flex-end", marginTop: 32 }}>
-        <CustomButton
-          title="Editar"
-          variant="outLine"
-          shape="rect"
-          iconPosition="end"
-          icon={<FontAwesome6 name="edit" color={Colors.light.primary} size={16} />}
-          onPress={() => {}}
-        />
-      </View>
-
       <View style={styles.inputsContainer}>
-        <CustomInput label="Nome" style={{ height: 42 }} />
-        <FlatList
-          data={userInfoInputFields}
-          numColumns={2}
-          keyExtractor={(item, index) => index.toString()}
-          columnWrapperStyle={styles.columnWrapper}
-          contentContainerStyle={styles.flatListContent}
-          renderItem={({ item }) => (
-            <View style={styles.inputItem}>
-              <CustomInput label={item.label} style={{ width: 146, height: 42 }} />
-            </View>
-          )}
-        />
-      </View>
-
-      <View style={styles.imcInfos}>
-        <Text
-          style={{
-            fontSize: 24,
-            fontWeight: "bold",
-            marginTop: -20,
-            padding: 0.5,
-            backgroundColor: Colors.light.reactNativeWhite,
-          }}
-        >
-          IMC
-        </Text>
-        <View style={styles.imcSituation}>
-          <FontAwesome6 name="person-circle-check" size={60} color={Colors.light.darkGray} />
-          <Text style={{ fontSize: 20, fontWeight: "bold" }}>18,5</Text>
+        <View style={styles.row}>
+          <View>
+            <CustomInput label="Nome" value={name} onChangeText={setName} style={styles.input} />
+          </View>
+          <View>
+            <CustomInput
+              label="Altura"
+              value={heigth}
+              onChangeText={setHeigth}
+              style={styles.input}
+            />
+          </View>
+          <View>
+            <CustomInput
+              label="Peso"
+              value={weigth}
+              onChangeText={setWeigth}
+              style={styles.input}
+            />
+          </View>
+          <View>
+            <CustomInput label="Idade" value={age} onChangeText={setAge} style={styles.input} />
+          </View>
         </View>
-        <FlatList
-          data={IMCInfoInputFields}
-          style={{ width: "90%" }}
-          numColumns={2}
-          keyExtractor={(item, index) => index.toString()}
-          columnWrapperStyle={styles.columnWrapper}
-          contentContainerStyle={styles.flatListContent}
-          renderItem={({ item }) => (
-            <View style={styles.inputItem}>
-              <CustomInput label={item.label} style={{ width: 127, height: 42 }} />
-            </View>
-          )}
-        />
       </View>
-
-      <View style={styles.actionButtonsContainer}>
+      <View style={styles.actionButtons}>
         <CustomButton
           title="Cancelar"
-          variant="secondary"
+          variant="primary"
+          style={{ backgroundColor: Colors.light.mediumGray }}
           shape="rect"
           iconPosition="end"
-          icon={<MaterialIcons name="cancel" color={Colors.light.reactNativeWhite} size={18}/>}
-          onPress={() => {}}
+          icon={<MaterialIcons name="cancel" color={Colors.light.reactNativeWhite} size={16} />}
+          onPress={onCancel}
         />
         <CustomButton
           title="Salvar"
           variant="primary"
           shape="rect"
           iconPosition="end"
-          icon={
-            <MaterialIcons name="save" color={Colors.light.reactNativeWhite} size={18} />
-          }
-          onPress={() => {}}
+          icon={<FontAwesome6 name="edit" color={Colors.light.reactNativeWhite} size={16} />}
+          onPress={handleUpdateProfile}
         />
       </View>
     </SafeAreaView>
@@ -98,43 +95,25 @@ const UserProfileForm = () => {
 
 const styles = StyleSheet.create({
   inputsContainer: {
-    width: "88%",
-    marginLeft: 24,
+    width: "100%",
+    alignSelf: "center",
     marginTop: 8,
   },
-  inputItem: {
-    marginRight: 68,
-    marginBottom: 22,
+  input: {
+    width: 146,
+    height: 42,
   },
-  columnWrapper: {
-    flex: 1,
-    justifyContent: "flex-start",
-  },
-  flatListContent: {
-    marginTop: 24,
-  },
-  imcInfos: {
-    alignItems: "center",
-    borderWidth: 1,
-    width: "88%",
-    marginLeft: 24,
-    borderRadius: 8,
-    marginTop: 26,
-  },
-  imcSituation: {
-    display: "flex",
+  row: {
+    justifyContent: "center",
     flexDirection: "row",
-    alignItems: "baseline",
+    flexWrap: "wrap",
     gap: 20,
   },
-  actionButtonsContainer: {
-    width: "88%",
-    marginLeft: 24,
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "flex-end",
+  actionButtons: {
+    alignSelf: "center",
     marginTop: 32,
-    gap: 24,
+    flexDirection: "row",
+    gap: 20,
   },
 });
 

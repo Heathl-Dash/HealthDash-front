@@ -180,3 +180,15 @@ export const getProfileIMC = async (): Promise<IProfileIMC | null> => {
     return null;
   }
 };
+
+export type profileForm = Omit<IProfile, "calc_IMC" | "imc_classification" | "imc_degree" | "id" | "email">;
+
+export const updateProfile = async (data:profileForm) => {
+  return apiGateway
+    .patch(`profiles/updateprofile/`, data)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("Erro ao atualizar o perfil: ", err);
+      throw err;
+    });
+};

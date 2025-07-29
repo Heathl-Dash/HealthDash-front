@@ -1,17 +1,27 @@
-import React from "react";
+import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Header from "../../components/Header";
 import CustomButton from "@/components/CustomButton";
 import { Entypo, FontAwesome5, FontAwesome6 } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
 import useProfile from "@/hooks/useProfile";
+import UserProfileForm from "@/components/UserProfileForm";
 
 interface UserProps {
   user?: IProfile;
+  isLoading?: boolean;
 }
 
-const UserInfo = ({ user }: UserProps) => {
+const UserInfo = ({ user, isLoading }: UserProps) => {
+  if (isLoading) {
+    return (
+      <View style={{ padding: 20, alignItems: "center", justifyContent: "center" }}>
+        <ActivityIndicator size="large" color="#000" />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.userInfoContainer}>
       <View style={styles.userInfoWrapper}>
@@ -52,40 +62,57 @@ const UserInfo = ({ user }: UserProps) => {
 export default function User() {
   const { profile, profileErro, profileLoading } = useProfile();
 
+  const [isEditing, setIsEditing] = useState(false);
+
+  const handleToggleEdit = () => setIsEditing(!isEditing);
+
   return (
     <SafeAreaView>
       <Header />
       <View style={{ width: "88%", marginLeft: 24, alignItems: "flex-end", marginTop: 32 }}>
-        <CustomButton
-          title="Editar"
+        {!isEditing && (
+          <CustomButton
+          title={"Editar"}
           variant="outLine"
           shape="rect"
           iconPosition="end"
           icon={<FontAwesome6 name="edit" color={Colors.light.primary} size={16} />}
-          onPress={() => {}}
+          onPress={handleToggleEdit}
         />
-        <UserInfo user={profile} />
-        <View style={styles.buttonContainer}>
-          <CustomButton
-            title="Sair"
-            variant="secondary"
-            style={{ backgroundColor: Colors.light.redColor }}
-            shape="rect"
-            iconPosition="end"
-            icon={<Entypo name="log-out" size={18} color={Colors.light.reactNativeWhite} />}
-            onPress={() => {}}
+        )}
+
+        {isEditing ? (
+          <UserProfileForm
+            initialData={profile}
+            onCancel={handleToggleEdit}
+            onSaved={handleToggleEdit}
           />
-          <CustomButton
-            title="Excluir"
-            variant="outLine"
-            styleText={{ color: Colors.light.redColor }}
-            style={{ borderColor: Colors.light.redColor }}
-            shape="rect"
-            iconPosition="end"
-            icon={<FontAwesome5 name="trash" size={16} color={Colors.light.redColor} />}
-            onPress={() => {}}
-          />
-        </View>
+        ) : (
+          <>
+            <UserInfo user={profile} isLoading={profileLoading}/>
+            <View style={styles.buttonContainer}>
+              <CustomButton
+                title="Sair"
+                variant="secondary"
+                style={{ backgroundColor: Colors.light.redColor }}
+                shape="rect"
+                iconPosition="end"
+                icon={<Entypo name="log-out" size={18} color={Colors.light.reactNativeWhite} />}
+                onPress={() => {}}
+              />
+              <CustomButton
+                title="Excluir"
+                variant="outLine"
+                styleText={{ color: Colors.light.redColor }}
+                style={{ borderColor: Colors.light.redColor }}
+                shape="rect"
+                iconPosition="end"
+                icon={<FontAwesome5 name="trash" size={16} color={Colors.light.redColor} />}
+                onPress={() => {}}
+              />
+            </View>
+          </>
+        )}
       </View>
     </SafeAreaView>
   );
