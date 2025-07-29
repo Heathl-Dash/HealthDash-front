@@ -73,8 +73,6 @@ export default function HomeScreen() {
         <Tabs tabs={TABS} initialTabKey="habit" onTabChange={(key: string) => setCurrentTab(key)} />
       </View>
 
-      <TouchableOpacity onPress={() => router.push("/login")}><Text>Tela login</Text></TouchableOpacity>
-
       {currentTab === "habit" && (
         <FlatList
           data={allHabits || []}
