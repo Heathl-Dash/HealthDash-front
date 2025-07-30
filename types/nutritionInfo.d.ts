@@ -3,7 +3,7 @@ declare interface INutritionInfo {
   carbohydrates: string;
   fiber: string;
   sugar: string;
-  protein: string;
+  proteins: string;
   fats: string;
   vitamins: string[];
   minerals: string[];

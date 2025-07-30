@@ -26,33 +26,35 @@ const UserInfo = ({ user, isLoading }: UserProps) => {
     <View style={styles.userInfoContainer}>
       <View style={styles.userInfoWrapper}>
         <Text style={styles.userInfoLabel}>Nome</Text>
-        <Text>{user?.name}</Text>
+        <Text>{user?.name !== null ? user?.name : "Não informado"}</Text>
       </View>
       <View style={styles.userInfoWrapper}>
         <Text style={styles.userInfoLabel}>Altura</Text>
-        <Text>{user?.heigth}</Text>
+        <Text>{user?.heigth !== null ? user?.heigth : "Não informado"}</Text>
       </View>
       <View style={styles.userInfoWrapper}>
         <Text style={styles.userInfoLabel}>Peso</Text>
-        <Text>{user?.weigth}</Text>
+        <Text>{user?.weigth !== null ? user?.weigth : "Não informado"}</Text>
       </View>
       <View style={styles.userInfoWrapper}>
         <Text style={styles.userInfoLabel}>Idade</Text>
-        <Text>{user?.age}</Text>
+        <Text>{user?.age !== null ? user?.age : "Não informado"}</Text>
       </View>
       <View style={{ height: 1, backgroundColor: "#ccc", width: "100%", marginVertical: 16 }} />
       <View style={styles.userImcInfo}>
         <View style={styles.userInfoWrapper}>
           <Text style={styles.userInfoLabel}>IMC</Text>
-          <Text>{user?.calc_IMC}</Text>
+          <Text>{user?.calc_IMC !== null ? user?.calc_IMC : "Não informado"}</Text>
         </View>
         <View style={styles.userInfoWrapper}>
           <Text style={styles.userInfoLabel}>Classificação</Text>
-          <Text>{user?.imc_classification}</Text>
+          <Text>
+            {user?.imc_classification !== null ? user?.imc_classification : "Não informado"}
+          </Text>
         </View>
         <View style={styles.userInfoWrapper}>
           <Text style={styles.userInfoLabel}>Grau de obesidade</Text>
-          <Text>{user?.imc_degree}</Text>
+          <Text>{user?.imc_degree !== null ? user?.imc_degree : "Não informado"}</Text>
         </View>
       </View>
     </View>
@@ -67,18 +69,18 @@ export default function User() {
   const handleToggleEdit = () => setIsEditing(!isEditing);
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{ flex: 1, paddingHorizontal: 30 }}>
       <Header />
-      <View style={{ width: "88%", marginLeft: 24, alignItems: "flex-end", marginTop: 32 }}>
+      <View style={{ alignItems: "flex-end", marginTop: 32 }}>
         {!isEditing && (
           <CustomButton
-          title={"Editar"}
-          variant="outLine"
-          shape="rect"
-          iconPosition="end"
-          icon={<FontAwesome6 name="edit" color={Colors.light.primary} size={16} />}
-          onPress={handleToggleEdit}
-        />
+            title={"Editar"}
+            variant="outLine"
+            shape="rect"
+            iconPosition="end"
+            icon={<FontAwesome6 name="edit" color={Colors.light.primary} size={16} />}
+            onPress={handleToggleEdit}
+          />
         )}
 
         {isEditing ? (
@@ -89,7 +91,7 @@ export default function User() {
           />
         ) : (
           <>
-            <UserInfo user={profile} isLoading={profileLoading}/>
+            <UserInfo user={profile} isLoading={profileLoading} />
             <View style={styles.buttonContainer}>
               <CustomButton
                 title="Sair"

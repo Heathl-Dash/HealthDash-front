@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { FontAwesome6 } from "@expo/vector-icons";
 
 interface IMCCardProp {
-  calc_IMC?: number;
+  calc_IMC: number | null;
   imc_classification?: string;
 }
 
@@ -50,7 +50,7 @@ const IMCCard = ({ calc_IMC, imc_classification }: IMCCardProp) => {
           color={status.color} 
           size={52}
         />
-        {calc_IMC !== undefined && (
+        {calc_IMC !== null && (
           <Text style={{ fontSize: 28, fontWeight: "bold", color: Colors.light.mediumGray }}>
             {calc_IMC.toFixed(1)}
           </Text>

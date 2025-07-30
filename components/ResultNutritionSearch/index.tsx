@@ -57,7 +57,7 @@ const ResultNutritionSearch = forwardRef<BottomSheetMethods, ResultNutritionSear
                   </View>
                   <View style={styles.resultLine}>
                     <Text style={styles.infoTitle}>Proteína</Text>
-                    <Text>{nutritionResult.protein}</Text>
+                    <Text>{nutritionResult.proteins}</Text>
                   </View>
                   <View style={styles.resultLine}>
                     <Text style={styles.infoTitle}>Gordura</Text>
