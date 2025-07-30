@@ -13,7 +13,7 @@ export const useIMC = () => {
         setImcData(null);
       })
       .finally(() => setLoading(false));
-  }, []);
+  }, [imcData]);
 
   return { imcData, loading };
 };

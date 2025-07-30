@@ -152,10 +152,19 @@ export const fitToggleMarkTodoDone = (id: number) => {
     .then((res) => res.data)
     .catch((err) => {
       console.error("erro ao trocar o valor do marcador de feito em tarefas de exercícios: ", err);
-      throw err;  
+      throw err;
     });
 };
 
+export const getProfile = () => {
+  return apiGateway
+    .get(`profiles/retrieveprofile/`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("erro ao receber perfil: ", err);
+      throw err;
+    });
+};
 
 export type IProfileIMC = Pick<IProfile, "calc_IMC" | "imc_classification">;
 
@@ -167,10 +176,19 @@ export const getProfileIMC = async (): Promise<IProfileIMC | null> => {
       imc_classification: data.imc_classification,
     };
   } catch (error: any) {
-    console.error(
-      "HTML completo da resposta:",
-      error.response?.data?.toString?.().slice(0, 1000)
-    );
+    console.error("HTML completo da resposta:", error.response?.data?.toString?.().slice(0, 1000));
     return null;
   }
+};
+
+export type profileForm = Omit<IProfile, "calc_IMC" | "imc_classification" | "imc_degree" | "id" | "email">;
+
+export const updateProfile = async (data:profileForm) => {
+  return apiGateway
+    .patch(`profiles/updateprofile/`, data)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("Erro ao atualizar o perfil: ", err);
+      throw err;
+    });
 };
