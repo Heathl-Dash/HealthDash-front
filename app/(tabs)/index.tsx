@@ -56,8 +56,8 @@ export default function HomeScreen() {
       <View style={{ flexDirection: "row" }}>
         <View style={{ width: "50%", padding: 5 }}>
           <IMCCard
-            calc_IMC={imcData?.calc_IMC}
-            imc_classification={imcData?.imc_classification}
+            calcIMC={imcData?.calc_IMC || null}
+            imcClassification={imcData?.imc_classification}
           />
         </View>
         <View style={{ width: "50%", padding: 5 }}>

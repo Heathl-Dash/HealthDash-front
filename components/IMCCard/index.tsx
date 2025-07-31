@@ -3,8 +3,8 @@ import { StyleSheet, Text, View } from "react-native";
 import { FontAwesome6 } from "@expo/vector-icons";
 
 interface IMCCardProp {
-  calc_IMC: number | null;
-  imc_classification?: string;
+  calcIMC: number | null;
+  imcClassification?: string;
 }
 
 const imcStatusMap = {
@@ -35,8 +35,8 @@ const imcStatusMap = {
   }
 };
 
-const IMCCard = ({ calc_IMC, imc_classification }: IMCCardProp) => {
-  const status = imcStatusMap[imc_classification] || {
+const IMCCard = ({ calcIMC, imcClassification }: IMCCardProp) => {
+  const status = imcStatusMap[imcClassification] || {
     icon: "person-circle-question",
     color: Colors.light.darkGray,
   };
@@ -50,9 +50,9 @@ const IMCCard = ({ calc_IMC, imc_classification }: IMCCardProp) => {
           color={status.color} 
           size={52}
         />
-        {calc_IMC !== null && (
+        {calcIMC !== null && (
           <Text style={{ fontSize: 28, fontWeight: "bold", color: Colors.light.mediumGray }}>
-            {calc_IMC.toFixed(1)}
+            {calcIMC?.toFixed(1)}
           </Text>
         )}
       </View>
