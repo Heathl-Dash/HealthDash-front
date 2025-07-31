@@ -1,9 +1,13 @@
 import { Colors } from "@/constants/Colors";
-import React from "react";
+import React, { useEffect } from "react";
 import { SafeAreaView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-
 import GoogleIcon from "@/assets/icons/google.svg";
 import { Stack } from "expo-router";
+import * as Google from 'expo-auth-session/providers/google';
+import * as WebBrowser from 'expo-web-browser';
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { googleLogin } from "@/lib/axios";
+import * as AuthSession from 'expo-auth-session'
 
 const LogoPlaceholder = () => (
   <View style={styles.logoContainer}>
@@ -13,10 +17,34 @@ const LogoPlaceholder = () => (
   </View>
 );
 
+WebBrowser.maybeCompleteAuthSession();
+
 const LoginScreen = () => {
-  const handleGoogleLogin = () => {
-    console.log("Login com Google");
-  };
+  const queryClient = useQueryClient();
+  const loginWithGoogle = useMutation({
+    mutationFn: (token:string) => googleLogin(token),
+    onSuccess: () => {
+      //logica para salvar o token localmente
+    },
+  }) 
+
+
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    webClientId: '485778111330-m17s0ppdtm8c45s9cbuh7qr7l2f4f9iu.apps.googleusercontent.com',
+    androidClientId: '485778111330-7lmac8a1t00u16sslcciddjls424qhvv.apps.googleusercontent.com',
+    responseType: 'id_token',
+    redirectUri: AuthSession.makeRedirectUri({scheme: 'healthdash'}),
+    scopes: ['profile', 'email'],
+  })
+
+  console.log(AuthSession.makeRedirectUri({scheme: 'healthdash'}))
+
+  useEffect(() => {
+    if (response?.type === 'success') {
+      const { id_token } = response.params;
+      //chama axios/função
+    }
+  }, [response]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -36,7 +64,7 @@ const LoginScreen = () => {
         <View style={styles.actionSection}>
           <TouchableOpacity
             style={styles.googleButton}
-            onPress={handleGoogleLogin}
+            onPress={() => promptAsync()}
             activeOpacity={0.8}
           >
             <GoogleIcon width={30} height={30} />

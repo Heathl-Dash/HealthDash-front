@@ -181,14 +181,28 @@ export const getProfileIMC = async (): Promise<IProfileIMC | null> => {
   }
 };
 
-export type profileForm = Omit<IProfile, "calc_IMC" | "imc_classification" | "imc_degree" | "id" | "email">;
+export type profileForm = Omit<
+  IProfile,
+  "calc_IMC" | "imc_classification" | "imc_degree" | "id" | "email"
+>;
 
-export const updateProfile = async (data:profileForm) => {
+export const updateProfile = async (data: profileForm) => {
   return apiGateway
     .patch(`profiles/updateprofile/`, data)
     .then((res) => res.data)
     .catch((err) => {
       console.error("Erro ao atualizar o perfil: ", err);
+      throw err;
+    });
+};
+
+export const googleLogin = (tokenGoogle: string) => {
+  return apiGateway
+    .post("url desconhecida", tokenGoogle)
+    .then((res) => res.data)
+    .then((data) => data.token)
+    .catch((err) => {
+      console.error("Erro ao entrar com google: ", err);
       throw err;
     });
 };
