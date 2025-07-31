@@ -56,7 +56,7 @@ export default function HomeScreen() {
       <View style={{ flexDirection: "row" }}>
         <View style={{ width: "50%", padding: 5 }}>
           <IMCCard
-            calc_IMC={imcData?.calc_IMC}
+            calc_IMC={imcData?.calc_IMC || null}
             imc_classification={imcData?.imc_classification}
           />
         </View>
@@ -72,6 +72,8 @@ export default function HomeScreen() {
       <View style={{ marginTop: 35, marginBottom: 25 }}>
         <Tabs tabs={TABS} initialTabKey="habit" onTabChange={(key: string) => setCurrentTab(key)} />
       </View>
+
+      <TouchableOpacity onPress={() => {router.push('/login')}}> <Text style={{color: Colors.light.darkGray}}>tela login</Text> </TouchableOpacity>
 
       {currentTab === "habit" && (
         <FlatList

@@ -52,7 +52,7 @@ const IMCCard = ({ calc_IMC, imc_classification }: IMCCardProp) => {
         />
         {calc_IMC !== null && (
           <Text style={{ fontSize: 28, fontWeight: "bold", color: Colors.light.mediumGray }}>
-            {calc_IMC.toFixed(1)}
+            {calc_IMC?.toFixed(1)}
           </Text>
         )}
       </View>

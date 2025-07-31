@@ -1,9 +1,12 @@
 import { Colors } from "@/constants/Colors";
-import React from "react";
+import React, { useState } from "react";
 import { SafeAreaView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 import GoogleIcon from "@/assets/icons/google.svg";
 import { Stack } from "expo-router";
+
+import { GoogleSignin, User, isSuccessResponse} from '@react-native-google-signin/google-signin'
+
 
 const LogoPlaceholder = () => (
   <View style={styles.logoContainer}>
@@ -13,11 +16,27 @@ const LogoPlaceholder = () => (
   </View>
 );
 
+GoogleSignin.configure()
+
 const LoginScreen = () => {
   const handleGoogleLogin = () => {
     console.log("Login com Google");
   };
 
+  const [auth, setAuth] = useState<User | null>(null)
+
+  async function handleGoogleSignIn(){
+    try{
+      await GoogleSignin.hasPlayServices()
+      const response = await GoogleSignin.signIn()
+
+      if(isSuccessResponse(response)){
+        console.log(response.data)
+      }
+    }catch(err){
+      console.log(err)
+    }
+  }
   return (
     <SafeAreaView style={styles.container}>
       <Stack.Screen options={{ headerShown: false }} />
@@ -36,7 +55,7 @@ const LoginScreen = () => {
         <View style={styles.actionSection}>
           <TouchableOpacity
             style={styles.googleButton}
-            onPress={handleGoogleLogin}
+            onPress={handleGoogleSignIn}
             activeOpacity={0.8}
           >
             <GoogleIcon width={30} height={30} />
