@@ -4,7 +4,7 @@ import useStorage from "@/hooks/useStorage";
 import { googleLogin } from "@/lib/axios";
 import { GoogleSignin, User, isSuccessResponse } from "@react-native-google-signin/google-signin";
 import { useMutation } from "@tanstack/react-query";
-import { Stack } from "expo-router";
+import { router, Stack } from "expo-router";
 import React, { useState } from "react";
 import { SafeAreaView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
@@ -29,6 +29,7 @@ const LoginScreen = () => {
     mutationFn: (googleToken: string) => googleLogin(googleToken),
     onSuccess: (data) => {
       saveTokens(data);
+      router.push('/(tabs)')
     },
     onError: (error) => {
       console.log(error);

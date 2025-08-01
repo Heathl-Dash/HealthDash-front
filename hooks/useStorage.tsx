@@ -1,6 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-
 const useStorage = () => {
   const saveTokens = async (data: {
     DashboardProfileRefresh: string;
@@ -36,12 +35,59 @@ const useStorage = () => {
     }
   };
 
-  return{
+  const getTokens = async () => {
+    try {
+      const access = await AsyncStorage.getItem("access");
+      const refresh = await AsyncStorage.getItem("refresh");
+      return { access, refresh };
+    } catch (error) {
+      console.log("Erro ao ler os tokens:", error);
+      return null;
+    }
+  };
+
+  const setAccessToken = async (newAccessToken: string) => {
+    try {
+      await AsyncStorage.setItem("access", newAccessToken);
+    } catch (error) {
+      console.log("Erro ao salvar access token:", error);
+    }
+  };
+
+  const setRefreshToken = async (newRefreshToken: string) => {
+    try {
+      await AsyncStorage.setItem("refresh", newRefreshToken);
+    } catch (error) {
+      console.log("Erro ao salvar refresh token:", error);
+    }
+  };
+
+  const removeTokenAccess = async () => {
+    try {
+      await AsyncStorage.removeItem("access");
+    } catch (error) {
+      console.log("Erro ao remover access token:", error);
+    }
+  };
+
+  const removeTokenRefresh = async () => {
+    try {
+      await AsyncStorage.removeItem("refresh");
+    } catch (error) {
+      console.log("Erro ao remover refresh token:", error);
+    }
+  };
+
+  return {
     saveTokens,
     getAccessToken,
-    getRefreshToken
-  }
+    getRefreshToken,
+    setAccessToken,
+    setRefreshToken,
+    getTokens,
+    removeTokenAccess,
+    removeTokenRefresh,
+  };
+};
 
-}
-
-export default useStorage
+export default useStorage;

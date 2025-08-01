@@ -1,3 +1,4 @@
+import useStorage from "@/hooks/useStorage";
 import Axios from "axios";
 
 const apiGateway = Axios.create({
@@ -6,6 +7,31 @@ const apiGateway = Axios.create({
   //   Authorization: `Bearer ${process.env.EXPO_PUBLIC_KEY}`,
   // },
 });
+
+const {
+  getTokens,
+  getAccessToken,
+  getRefreshToken,
+  setAccessToken,
+  setRefreshToken,
+  removeTokenAccess,
+  removeTokenRefresh,
+} = useStorage();
+
+apiGateway.interceptors.request.use(
+  async (config) => {
+    const token = await getTokens();
+
+    if (token?.access) {
+      config.headers["Authorization"] = `Bearer ${token.access}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 
 export const getWaterGoal = () => {
   return apiGateway
