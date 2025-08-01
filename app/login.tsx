@@ -1,8 +1,8 @@
 import GoogleIcon from "@/assets/icons/google.svg";
 import { Colors } from "@/constants/Colors";
+import useGoogle from "@/hooks/useGoogle";
 import useStorage from "@/hooks/useStorage";
 import { googleLogin } from "@/lib/axios";
-import { GoogleSignin, User, isSuccessResponse } from "@react-native-google-signin/google-signin";
 import { useMutation } from "@tanstack/react-query";
 import { router, Stack } from "expo-router";
 import React, { useState } from "react";
@@ -16,44 +16,9 @@ const LogoPlaceholder = () => (
   </View>
 );
 
-GoogleSignin.configure({
-  webClientId: `${process.env.EXPO_PUBLIC_WEB_CLIENT}`,
-});
 
 const LoginScreen = () => {
-  const [auth, setAuth] = useState<User | null>(null);
-  const {saveTokens} = useStorage()
-
-  
-  const googleLoginMutation = useMutation({
-    mutationFn: (googleToken: string) => googleLogin(googleToken),
-    onSuccess: (data) => {
-      saveTokens(data);
-      router.push('/(tabs)')
-    },
-    onError: (error) => {
-      console.log(error);
-    },
-  });
-
-  async function handleGoogleSignIn() {
-    try {
-      await GoogleSignin.hasPlayServices();
-      const response = await GoogleSignin.signIn();
-
-      if (isSuccessResponse(response)) {
-        const idToken = response.data.idToken;
-        console.log(idToken);
-        if (idToken !== null) {
-          googleLoginMutation.mutate(idToken);
-        } else {
-          console.error("Token não pode ser null");
-        }
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  }
+  const {handleGoogleSignIn} = useGoogle()
   return (
     <SafeAreaView style={styles.container}>
       <Stack.Screen options={{ headerShown: false }} />

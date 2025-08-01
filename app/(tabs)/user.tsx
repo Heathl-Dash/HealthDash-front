@@ -1,12 +1,15 @@
+import CustomButton from "@/components/CustomButton";
+import UserProfileForm from "@/components/UserProfileForm";
+import { Colors } from "@/constants/Colors";
+import useProfile from "@/hooks/useProfile";
+import { Entypo, FontAwesome5, FontAwesome6 } from "@expo/vector-icons";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import React, { useState } from "react";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Header from "../../components/Header";
-import CustomButton from "@/components/CustomButton";
-import { Entypo, FontAwesome5, FontAwesome6 } from "@expo/vector-icons";
-import { Colors } from "@/constants/Colors";
-import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
-import useProfile from "@/hooks/useProfile";
-import UserProfileForm from "@/components/UserProfileForm";
+import useStorage from "@/hooks/useStorage";
+import useGoogle from "@/hooks/useGoogle";
 
 interface UserProps {
   user?: IProfile;
@@ -14,6 +17,7 @@ interface UserProps {
 }
 
 const UserInfo = ({ user, isLoading }: UserProps) => {
+
   if (isLoading) {
     return (
       <View style={{ padding: 20, alignItems: "center", justifyContent: "center" }}>
@@ -62,6 +66,8 @@ const UserInfo = ({ user, isLoading }: UserProps) => {
 };
 
 export default function User() {
+  const {handleLogout} = useGoogle()
+
   const { profile, profileErro, profileLoading } = useProfile();
 
   const [isEditing, setIsEditing] = useState(false);
@@ -100,7 +106,7 @@ export default function User() {
                 shape="rect"
                 iconPosition="end"
                 icon={<Entypo name="log-out" size={18} color={Colors.light.reactNativeWhite} />}
-                onPress={() => {}}
+                onPress={handleLogout}
               />
               <CustomButton
                 title="Excluir"

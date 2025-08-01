@@ -243,7 +243,7 @@ export const getProfileIMC = async (): Promise<IProfileIMC | null> => {
       imc_classification: data.imc_classification,
     };
   } catch (error: any) {
-    console.error("HTML completo da resposta:", error.response?.data?.toString?.().slice(0, 1000));
+    console.error("Erro ao pegar imc:", error);
     return null;
   }
 };
