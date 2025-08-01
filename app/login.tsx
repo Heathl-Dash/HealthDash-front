@@ -1,12 +1,12 @@
+import GoogleIcon from "@/assets/icons/google.svg";
 import { Colors } from "@/constants/Colors";
+import useStorage from "@/hooks/useStorage";
+import { googleLogin } from "@/lib/axios";
+import { GoogleSignin, User, isSuccessResponse } from "@react-native-google-signin/google-signin";
+import { useMutation } from "@tanstack/react-query";
+import { Stack } from "expo-router";
 import React, { useState } from "react";
 import { SafeAreaView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-
-import GoogleIcon from "@/assets/icons/google.svg";
-import { Stack } from "expo-router";
-
-import { GoogleSignin, User, isSuccessResponse} from '@react-native-google-signin/google-signin'
-
 
 const LogoPlaceholder = () => (
   <View style={styles.logoContainer}>
@@ -17,26 +17,40 @@ const LogoPlaceholder = () => (
 );
 
 GoogleSignin.configure({
-  webClientId: '485778111330-m17s0ppdtm8c45s9cbuh7qr7l2f4f9iu.apps.googleusercontent.com'
-})
+  webClientId: `${process.env.EXPO_PUBLIC_WEB_CLIENT}`,
+});
 
 const LoginScreen = () => {
-  const handleGoogleLogin = () => {
-    console.log("Login com Google");
-  };
+  const [auth, setAuth] = useState<User | null>(null);
+  const {saveTokens} = useStorage()
 
-  const [auth, setAuth] = useState<User | null>(null)
+  
+  const googleLoginMutation = useMutation({
+    mutationFn: (googleToken: string) => googleLogin(googleToken),
+    onSuccess: (data) => {
+      saveTokens(data);
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+  });
 
-  async function handleGoogleSignIn(){
-    try{
-      await GoogleSignin.hasPlayServices()
-      const response = await GoogleSignin.signIn()
+  async function handleGoogleSignIn() {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const response = await GoogleSignin.signIn();
 
-      if(isSuccessResponse(response)){
-        console.log(response.data)
+      if (isSuccessResponse(response)) {
+        const idToken = response.data.idToken;
+        console.log(idToken);
+        if (idToken !== null) {
+          googleLoginMutation.mutate(idToken);
+        } else {
+          console.error("Token não pode ser null");
+        }
       }
-    }catch(err){
-      console.log(err)
+    } catch (err) {
+      console.log(err);
     }
   }
   return (
@@ -92,7 +106,7 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: Colors.light.primary, 
+    backgroundColor: Colors.light.primary,
     justifyContent: "center",
     alignItems: "center",
     borderWidth: 1,
@@ -120,14 +134,14 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 25,
     fontWeight: "bold",
-    color: Colors.light.darkGray, 
+    color: Colors.light.darkGray,
     textAlign: "center",
     marginBottom: 16,
     fontFamily: "System",
   },
   subtitle: {
     fontSize: 16,
-    color: Colors.light.mediumGray, 
+    color: Colors.light.mediumGray,
     textAlign: "center",
     lineHeight: 24,
     fontFamily: "System",
@@ -171,7 +185,7 @@ const styles = StyleSheet.create({
   },
   termsText: {
     fontSize: 12,
-    color: "#BEBEBE", 
+    color: "#BEBEBE",
     textAlign: "center",
     lineHeight: 18,
     paddingHorizontal: 16,

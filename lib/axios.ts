@@ -2,9 +2,9 @@ import Axios from "axios";
 
 const apiGateway = Axios.create({
   baseURL: `http://${process.env.EXPO_PUBLIC_IP_MAQUINA}:8004/api/v1/`,
-  headers: {
-    Authorization: `Bearer ${process.env.EXPO_PUBLIC_KEY}`,
-  },
+  // headers: {
+  //   Authorization: `Bearer ${process.env.EXPO_PUBLIC_KEY}`,
+  // },
 });
 
 export const getWaterGoal = () => {
@@ -181,14 +181,27 @@ export const getProfileIMC = async (): Promise<IProfileIMC | null> => {
   }
 };
 
-export type profileForm = Omit<IProfile, "calc_IMC" | "imc_classification" | "imc_degree" | "id" | "email">;
+export type profileForm = Omit<
+  IProfile,
+  "calc_IMC" | "imc_classification" | "imc_degree" | "id" | "email"
+>;
 
-export const updateProfile = async (data:profileForm) => {
+export const updateProfile = async (data: profileForm) => {
   return apiGateway
     .patch(`profiles/updateprofile/`, data)
     .then((res) => res.data)
     .catch((err) => {
       console.error("Erro ao atualizar o perfil: ", err);
+      throw err;
+    });
+};
+
+export const googleLogin = (googleToken: string) => {
+  return apiGateway
+    .post(`profiles/googlelogin/`, { token: googleToken })
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("Erro ao buscar token do google: ", err);
       throw err;
     });
 };
