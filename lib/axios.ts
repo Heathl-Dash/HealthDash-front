@@ -1,8 +1,10 @@
 import useStorage from "@/hooks/useStorage";
 import Axios from "axios";
 
+const API_URL = `http://${process.env.EXPO_PUBLIC_IP_MAQUINA}:8004/api/v1/`;
+
 const apiGateway = Axios.create({
-  baseURL: `http://${process.env.EXPO_PUBLIC_IP_MAQUINA}:8004/api/v1/`,
+  baseURL: API_URL,
   // headers: {
   //   Authorization: `Bearer ${process.env.EXPO_PUBLIC_KEY}`,
   // },
@@ -14,8 +16,8 @@ const {
   getRefreshToken,
   setAccessToken,
   setRefreshToken,
-  removeTokenAccess,
-  removeTokenRefresh,
+  removeAccessToken,
+  removeRefreshToken,
 } = useStorage();
 
 apiGateway.interceptors.request.use(
@@ -32,6 +34,45 @@ apiGateway.interceptors.request.use(
   }
 );
 
+apiGateway.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      const refresh = await getRefreshToken();
+
+      if (refresh) {
+        try {
+          const response = await Axios.post(`${API_URL}/token/refresh`, {
+            DashboardProfileRefresh: refresh,
+          });
+          if (response.status !== 200) {
+            await removeAccessToken();
+            await removeRefreshToken();
+            return Promise.reject(error);
+          }
+          const newAccessToken = response.data.DashboardProfileAccess;
+          const newRefreshToken = response.data.DashboardProfileRefresh;
+
+          await setAccessToken(newAccessToken);
+          await setRefreshToken(newRefreshToken);
+
+          originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
+
+          return apiGateway(originalRequest);
+        } catch (err) {
+          await removeAccessToken();
+          await removeRefreshToken();
+          console.log("Erro ao fazer refresh do token:", err);
+        }
+      }
+    }
+    return Promise.reject(error);
+  }
+);
 
 export const getWaterGoal = () => {
   return apiGateway

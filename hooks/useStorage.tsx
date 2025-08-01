@@ -62,7 +62,7 @@ const useStorage = () => {
     }
   };
 
-  const removeTokenAccess = async () => {
+  const removeAccessToken = async () => {
     try {
       await AsyncStorage.removeItem("access");
     } catch (error) {
@@ -70,7 +70,7 @@ const useStorage = () => {
     }
   };
 
-  const removeTokenRefresh = async () => {
+  const removeRefreshToken = async () => {
     try {
       await AsyncStorage.removeItem("refresh");
     } catch (error) {
@@ -85,8 +85,8 @@ const useStorage = () => {
     setAccessToken,
     setRefreshToken,
     getTokens,
-    removeTokenAccess,
-    removeTokenRefresh,
+    removeAccessToken,
+    removeRefreshToken,
   };
 };
 
