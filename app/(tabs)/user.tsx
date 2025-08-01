@@ -7,6 +7,7 @@ import { Colors } from "@/constants/Colors";
 import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
 import useProfile from "@/hooks/useProfile";
 import UserProfileForm from "@/components/UserProfileForm";
+import HabitTodoManger from "@/components/HabitTodoManager";
 
 interface UserProps {
   user?: IProfile;
@@ -71,6 +72,10 @@ export default function User() {
   return (
     <SafeAreaView style={{ flex: 1, paddingHorizontal: 30 }}>
       <Header />
+      <HabitTodoManger
+        type="habit"
+        mode="edit"
+      />
       <View style={{ alignItems: "flex-end", marginTop: 32 }}>
         {!isEditing && (
           <CustomButton

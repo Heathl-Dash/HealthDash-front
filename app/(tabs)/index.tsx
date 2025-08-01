@@ -142,7 +142,7 @@ export default function HomeScreen() {
         onPressBottleButton={updateWaterGoalWithBottle}
         onPressAddBottle={openAddBottle}
       />
-      <AddBottleModal onClose={handleCloseAddBottleModal} visible={addBottleModalIsOpen} />
+      <AddBottleModal onClose={handleCloseAddBottleModal} visible={addBottleModalIsOpen}/>
     </SafeAreaView>
   );
 }

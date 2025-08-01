@@ -10,6 +10,7 @@ export const Colors = {
   light: {
     primary: "#528D95",
     secondary: "#6CA1D7",
+    mediumBlue: "#4288ca",
     darkGray: "#444444",
     lightGray: "#BEBEBE",
     mediumGray: "#828282",
@@ -17,5 +18,5 @@ export const Colors = {
     surface: '#D4ECDE',
     reactNativeWhite: '#F2F2F2',
   },
-  dark: {},
+  dark: { darkBlue: "#1A405F"},
 };
