@@ -46,6 +46,9 @@ const HabitTodoManger = ({ mode, type, item }: HabitTodoMangerProps) => {
               borderColor: Colors.light.reactNativeWhite,
               padding: 2,
             }}
+            toggle={true}
+            toggledColor={Colors.light.reactNativeWhite}
+            toggledTextColor={Colors.light.secondary}
             styleText={{ fontSize: 32, color: Colors.light.reactNativeWhite }}
             onPress={() => {}}
           />
@@ -58,6 +61,9 @@ const HabitTodoManger = ({ mode, type, item }: HabitTodoMangerProps) => {
               borderColor: Colors.light.reactNativeWhite,
               padding: -2,
             }}
+            toggle={true}
+            toggledColor={Colors.light.reactNativeWhite}
+            toggledTextColor={Colors.light.secondary}
             styleText={{ fontSize: 32, color: Colors.light.reactNativeWhite }}
             onPress={() => {}}
           />
