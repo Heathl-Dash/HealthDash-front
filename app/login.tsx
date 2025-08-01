@@ -16,7 +16,9 @@ const LogoPlaceholder = () => (
   </View>
 );
 
-GoogleSignin.configure()
+GoogleSignin.configure({
+  webClientId: '485778111330-m17s0ppdtm8c45s9cbuh7qr7l2f4f9iu.apps.googleusercontent.com'
+})
 
 const LoginScreen = () => {
   const handleGoogleLogin = () => {
