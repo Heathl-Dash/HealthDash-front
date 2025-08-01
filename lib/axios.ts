@@ -192,3 +192,13 @@ export const updateProfile = async (data:profileForm) => {
       throw err;
     });
 };
+
+export const logoutProfile = () => {
+  return apiGateway
+    .post('profiles/logout')
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("Erro ao sair da conta: ", err);
+      throw err;
+    });
+};

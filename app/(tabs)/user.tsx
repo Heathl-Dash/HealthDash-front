@@ -7,6 +7,7 @@ import { Colors } from "@/constants/Colors";
 import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
 import useProfile from "@/hooks/useProfile";
 import UserProfileForm from "@/components/UserProfileForm";
+import useLogout from "@/hooks/useLogout";
 
 interface UserProps {
   user?: IProfile;
@@ -66,6 +67,8 @@ export default function User() {
 
   const [isEditing, setIsEditing] = useState(false);
 
+  const { logout } = useLogout();
+
   const handleToggleEdit = () => setIsEditing(!isEditing);
 
   return (
@@ -100,7 +103,7 @@ export default function User() {
                 shape="rect"
                 iconPosition="end"
                 icon={<Entypo name="log-out" size={18} color={Colors.light.reactNativeWhite} />}
-                onPress={() => {}}
+                onPress={logout}
               />
               <CustomButton
                 title="Excluir"
