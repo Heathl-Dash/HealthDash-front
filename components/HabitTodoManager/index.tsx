@@ -1,6 +1,5 @@
 import { Colors } from "@/constants/Colors";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import CustomInput from "../CustomInput";
 import CustomButton from "../CustomButton";
 import { Ionicons } from "@expo/vector-icons";
@@ -14,11 +13,19 @@ interface HabitTodoMangerProps {
 const HabitTodoManger = ({ mode, type, item }: HabitTodoMangerProps) => {
   return (
     <View style={styles.container}>
-      <View>
+      <View style={styles.modalHeader}>
         <TouchableOpacity>
           <Ionicons name="arrow-back" size={24} color={Colors.light.reactNativeWhite} />
         </TouchableOpacity>
+        <View style={styles.flexSpacer} />
+        <View style={styles.textContainer}>
+          <Text style={styles.actionDescription}>
+            {mode === "create" ? "Criando" : "Editando"} {type === "habit" ? "Hábito" : "Tarefa"}
+          </Text>
+        </View>
+        <View style={styles.flexSpacer} />
       </View>
+
       <View>
         <CustomInput
           placeholder="Título"
@@ -48,7 +55,7 @@ const HabitTodoManger = ({ mode, type, item }: HabitTodoMangerProps) => {
             }}
             toggle={true}
             toggledColor={Colors.light.reactNativeWhite}
-            toggledTextColor={Colors.light.secondary}
+            toggledTextColor={Colors.light.mediumBlue}
             styleText={{ fontSize: 32, color: Colors.light.reactNativeWhite }}
             onPress={() => {}}
           />
@@ -63,7 +70,7 @@ const HabitTodoManger = ({ mode, type, item }: HabitTodoMangerProps) => {
             }}
             toggle={true}
             toggledColor={Colors.light.reactNativeWhite}
-            toggledTextColor={Colors.light.secondary}
+            toggledTextColor={Colors.light.mediumBlue}
             styleText={{ fontSize: 32, color: Colors.light.reactNativeWhite }}
             onPress={() => {}}
           />
@@ -109,6 +116,22 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 32,
     alignSelf: "center",
+  },
+  modalHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  flexSpacer: {
+    flex: 1,
+  },
+  textContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  actionDescription: {
+    color: Colors.light.reactNativeWhite,
+    fontSize: 18,
+    fontWeight: "bold",
   },
 });
 
