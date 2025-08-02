@@ -1,15 +1,13 @@
 import CustomButton from "@/components/CustomButton";
 import UserProfileForm from "@/components/UserProfileForm";
 import { Colors } from "@/constants/Colors";
+import useAuth from "@/hooks/useAuth";
 import useProfile from "@/hooks/useProfile";
 import { Entypo, FontAwesome5, FontAwesome6 } from "@expo/vector-icons";
-import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import React, { useState } from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Header from "../../components/Header";
-import useStorage from "@/hooks/useStorage";
-import useGoogle from "@/hooks/useGoogle";
 
 interface UserProps {
   user?: IProfile;
@@ -17,7 +15,6 @@ interface UserProps {
 }
 
 const UserInfo = ({ user, isLoading }: UserProps) => {
-
   if (isLoading) {
     return (
       <View style={{ padding: 20, alignItems: "center", justifyContent: "center" }}>
@@ -66,7 +63,7 @@ const UserInfo = ({ user, isLoading }: UserProps) => {
 };
 
 export default function User() {
-  const {handleLogout} = useGoogle()
+  const { handleLogout } = useAuth();
 
   const { profile, profileErro, profileLoading } = useProfile();
 

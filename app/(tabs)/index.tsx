@@ -14,7 +14,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import AddBottleModal from "../../components/AddBottleModal";
 import WaterButton from "../../components/WaterButton";
 import WaterModal from "../../components/WaterModal";
-import { router } from "expo-router"
+import { Redirect, router } from "expo-router"
+import useAuth from "@/hooks/useAuth";
 
 export default function HomeScreen() {
   const {
@@ -49,6 +50,14 @@ export default function HomeScreen() {
   } = useTodo();
 
   const { imcData, loading } = useIMC();
+
+  const { isAuthenticated, loading:isLoading } = useAuth();
+
+  if (isLoading) return null;
+
+  if (!isAuthenticated) {
+    return <Redirect href="/login" />;
+  }
 
   return (
     <SafeAreaView style={[styles.container, {flexGrow: 1}]}>

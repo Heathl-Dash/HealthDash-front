@@ -3,18 +3,35 @@ import { GoogleSignin, isSuccessResponse } from "@react-native-google-signin/goo
 import { useMutation } from "@tanstack/react-query";
 import { router } from "expo-router";
 import useStorage from "./useStorage";
+import { useEffect, useState } from "react";
 
-const useGoogle = () => {
+const useAuth = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  const { saveTokens, removeAccessToken, removeRefreshToken, getAccessToken } = useStorage();
+
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = await getAccessToken();
+      setIsAuthenticated(!!token);
+      setLoading(false);
+    };
+
+    checkAuth();
+  }, []);
+
   GoogleSignin.configure({
     webClientId: `${process.env.EXPO_PUBLIC_WEB_CLIENT}`,
   });
 
-  const { saveTokens, removeAccessToken, removeRefreshToken } = useStorage();
 
   const googleLoginMutation = useMutation({
     mutationFn: (googleToken: string) => googleLogin(googleToken),
     onSuccess: (data) => {
       saveTokens(data);
+      setIsAuthenticated(true)
       router.push("/(tabs)");
     },
     onError: (error) => {
@@ -46,6 +63,8 @@ const useGoogle = () => {
       await GoogleSignin.signOut(); 
       await removeAccessToken()
       await removeRefreshToken()
+      setIsAuthenticated(false)
+      router.push('/login')
     } catch (error) {
       console.error("Erro ao deslogar:", error);
     }
@@ -55,7 +74,9 @@ const useGoogle = () => {
     GoogleSignin,
     handleGoogleSignIn,
     handleLogout,
+    isAuthenticated,
+    loading,
   };
 };
 
-export default useGoogle;
+export default useAuth;

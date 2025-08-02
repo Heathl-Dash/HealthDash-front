@@ -1,11 +1,8 @@
 import GoogleIcon from "@/assets/icons/google.svg";
 import { Colors } from "@/constants/Colors";
-import useGoogle from "@/hooks/useGoogle";
-import useStorage from "@/hooks/useStorage";
-import { googleLogin } from "@/lib/axios";
-import { useMutation } from "@tanstack/react-query";
-import { router, Stack } from "expo-router";
-import React, { useState } from "react";
+import useAuth from "@/hooks/useAuth";
+import { Redirect, Stack } from "expo-router";
+import React from "react";
 import { SafeAreaView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const LogoPlaceholder = () => (
@@ -16,9 +13,14 @@ const LogoPlaceholder = () => (
   </View>
 );
 
-
 const LoginScreen = () => {
-  const {handleGoogleSignIn} = useGoogle()
+  const { handleGoogleSignIn, isAuthenticated, loading } = useAuth();
+
+  if (loading) return null;
+
+  if (isAuthenticated) {
+    return <Redirect href="/(tabs)" />;
+  }
   return (
     <SafeAreaView style={styles.container}>
       <Stack.Screen options={{ headerShown: false }} />
