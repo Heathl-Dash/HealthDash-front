@@ -12,6 +12,7 @@ interface WaterModalProps {
   onClose: () => void;
   onPressBottleButton: (bottle: IBottle) => void;
   onPressAddBottle: () => void;
+  onPressEditBottle: (bottle: IBottle) => void;
 }
 
 const WaterModal = ({
@@ -20,6 +21,7 @@ const WaterModal = ({
   onClose,
   onPressBottleButton,
   onPressAddBottle,
+  onPressEditBottle,
 }: WaterModalProps) => {
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [selectedBottles, setSelectedBottles] = useState<number[]>([]);
@@ -176,7 +178,12 @@ const WaterModal = ({
                     <CustomButton
                       title="Editar"
                       onPress={() => {
-                        // abrir modal de edição
+                        const bottleToEdit = bottles.find(
+                          (b) => b.water_bottle_id === selectedBottles[0]
+                        );
+                        if (bottleToEdit) {
+                          onPressEditBottle(bottleToEdit);
+                        }
                       }}
                       variant="secondary"
                       style={{ width: "45%" }}
@@ -188,7 +195,7 @@ const WaterModal = ({
                       onPress={() => {
                         // confirmar e excluir
                       }}
-                      style={{ width: "45%", backgroundColor: Colors.light.redColor, opacity:0.9 }}
+                      style={{ width: "45%", backgroundColor: Colors.light.redColor, opacity: 0.9 }}
                       variant="secondary"
                     />
                   )}

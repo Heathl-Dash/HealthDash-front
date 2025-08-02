@@ -4,11 +4,12 @@ import IMCCard from "@/components/IMCCard";
 import Tabs from "@/components/Tabs";
 import ToDo from "@/components/ToDo";
 import { Colors } from "@/constants/Colors";
+import useAuth from "@/hooks/useAuth";
 import useHabit from "@/hooks/useHabit";
 import useIMC from "@/hooks/useIMC";
 import useTodo from "@/hooks/useToDo";
 import useWater from "@/hooks/useWater";
-import { router } from "expo-router";
+import { Redirect, router } from "expo-router";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -25,6 +26,11 @@ export default function HomeScreen() {
     waterGoal,
     waterModalIsOpen,
     addBottleModalIsOpen,
+    editBottleModalIsOpen,
+    bottleToEdit,
+    openEditBottleModal,
+    handleEditBottle,
+    handleCloseEditBottleModal
   } = useWater();
 
   const {
@@ -49,13 +55,13 @@ export default function HomeScreen() {
 
   const { imcData, loading } = useIMC();
 
-  // const { isAuthenticated, loading:isLoading } = useAuth();
+  const { isAuthenticated, loading: isLoading } = useAuth();
 
-  // if (isLoading) return null;
+  if (isLoading) return null;
 
-  // if (!isAuthenticated) {
-  //   return <Redirect href="/login" />;
-  // }
+  if (!isAuthenticated) {
+    return <Redirect href="/login" />;
+  }
 
   return (
     <SafeAreaView style={[styles.container, { flexGrow: 1 }]}>
@@ -152,28 +158,16 @@ export default function HomeScreen() {
       )}
 
       <WaterModal
-        bottles={
-          waterGoal?.bottles || [
-            {
-              bottle_name: "Copo de Vidro",
-              ml_bottle: 250,
-              water_bottle_id: 1,
-              id_bottle_style: 1,
-            },
-            {
-              bottle_name: "Garrafa Plástica",
-              ml_bottle: 500,
-              water_bottle_id: 2,
-              id_bottle_style: 2,
-            },
-          ]
-        }
+        bottles={waterGoal?.bottles || []}
         onClose={handleCloseWaterModal}
         visible={waterModalIsOpen}
         onPressBottleButton={updateWaterGoalWithBottle}
         onPressAddBottle={openAddBottle}
+        onPressEditBottle={handleEditBottle}
       />
       <AddBottleModal onClose={handleCloseAddBottleModal} visible={addBottleModalIsOpen} />
+
+      <AddBottleModal onClose={handleCloseEditBottleModal} visible={editBottleModalIsOpen} bottleToEdit={bottleToEdit}/>
     </SafeAreaView>
   );
 }

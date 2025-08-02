@@ -1,12 +1,13 @@
-import { createBottles } from "@/lib/axios";
+import { createBottles, editWaterBottle } from "@/lib/axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface useAddBottleModel {
   onClose: () => void;
+  bottleToEdit?: IBottle | null;
 }
 
-const useAddBottleModel = ({ onClose }: useAddBottleModel) => {
+const useAddBottleModel = ({ onClose, bottleToEdit }: useAddBottleModel) => {
   const [nameBottleValue, setNameBottleValue] = useState("");
   const [selectedBottleStyle, setSelectedBottleStyle] = useState(1);
   const [mlBottleValue, setMLBottleValue] = useState("0");
@@ -14,24 +15,44 @@ const useAddBottleModel = ({ onClose }: useAddBottleModel) => {
   const [nameBottleError, setNameBottleError] = useState("");
   const [mlBottleError, setMLBottleError] = useState("");
 
+  useEffect(() => {
+    if (bottleToEdit) {
+      setNameBottleValue(bottleToEdit.bottle_name);
+      setMLBottleValue(bottleToEdit.ml_bottle.toString());
+      setSelectedBottleStyle(bottleToEdit.water_bottle_id);
+    }
+  }, [bottleToEdit]);
+
+  const resetForm = () => {
+    setNameBottleValue("");
+    setMLBottleValue("0");
+    setSelectedBottleStyle(1);
+    setNameBottleError("");
+    setMLBottleError("");
+  };
+
   const queryClient = useQueryClient();
 
-  const mutation = useMutation({
+  const createBottleMutation = useMutation({
     mutationFn: createBottles,
     onSuccess: () => {
-      console.log("Garrafa criada com sucesso!");
-
-      setNameBottleValue("");
-      setMLBottleValue("0");
-      setSelectedBottleStyle(1);
-      setNameBottleError("");
-      setMLBottleError("");
+      resetForm();
       onClose();
 
       queryClient.invalidateQueries({ queryKey: ["waterGoal"] });
     },
     onError: (error) => {
       console.log("Erro ao criar garrafa:", error);
+    },
+  });
+
+  const updateBottleMutation = useMutation({
+    mutationFn: ({ id, data }: { id: number; data: Partial<IBottle> }) => editWaterBottle(id, data),
+    onSuccess: () => {
+      console.log(bottleToEdit ? "Garrafa atualizada!" : "Garrafa criada!");
+      resetForm();
+      queryClient.invalidateQueries({ queryKey: ["waterGoal"] });
+      onClose();
     },
   });
 
@@ -58,10 +79,14 @@ const useAddBottleModel = ({ onClose }: useAddBottleModel) => {
     const bottleData = {
       bottle_name: nameBottleValue,
       ml_bottle: Number(mlBottleValue),
-      water_bottle_id: selectedBottleStyle,
+      id_bottle_style: selectedBottleStyle,
     };
 
-    mutation.mutate(bottleData);
+    if (bottleToEdit) {
+      updateBottleMutation.mutate({ id: bottleToEdit.water_bottle_id, data: { ...bottleData } });
+    } else {
+      createBottleMutation.mutate(bottleData);
+    }
   };
   return {
     nameBottleValue,
