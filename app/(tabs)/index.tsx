@@ -14,7 +14,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import AddBottleModal from "../../components/AddBottleModal";
 import WaterButton from "../../components/WaterButton";
 import WaterModal from "../../components/WaterModal";
-import { router } from "expo-router"
+import { Redirect, router } from "expo-router"
+import useAuth from "@/hooks/useAuth";
 
 export default function HomeScreen() {
   const {
@@ -50,13 +51,21 @@ export default function HomeScreen() {
 
   const { imcData, loading } = useIMC();
 
+  const { isAuthenticated, loading:isLoading } = useAuth();
+
+  if (isLoading) return null;
+
+  if (!isAuthenticated) {
+    return <Redirect href="/login" />;
+  }
+
   return (
     <SafeAreaView style={[styles.container, {flexGrow: 1}]}>
       <Header/>
       <View style={{ flexDirection: "row" }}>
         <View style={{ width: "50%", padding: 5 }}>
           <IMCCard
-            calc_IMC={imcData?.calc_IMC}
+            calc_IMC={imcData?.calc_IMC || null}
             imc_classification={imcData?.imc_classification}
           />
         </View>
@@ -72,6 +81,8 @@ export default function HomeScreen() {
       <View style={{ marginTop: 35, marginBottom: 25 }}>
         <Tabs tabs={TABS} initialTabKey="habit" onTabChange={(key: string) => setCurrentTab(key)} />
       </View>
+
+      <TouchableOpacity onPress={() => {router.push('/login')}}> <Text style={{color: Colors.light.darkGray}}>tela login</Text> </TouchableOpacity>
 
       {currentTab === "habit" && (
         <FlatList

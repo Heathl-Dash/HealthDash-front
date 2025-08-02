@@ -9,7 +9,8 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.gabriella-aquino.HealthDash"
     },
     "android": {
       "adaptiveIcon": {
@@ -17,7 +18,7 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.gabriella_aquino.HealthDash",
+      "package": "com.healthdash.android",
       "permissions": [
         "ACTIVITY_RECOGNITION",
         "BODY_SENSORS",
@@ -40,18 +41,28 @@
           "backgroundColor": "#ffffff"
         }
       ],
-      ["expo-sqlite",
-      {
-        "enableFTS": true,
-        "useSQLCipher": true,
-        "android": {
-          "enableFTS": false,
-          "useSQLCipher": false
-        },
-        "ios": {
-          "customBuildFlags": ["-DSQLITE_ENABLE_DBSTAT_VTAB=1 -DSQLITE_ENABLE_SNAPSHOT=1"]
+      [
+        "expo-sqlite",
+        {
+          "enableFTS": true,
+          "useSQLCipher": true,
+          "android": {
+            "enableFTS": false,
+            "useSQLCipher": false
+          },
+          "ios": {
+            "customBuildFlags": [
+              "-DSQLITE_ENABLE_DBSTAT_VTAB=1 -DSQLITE_ENABLE_SNAPSHOT=1"
+            ]
+          }
         }
-      }]
+      ],
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps._some_id_here_"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
