@@ -1,23 +1,27 @@
+import GoogleIcon from "@/assets/icons/google.svg";
 import { Colors } from "@/constants/Colors";
+import useAuth from "@/hooks/useAuth";
+import { Redirect, Stack } from "expo-router";
 import React from "react";
 import { SafeAreaView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-
-import GoogleIcon from "@/assets/icons/google.svg";
-import { Stack } from "expo-router";
+import HealthDashLogo from '@/assets/images/healthDashLogo48.svg'
 
 const LogoPlaceholder = () => (
   <View style={styles.logoContainer}>
     <View style={styles.logoCircle}>
-      <Text style={styles.logoText}>HD</Text>
+      <HealthDashLogo/>
     </View>
   </View>
 );
 
 const LoginScreen = () => {
-  const handleGoogleLogin = () => {
-    console.log("Login com Google");
-  };
+  const { handleGoogleSignIn, isAuthenticated, loading } = useAuth();
 
+  if (loading) return null;
+
+  if (isAuthenticated) {
+    return <Redirect href="/(tabs)" />;
+  }
   return (
     <SafeAreaView style={styles.container}>
       <Stack.Screen options={{ headerShown: false }} />
@@ -36,7 +40,7 @@ const LoginScreen = () => {
         <View style={styles.actionSection}>
           <TouchableOpacity
             style={styles.googleButton}
-            onPress={handleGoogleLogin}
+            onPress={handleGoogleSignIn}
             activeOpacity={0.8}
           >
             <GoogleIcon width={30} height={30} />
@@ -68,22 +72,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   logoCircle: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    backgroundColor: Colors.light.primary, 
+    width: 125,
+    height: 125,
     justifyContent: "center",
     alignItems: "center",
-    borderWidth: 1,
-    borderColor: Colors.light.lightGray,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 8,
   },
   logoText: {
     fontSize: 36,
@@ -99,14 +91,14 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 25,
     fontWeight: "bold",
-    color: Colors.light.darkGray, 
+    color: Colors.light.darkGray,
     textAlign: "center",
     marginBottom: 16,
     fontFamily: "System",
   },
   subtitle: {
     fontSize: 16,
-    color: Colors.light.mediumGray, 
+    color: Colors.light.mediumGray,
     textAlign: "center",
     lineHeight: 24,
     fontFamily: "System",
@@ -150,7 +142,7 @@ const styles = StyleSheet.create({
   },
   termsText: {
     fontSize: 12,
-    color: "#BEBEBE", 
+    color: "#BEBEBE",
     textAlign: "center",
     lineHeight: 18,
     paddingHorizontal: 16,

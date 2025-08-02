@@ -1,11 +1,78 @@
+import useStorage from "@/hooks/useStorage";
 import Axios from "axios";
 
+const API_URL = `http://${process.env.EXPO_PUBLIC_IP_MAQUINA}:8004/api/v1/`;
+
 const apiGateway = Axios.create({
-  baseURL: `http://${process.env.EXPO_PUBLIC_IP_MAQUINA}:8004/api/v1/`,
-  headers: {
-    Authorization: `Bearer ${process.env.EXPO_PUBLIC_KEY}`,
-  },
+  baseURL: API_URL,
+  // headers: {
+  //   Authorization: `Bearer ${process.env.EXPO_PUBLIC_KEY}`,
+  // },
 });
+
+const {
+  getTokens,
+  getAccessToken,
+  getRefreshToken,
+  setAccessToken,
+  setRefreshToken,
+  removeAccessToken,
+  removeRefreshToken,
+} = useStorage();
+
+apiGateway.interceptors.request.use(
+  async (config) => {
+    const token = await getTokens();
+
+    if (token?.access) {
+      config.headers["Authorization"] = `Bearer ${token.access}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+apiGateway.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      const refresh = await getRefreshToken();
+
+      if (refresh) {
+        try {
+          const response = await Axios.post(`${API_URL}/token/refresh`, {
+            DashboardProfileRefresh: refresh,
+          });
+          if (response.status !== 200) {
+            await removeAccessToken();
+            await removeRefreshToken();
+            return Promise.reject(error);
+          }
+          const newAccessToken = response.data.DashboardProfileAccess;
+          const newRefreshToken = response.data.DashboardProfileRefresh;
+
+          await setAccessToken(newAccessToken);
+          await setRefreshToken(newRefreshToken);
+
+          originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
+
+          return apiGateway(originalRequest);
+        } catch (err) {
+          await removeAccessToken();
+          await removeRefreshToken();
+          console.log("Erro ao fazer refresh do token:", err);
+        }
+      }
+    }
+    return Promise.reject(error);
+  }
+);
 
 export const getWaterGoal = () => {
   return apiGateway
@@ -176,19 +243,32 @@ export const getProfileIMC = async (): Promise<IProfileIMC | null> => {
       imc_classification: data.imc_classification,
     };
   } catch (error: any) {
-    console.error("HTML completo da resposta:", error.response?.data?.toString?.().slice(0, 1000));
+    console.error("Erro ao pegar imc:", error);
     return null;
   }
 };
 
-export type profileForm = Omit<IProfile, "calc_IMC" | "imc_classification" | "imc_degree" | "id" | "email">;
+export type profileForm = Omit<
+  IProfile,
+  "calc_IMC" | "imc_classification" | "imc_degree" | "id" | "email"
+>;
 
-export const updateProfile = async (data:profileForm) => {
+export const updateProfile = async (data: profileForm) => {
   return apiGateway
     .patch(`profiles/updateprofile/`, data)
     .then((res) => res.data)
     .catch((err) => {
       console.error("Erro ao atualizar o perfil: ", err);
+      throw err;
+    });
+};
+
+export const googleLogin = (googleToken: string) => {
+  return apiGateway
+    .post(`profiles/googlelogin/`, { token: googleToken })
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("Erro ao buscar token do google: ", err);
       throw err;
     });
 };
