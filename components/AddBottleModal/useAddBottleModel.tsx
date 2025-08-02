@@ -19,7 +19,7 @@ const useAddBottleModel = ({ onClose, bottleToEdit }: useAddBottleModel) => {
     if (bottleToEdit) {
       setNameBottleValue(bottleToEdit.bottle_name);
       setMLBottleValue(bottleToEdit.ml_bottle.toString());
-      setSelectedBottleStyle(bottleToEdit.water_bottle_id);
+      setSelectedBottleStyle(bottleToEdit.id_bottle_style);
     }
   }, [bottleToEdit]);
 
