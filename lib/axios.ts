@@ -114,8 +114,15 @@ export const editWaterBottle = (id: number, data: Partial<IBottle>) => {
     });
 };
 
+
 export const deleteWaterBottle = (id:number) => {
-  
+  return apiGateway
+    .delete(`nutri/water_bottle/${id}`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("Erro ao deletar garrafa ", err);
+      throw err;
+    });
 }
 
 export const createBottles = (data: Partial<IBottle>) => {

@@ -1,5 +1,7 @@
 import { Colors } from "@/constants/Colors";
+import { deleteWaterBottle } from "@/lib/axios";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
 import { Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import BottleButton from "../BottleButton";
@@ -70,6 +72,24 @@ const WaterModal = ({
       setIsSelectionMode(false);
     }
   }, [visible]);
+
+  const queryClient = useQueryClient();
+
+  const deleteMultipleWaterBottles = (ids: number[]) => {
+    return Promise.all(ids.map((id) => deleteWaterBottle(id)));
+  };
+
+  const deleteWaterBottleMutation = useMutation({
+    mutationFn: (ids: number[]) => deleteMultipleWaterBottles(selectedBottles), // deleteBottle precisa retornar uma Promise
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["waterGoal"] });
+      setIsSelectionMode(false);
+      setSelectedBottles([]);
+    },
+    onError: (error) => {
+      console.error("Erro ao deletar:", error);
+    },
+  });
 
   return (
     <Modal visible={visible} onRequestClose={onClose} transparent>
@@ -193,7 +213,7 @@ const WaterModal = ({
                     <CustomButton
                       title="Excluir"
                       onPress={() => {
-                        // confirmar e excluir
+                        deleteWaterBottleMutation.mutate(selectedBottles);
                       }}
                       style={{ width: "45%", backgroundColor: Colors.light.redColor, opacity: 0.9 }}
                       variant="secondary"
