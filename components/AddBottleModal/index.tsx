@@ -102,7 +102,7 @@ const AddBottleModal = ({ visible, onClose }: AddBottleModalProps) => {
               <View style={styles.buttonRow}>
                 <CustomButton
                   title="Salvar garrafa"
-                  variant="outLine"
+                  variant="secondary"
                   style={{ borderColor: "white", width: '45%', opacity: 0.9 }}
                   styleText={{ color: "white" }}
                   onPress={onSaveBottle}

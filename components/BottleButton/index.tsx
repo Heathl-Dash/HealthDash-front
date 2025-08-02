@@ -13,6 +13,7 @@ interface BottleButtonProps {
   variant?: keyof typeof Variant;
   isSelected?: boolean;
   onPress: () => void;
+  onLongPress?: () => void;
 }
 
 const BOTTLES = [
@@ -29,6 +30,7 @@ const BottleButton = ({
   onPress,
   variant,
   isSelected,
+  onLongPress,
 }: BottleButtonProps) => {
   const BottleIcon = BOTTLES.find((bottle) => bottleStyle === bottle.id)?.image;
   return (
@@ -40,6 +42,7 @@ const BottleButton = ({
         pressed && styles.buttonPressed,
         isSelected && styles.selected,
       ]}
+      onLongPress={onLongPress && onLongPress}
     >
       <Text style={styles.bottleTitle}>{name}</Text>
       <View style={[variant ? VariantIcon[variant] : { height: 65 }]}>

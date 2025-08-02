@@ -1,5 +1,6 @@
-import { Ionicons } from "@expo/vector-icons";
-import React from "react";
+import { Colors } from "@/constants/Colors";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import React, { useEffect, useState } from "react";
 import { Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import BottleButton from "../BottleButton";
 import CustomButton from "../CustomButton";
@@ -20,6 +21,54 @@ const WaterModal = ({
   onPressBottleButton,
   onPressAddBottle,
 }: WaterModalProps) => {
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
+  const [selectedBottles, setSelectedBottles] = useState<number[]>([]);
+  const [isSelectAll, setIsSelectAll] = useState(false);
+
+  const toggleSelectBottle = (id: number) => {
+    if (selectedBottles.includes(id)) {
+      const newSelection = selectedBottles.filter((bottleId) => bottleId !== id);
+      setSelectedBottles(newSelection);
+      if (newSelection.length === 0) setIsSelectionMode(false);
+    } else {
+      setSelectedBottles((prev) => [...prev, id]);
+    }
+  };
+
+  const handleLongPress = (id: number) => {
+    setIsSelectionMode(true);
+    setSelectedBottles([id]);
+  };
+
+  const handleSelectAll = () => {
+    if (selectedBottles.length === bottles.length) {
+      setSelectedBottles([]);
+      setIsSelectionMode(false);
+      setIsSelectAll(false);
+    } else {
+      setSelectedBottles(bottles.map((b) => b.water_bottle_id));
+      setIsSelectionMode(true);
+      setIsSelectAll(true);
+    }
+  };
+
+  const handleCancelSelection = () => {
+    setSelectedBottles([]);
+    setIsSelectionMode(false);
+  };
+
+  useEffect(() => {
+    setIsSelectAll(selectedBottles.length === bottles.length && bottles.length > 0);
+  }, [selectedBottles, bottles]);
+
+  useEffect(() => {
+    if (!visible) {
+      setSelectedBottles([]);
+      setIsSelectAll(false);
+      setIsSelectionMode(false);
+    }
+  }, [visible]);
+
   return (
     <Modal visible={visible} onRequestClose={onClose} transparent>
       <Pressable style={styles.modalBackGround} onPress={onClose}>
@@ -31,7 +80,7 @@ const WaterModal = ({
             </TouchableOpacity>
           </View>
           <View style={styles.bottlesContainer}>
-            {bottles?.length == 0 && (
+            {bottles?.length === 0 && (
               <View>
                 <Text style={styles.noBottleText}>Cadastre sua primeira garrafa!</Text>
                 <View style={styles.bottlesContent}>
@@ -39,44 +88,112 @@ const WaterModal = ({
                 </View>
               </View>
             )}
-            {bottles?.length == 1 && (
+            {isSelectionMode && (
+              <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+                <CustomButton
+                  title="Selecionar tudo"
+                  onPress={handleSelectAll}
+                  variant="ghost"
+                  icon={
+                    isSelectAll ? (
+                      <MaterialIcons name="check-box" color="white" size={30} />
+                    ) : (
+                      <MaterialIcons name="check-box-outline-blank" color="white" size={30} />
+                    )
+                  }
+                  style={{ flex: 1, justifyContent: "flex-start" }}
+                  styleText={{ color: "white", opacity: 0.8 }}
+                />
+                <CustomButton
+                  title="Cancelar"
+                  onPress={handleCancelSelection}
+                  variant="ghost"
+                  styleText={{ color: "white", opacity: 0.8 }}
+                />
+              </View>
+            )}
+            {bottles?.length === 1 && (
               <View style={styles.bottlesContent}>
                 <BottleButton
                   name={bottles[0].bottle_name}
                   mlCapacity={bottles[0].ml_bottle}
                   bottleStyle={bottles[0].id_bottle_style}
-                  onPress={() => onPressBottleButton(bottles[0])}
+                  isSelected={selectedBottles.includes(bottles[0].water_bottle_id)}
+                  onPress={() => {
+                    if (isSelectionMode) {
+                      toggleSelectBottle(bottles[0].water_bottle_id);
+                    } else {
+                      onPressBottleButton(bottles[0]);
+                    }
+                  }}
+                  onLongPress={() => handleLongPress(bottles[0].water_bottle_id)}
                 />
                 <ButtonAddBottle onPress={onPressAddBottle} />
               </View>
             )}
             {bottles?.length >= 2 && (
               <>
-                <View style={[styles.bottlesContent]}>
-                  {bottles?.map((bottle) => (
+                <View style={styles.bottlesContent}>
+                  {bottles.map((bottle) => (
                     <View style={{ width: "48%" }} key={bottle.water_bottle_id}>
                       <BottleButton
                         mlCapacity={bottle.ml_bottle}
                         name={bottle.bottle_name}
                         bottleStyle={bottle.id_bottle_style}
-                        onPress={() => onPressBottleButton(bottle)}
+                        onPress={() => {
+                          if (isSelectionMode) {
+                            toggleSelectBottle(bottle.water_bottle_id);
+                          } else {
+                            onPressBottleButton(bottle);
+                          }
+                        }}
+                        onLongPress={() => handleLongPress(bottle.water_bottle_id)}
                         variant="large"
+                        isSelected={selectedBottles.includes(bottle.water_bottle_id)}
                       />
                     </View>
                   ))}
                 </View>
-                <View style={styles.buttonRow}>
-                  <CustomButton
-                    title="Adicionar garrafa"
-                    variant="outLine"
-                    style={{ borderColor: "white", width: 190, opacity: 0.9 }}
-                    styleText={{ color: "white" }}
-                    icon={<Ionicons name="add" color="white" size={24} />}
-                    onPress={onPressAddBottle}
-                    isDisable={bottles.length >= 4}
-                  />
-                </View>
+                {!isSelectionMode && (
+                  <View style={styles.buttonRow}>
+                    <CustomButton
+                      title="Adicionar garrafa"
+                      variant="secondary"
+                      style={{ width: 190 }}
+                      styleText={{ color: "white" }}
+                      icon={<Ionicons name="add" color="white" size={24} />}
+                      onPress={onPressAddBottle}
+                      isDisable={bottles.length >= 4}
+                    />
+                  </View>
+                )}
               </>
+            )}
+            {isSelectionMode && (
+              <View style={{ width: "100%", gap: 10 }}>
+                <View style={{ flexDirection: "row", justifyContent: "space-evenly" }}>
+                  {selectedBottles.length === 1 && (
+                    <CustomButton
+                      title="Editar"
+                      onPress={() => {
+                        // abrir modal de edição
+                      }}
+                      variant="secondary"
+                      style={{ width: "45%" }}
+                    />
+                  )}
+                  {selectedBottles.length >= 1 && (
+                    <CustomButton
+                      title="Excluir"
+                      onPress={() => {
+                        // confirmar e excluir
+                      }}
+                      style={{ width: "45%", backgroundColor: Colors.light.redColor, opacity:0.9 }}
+                      variant="secondary"
+                    />
+                  )}
+                </View>
+              </View>
             )}
           </View>
         </Pressable>
