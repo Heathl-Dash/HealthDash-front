@@ -4,11 +4,12 @@ import useAuth from "@/hooks/useAuth";
 import { Redirect, Stack } from "expo-router";
 import React from "react";
 import { SafeAreaView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import HealthDashLogo from '@/assets/images/healthDashLogo48.svg'
 
 const LogoPlaceholder = () => (
   <View style={styles.logoContainer}>
     <View style={styles.logoCircle}>
-      <Text style={styles.logoText}>HD</Text>
+      <HealthDashLogo/>
     </View>
   </View>
 );
@@ -71,22 +72,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   logoCircle: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    backgroundColor: Colors.light.primary,
+    width: 125,
+    height: 125,
     justifyContent: "center",
     alignItems: "center",
-    borderWidth: 1,
-    borderColor: Colors.light.lightGray,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 8,
   },
   logoText: {
     fontSize: 36,
