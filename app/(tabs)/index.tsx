@@ -1,22 +1,21 @@
 import Habit from "@/components/Habit";
 import Header from "@/components/Header";
-import IMCCard from "@/components/IMCCard";;
+import IMCCard from "@/components/IMCCard";
 import Tabs from "@/components/Tabs";
 import ToDo from "@/components/ToDo";
 import { Colors } from "@/constants/Colors";
+import useAuth from "@/hooks/useAuth";
 import useHabit from "@/hooks/useHabit";
 import useIMC from "@/hooks/useIMC";
 import useTodo from "@/hooks/useToDo";
 import useWater from "@/hooks/useWater";
+import { Redirect, router } from "expo-router";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AddBottleModal from "../../components/AddBottleModal";
 import WaterButton from "../../components/WaterButton";
 import WaterModal from "../../components/WaterModal";
-import { Redirect, router } from "expo-router"
-import useAuth from "@/hooks/useAuth";
-
 export default function HomeScreen() {
   const {
     handleCloseAddBottleModal,
@@ -27,6 +26,11 @@ export default function HomeScreen() {
     waterGoal,
     waterModalIsOpen,
     addBottleModalIsOpen,
+    editBottleModalIsOpen,
+    bottleToEdit,
+    openEditBottleModal,
+    handleEditBottle,
+    handleCloseEditBottleModal
   } = useWater();
 
   const {
@@ -51,7 +55,7 @@ export default function HomeScreen() {
 
   const { imcData, loading } = useIMC();
 
-  const { isAuthenticated, loading:isLoading } = useAuth();
+  const { isAuthenticated, loading: isLoading } = useAuth();
 
   if (isLoading) return null;
 
@@ -60,8 +64,8 @@ export default function HomeScreen() {
   }
 
   return (
-    <SafeAreaView style={[styles.container, {flexGrow: 1}]}>
-      <Header/>
+    <SafeAreaView style={[styles.container, { flexGrow: 1 }]}>
+      <Header />
       <View style={{ flexDirection: "row" }}>
         <View style={{ width: "50%", padding: 5 }}>
           <IMCCard
@@ -82,7 +86,14 @@ export default function HomeScreen() {
         <Tabs tabs={TABS} initialTabKey="habit" onTabChange={(key: string) => setCurrentTab(key)} />
       </View>
 
-      <TouchableOpacity onPress={() => {router.push('/login')}}> <Text style={{color: Colors.light.darkGray}}>tela login</Text> </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => {
+          router.push("/login");
+        }}
+      >
+        {" "}
+        <Text style={{ color: Colors.light.darkGray }}>tela login</Text>{" "}
+      </TouchableOpacity>
 
       {currentTab === "habit" && (
         <FlatList
@@ -128,11 +139,11 @@ export default function HomeScreen() {
               todo={item}
               onPressEdit={() => {}}
               onPressMarkToggle={() => {
-                if(item.source === "nutri"){
-                  toggleMarkToDoNutri.mutate(item.id)
-                } else if(item.source === "fit"){
-                  toggleMarkToDoFit.mutate(item.id)
-                }else{
+                if (item.source === "nutri") {
+                  toggleMarkToDoNutri.mutate(item.id);
+                } else if (item.source === "fit") {
+                  toggleMarkToDoFit.mutate(item.id);
+                } else {
                   console.warn("Tipo de tarefa desconhecido:", item);
                 }
               }}
@@ -152,8 +163,11 @@ export default function HomeScreen() {
         visible={waterModalIsOpen}
         onPressBottleButton={updateWaterGoalWithBottle}
         onPressAddBottle={openAddBottle}
+        onPressEditBottle={handleEditBottle}
       />
       <AddBottleModal onClose={handleCloseAddBottleModal} visible={addBottleModalIsOpen} />
+
+      <AddBottleModal onClose={handleCloseEditBottleModal} visible={editBottleModalIsOpen} bottleToEdit={bottleToEdit}/>
     </SafeAreaView>
   );
 }

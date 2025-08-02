@@ -88,10 +88,11 @@ export const editWaterGoal = (data: Partial<IWaterGoal>) => {
     .patch<IWaterGoal>("nutri/water_goal/", data)
     .then((res) => res.data)
     .catch((err) => {
-      console.error("Erro ao buscar meta de agua: ", err);
+      console.error("Erro ao editar meta de agua: ", err);
       throw err;
     });
 };
+
 
 export const getBottles = () => {
   return apiGateway
@@ -102,6 +103,27 @@ export const getBottles = () => {
       throw err;
     });
 };
+
+export const editWaterBottle = (id: number, data: Partial<IBottle>) => {
+  return apiGateway
+    .patch(`nutri/water_bottle/${id}`, data)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("Erro ao editar garrafa ", err);
+      throw err;
+    });
+};
+
+
+export const deleteWaterBottle = (id:number) => {
+  return apiGateway
+    .delete(`nutri/water_bottle/${id}`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("Erro ao deletar garrafa ", err);
+      throw err;
+    });
+}
 
 export const createBottles = (data: Partial<IBottle>) => {
   return apiGateway

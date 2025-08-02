@@ -6,6 +6,8 @@ import { Alert } from "react-native";
 const useWater = () => {
   const [waterModalIsOpen, setWaterModalIsOpen] = useState(false);
   const [addBottleModalIsOpen, setAddBottleModalIsOpen] = useState(false);
+  const [editBottleModalIsOpen, setEditBottleModalIsOpen] = useState(false);
+  const [bottleToEdit, setBottleToEdit] = useState<IBottle | null>(null);
 
   const { data: waterGoal, error } = useQuery({
     queryKey: ["waterGoal"],
@@ -54,6 +56,20 @@ const useWater = () => {
     setAddBottleModalIsOpen(true);
   };
 
+
+  const openEditBottleModal = (bottle: IBottle) => {
+    setBottleToEdit(bottle);
+    setEditBottleModalIsOpen(true);
+  };
+
+  const handleEditBottle = (bottle: IBottle) => {
+    setBottleToEdit(bottle);
+    setEditBottleModalIsOpen(true);
+  };
+  const handleCloseEditBottleModal = () => {
+    setEditBottleModalIsOpen(false);
+  };
+
   return {
     openWaterModal,
     updateWaterGoalWithBottle,
@@ -63,6 +79,11 @@ const useWater = () => {
     waterGoal,
     waterModalIsOpen,
     addBottleModalIsOpen,
+    openEditBottleModal,
+    editBottleModalIsOpen,
+    bottleToEdit,
+    handleEditBottle,
+    handleCloseEditBottleModal,
   };
 };
 
