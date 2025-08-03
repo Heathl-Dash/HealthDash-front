@@ -1,4 +1,6 @@
+import { createFitData } from "@/lib/axios";
 import NetInfo from "@react-native-community/netinfo";
+import { useMutation } from "@tanstack/react-query";
 import { useSQLiteContext } from "expo-sqlite";
 import { useEffect, useRef, useState } from "react";
 import { AppState, AppStateStatus } from "react-native";
@@ -18,8 +20,7 @@ const useStepSync = ({ steps, kcal, distance }: Props) => {
   useEffect(() => {
     if (steps === 0 && kcal === 0 && distance === 0) return;
 
-    const today = new Date().toISOString().split("T")[0]; // formato YYYY-MM-DD
-
+    const today = new Date().toLocaleDateString("sv-SE");
     const saveToSQLite = async () => {
       await insertOrUpdateFitInfos(today, { steps, kcal, distance }, db);
     };
@@ -49,6 +50,26 @@ const useStepSync = ({ steps, kcal, distance }: Props) => {
       netInfoUnsubscribe();
     };
   }, [steps, kcal, distance, isConnected, db]);
+
+  const addFitDateMutation = useMutation({
+    mutationFn: (data: IFitData) => createFitData(data),
+  });
+
+  useEffect(() => {
+    const sendToBack = () => {
+      const today = new Date().toLocaleDateString("sv-SE");
+      const data: IFitData = {
+        fit_date: today,
+        steps,
+        distance,
+        burned_calories: kcal,
+      };
+
+      addFitDateMutation.mutate(data);
+    };
+
+    sendToBack();
+  }, [isConnected]);
 };
 
 export default useStepSync;
