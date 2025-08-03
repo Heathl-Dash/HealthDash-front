@@ -26,7 +26,6 @@ export default function Fit() {
   const { totalCalories, totalDistance, totalSteps } = useFit();
   const {
     fitToDo,
-    fitToDoIsLoading,
     toDoFitError,
     toggleMarkToDoFit
   } = useTodo()
