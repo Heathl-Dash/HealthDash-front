@@ -39,14 +39,15 @@ apiGateway.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (error.response?.status === 401 ||  error.response?.status === 403 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       const refresh = await getRefreshToken();
 
       if (refresh) {
         try {
-          const response = await Axios.post(`${API_URL}/profiles/token/refresh`, {
+          console.log("REFRESH:", refresh)
+          const response = await Axios.post(`${API_URL}profiles/token/refresh`, {
             DashboardProfileRefresh: refresh,
           });
           console.log(response.data)
