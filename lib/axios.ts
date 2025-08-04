@@ -272,3 +272,126 @@ export const googleLogin = (googleToken: string) => {
       throw err;
     });
 };
+
+export type habitForm = Pick<IHabit, "title" | "description" | "positive" | "negative">;
+export type toDoForm = Pick<IToDo, "title" | "description">
+
+export const createNutriHabit = (habitData: habitForm) => {
+  return apiGateway
+  .post(`nutri/habit/`, habitData)
+  .then(res => res.data)
+  .catch(err => {
+    console.error("Erro ao criar hábito de nutrição: ", err)
+    throw err;
+  })
+};
+
+export const editNutriHabit = (habitData: habitForm, id:number) => {
+  return apiGateway
+  .patch(`nutri/habit/${id}`, habitData)
+  .then(res=> res.data)
+  .catch(err => {
+    console.error("Erro ao alterar hábito de nutrição: ", err)
+    throw err;
+  })
+};
+
+export const deleteNutriHabit = (id:number) => {
+  return apiGateway
+  .delete(`nutri/habit/${id}`)
+  .then(res=>res.data)
+  .catch(err=>{
+    console.error("Erro ao deletar hábito de nutrição: ", err)
+    throw err;
+  })
+}
+
+export const createNutriToDo = (toDoData:toDoForm) => {
+  return apiGateway
+  .post(`nutri/todo/`, toDoData)
+  .then(res => res.data)
+  .catch(err => {
+    console.error("Erro ao criar tarefa de nutrição: ", err)
+    throw err;
+  })
+};
+
+export const editNutriToDo = (toDoData:toDoForm, id:number) => {
+  return apiGateway
+  .patch(`nutri/todo/${id}`, toDoData)
+  .then(res => res.data)
+  .catch(err => {
+    console.error("Erro ao editar tarefa de nutrição: ", err)
+    throw err;
+  })
+};
+
+export const deleteNutriToDo = (id:number) => {
+  return apiGateway
+  .delete(`nutri/todo/${id}`)
+  .then(res => res.data)
+  .catch(err => {
+    console.error("Erro ao deletar tarefa de nutrição: ", err)
+    throw err;
+  })
+}
+
+export const createFitHabit = (habitData: habitForm) => {
+  return apiGateway
+  .post(`fit/haFit/`, habitData)
+  .then(res => res.data)
+  .catch(err => {
+    console.error("Erro ao criar hábito de nutrição: ", err)
+    throw err;
+  })
+};
+
+export const editFitHabit = (habitData: habitForm, id:number) => {
+  return apiGateway
+  .patch(`fit/habit/${id}`, habitData)
+  .then(res=> res.data)
+  .catch(err => {
+    console.error("Erro ao alterar hábito de nutrição: ", err)
+    throw err;
+  })
+};
+
+export const deleteFitHabit = (id:number) => {
+  return apiGateway
+  .delete(`fit/habit/${id}`)
+  .then(res=>res.data)
+  .catch(err=>{
+    console.error("Erro ao deletar hábito de nutrição: ", err)
+    throw err;
+  })
+}
+
+export const createFitToDo = (toDoData:toDoForm) => {
+  return apiGateway
+  .post(`fit/todo/`, toDoData)
+  .then(res => res.data)
+  .catch(err => {
+    console.error("Erro ao criar tarefa de nutrição: ", err)
+    throw err;
+  })
+};
+
+export const editFitToDo = (toDoData:toDoForm, id:number) => {
+  return apiGateway
+  .patch(`nutri/todo/${id}`, toDoData)
+  .then(res => res.data)
+  .catch(err => {
+    console.error("Erro ao editar tarefa de nutrição: ", err)
+    throw err;
+  })
+};
+
+export const deleteFitToDo = (id:number) => {
+  return apiGateway
+  .delete(`nutri/todo/${id}`)
+  .then(res => res.data)
+  .catch(err => {
+    console.error("Erro ao deletar tarefa de nutrição: ", err)
+    throw err;
+  })
+}

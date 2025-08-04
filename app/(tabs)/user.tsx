@@ -8,7 +8,6 @@ import React, { useState } from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Header from "../../components/Header";
-import HabitTodoManger from "@/components/HabitTodoManager";
 
 interface UserProps {
   user?: IProfile;
@@ -75,10 +74,6 @@ export default function User() {
   return (
     <SafeAreaView style={{ flex: 1, paddingHorizontal: 30 }}>
       <Header />
-      <HabitTodoManger
-        type="habit"
-        mode="edit"
-      />
       <View style={{ alignItems: "flex-end", marginTop: 32 }}>
         {!isEditing && (
           <CustomButton

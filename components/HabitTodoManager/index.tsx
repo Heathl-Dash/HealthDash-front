@@ -1,100 +1,235 @@
 import { Colors } from "@/constants/Colors";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import CustomInput from "../CustomInput";
-import CustomButton from "../CustomButton";
+import useHabit from "@/hooks/useHabit";
+import useTodo from "@/hooks/useToDo";
+import { habitForm, toDoForm } from "@/lib/axios";
 import { Ionicons } from "@expo/vector-icons";
+import { useEffect, useState } from "react";
+import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import CustomButton from "../CustomButton";
+import CustomInput from "../CustomInput";
 
 interface HabitTodoMangerProps {
   mode: "edit" | "create";
   type: "todo" | "habit";
+  visible: boolean;
   item?: IToDo | IHabit;
+  onClose?: () => void;
 }
 
-const HabitTodoManger = ({ mode, type, item }: HabitTodoMangerProps) => {
-  return (
-    <View style={styles.container}>
-      <View style={styles.modalHeader}>
-        <TouchableOpacity>
-          <Ionicons name="arrow-back" size={24} color={Colors.light.reactNativeWhite} />
-        </TouchableOpacity>
-        <View style={styles.flexSpacer} />
-        <View style={styles.textContainer}>
-          <Text style={styles.actionDescription}>
-            {mode === "create" ? "Criando" : "Editando"} {type === "habit" ? "Hábito" : "Tarefa"}
-          </Text>
-        </View>
-        <View style={styles.flexSpacer} />
-      </View>
+function isHabit(item: IToDo | IHabit): item is IHabit {
+  return "positive" in item && "negative" in item;
+}
 
-      <View>
-        <CustomInput
-          placeholder="Título"
-          placeholderTextColor={Colors.light.reactNativeWhite}
-          value={item?.title}
-          style={{ height: 44, borderColor: Colors.light.reactNativeWhite }}
-        />
-      </View>
-      <View>
-        <CustomInput
-          placeholder="Descrição"
-          placeholderTextColor={Colors.light.reactNativeWhite}
-          value={item?.description}
-          style={{ height: 44, borderColor: Colors.light.reactNativeWhite }}
-        />
-      </View>
-      {type === "habit" && (
-        <View style={styles.habitTypeChoice}>
-          <CustomButton
-            title="+"
-            variant="outLine"
-            style={{
-              height: 52,
-              width: 52,
-              borderColor: Colors.light.reactNativeWhite,
-              padding: 2,
-            }}
-            toggle={true}
-            toggledColor={Colors.light.reactNativeWhite}
-            toggledTextColor={Colors.light.mediumBlue}
-            styleText={{ fontSize: 32, color: Colors.light.reactNativeWhite }}
-            onPress={() => {}}
-          />
-          <CustomButton
-            title="-"
-            variant="outLine"
-            style={{
-              height: 52,
-              width: 52,
-              borderColor: Colors.light.reactNativeWhite,
-              padding: -2,
-            }}
-            toggle={true}
-            toggledColor={Colors.light.reactNativeWhite}
-            toggledTextColor={Colors.light.mediumBlue}
-            styleText={{ fontSize: 32, color: Colors.light.reactNativeWhite }}
-            onPress={() => {}}
-          />
+const HabitTodoManager = ({ mode, type, item, visible, onClose }: HabitTodoMangerProps) => {
+  const {
+    createNutriHabitMutation,
+    deleteNutriHabitMutation,
+    editNutriHabitMutation,
+    createFitHabitMutation,
+    deleteFitHabitMutation,
+    editFitHabitMutation,
+  } = useHabit();
+  const {
+    createNutriToDoMutation,
+    editNutriToDoMutation,
+    deleteNutriToDoMutation,
+    deleteFitToDoMutation,
+    editFitToDoMutation,
+    createFitToDoMutation,
+  } = useTodo();
+
+  const [title, setTitle] = useState(item?.title ?? "");
+  const [description, setDescription] = useState(item?.description ?? "");
+  const [positive, setPositive] = useState(
+    (type === "habit" && (item as IHabit)?.positive) ?? false
+  );
+  const [negative, setNegative] = useState(
+    (type === "habit" && (item as IHabit)?.negative) ?? false
+  );
+
+  const { mutate: createHabit } = createNutriHabitMutation();
+  const { mutate: editHabit } = editNutriHabitMutation();
+  const { mutate: deleteHabit } = deleteNutriHabitMutation();
+
+  const { mutate: createToDo } = createNutriToDoMutation();
+  const { mutate: editToDo } = editNutriToDoMutation();
+  const { mutate: deleteToDo } = deleteNutriToDoMutation();
+
+  const handleSave = () => {
+    const payload = { title, description };
+
+    if (type === "habit") {
+      const habitPayload: habitForm = {
+        title,
+        description,
+        positive,
+        negative,
+      };
+
+      if (mode === "edit" && item?.id) {
+        editHabit(
+          { id: item.id, habitData: habitPayload },
+          {
+            onSuccess: () => {
+              onClose?.();
+            },
+          }
+        );
+      } else {
+        createHabit(habitPayload, {
+          onSuccess: () => {
+            onClose?.();
+          },
+        });
+      }
+    } else {
+      const toDoPayload: toDoForm = {
+        title,
+        description,
+      };
+
+      if (mode === "edit" && item?.id) {
+        editToDo(
+          { id: item.id, toDoData: toDoPayload },
+          {
+            onSuccess: () => {
+              onClose?.();
+            },
+          }
+        );
+      } else {
+        createToDo(toDoPayload);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (mode === "edit" && item) {
+      setTitle(item.title || "");
+      setDescription(item.description || "");
+
+      if (type === "habit" && isHabit(item)) {
+        setPositive(item.positive ?? false);
+        setNegative(item.negative ?? false);
+      }
+    }
+  }, [mode, item, type]);
+
+  const handleDelete = () => {
+    if (!item?.id) return;
+
+    if (type === "habit") {
+      deleteHabit(item.id, {
+        onSuccess: () => {
+          onClose?.();
+        },
+      });
+    } else {
+      deleteToDo(item.id, {
+        onSuccess: () => {
+          onClose?.();
+        },
+      });
+    }
+  };
+
+  return (
+    <Modal visible={visible} onRequestClose={onClose} transparent>
+      <View style={styles.overlay}>
+        <View style={styles.container}>
+          <View style={styles.modalHeader}>
+            <TouchableOpacity>
+              <Ionicons
+                name="arrow-back"
+                size={24}
+                color={Colors.light.reactNativeWhite}
+                onPress={onClose}
+              />
+            </TouchableOpacity>
+            <View style={styles.flexSpacer} />
+            <View style={styles.textContainer}>
+              <Text style={styles.actionDescription}>
+                {mode === "create" ? "Criando" : "Editando"}{" "}
+                {type === "habit" ? "Hábito" : "Tarefa"}
+              </Text>
+            </View>
+            <View style={styles.flexSpacer} />
+          </View>
+          <View>
+            <CustomInput
+              placeholder="Título"
+              placeholderTextColor={Colors.light.reactNativeWhite}
+              value={title}
+              onChangeText={setTitle}
+              style={{ height: 44, borderColor: Colors.light.reactNativeWhite }}
+            />
+          </View>
+          <View>
+            <CustomInput
+              placeholder="Descrição"
+              placeholderTextColor={Colors.light.reactNativeWhite}
+              value={description}
+              onChangeText={setDescription}
+              style={{ height: 44, borderColor: Colors.light.reactNativeWhite }}
+            />
+          </View>
+          {type === "habit" && (
+            <View style={styles.habitTypeChoice}>
+              <CustomButton
+                title="+"
+                variant="outLine"
+                style={{
+                  height: 52,
+                  width: 52,
+                  borderColor: Colors.light.reactNativeWhite,
+                  padding: 2,
+                }}
+                toggle={true}
+                toggled={positive}
+                toggledColor={Colors.light.reactNativeWhite}
+                toggledTextColor={Colors.light.mediumBlue}
+                styleText={{ fontSize: 32, color: Colors.light.reactNativeWhite }}
+                onPress={() => setPositive(!positive)}
+              />
+              <CustomButton
+                title="-"
+                variant="outLine"
+                style={{
+                  height: 52,
+                  width: 52,
+                  borderColor: Colors.light.reactNativeWhite,
+                  padding: -2,
+                }}
+                toggle={true}
+                toggled={negative}
+                toggledColor={Colors.light.reactNativeWhite}
+                toggledTextColor={Colors.light.mediumBlue}
+                styleText={{ fontSize: 32, color: Colors.light.reactNativeWhite }}
+                onPress={() => setNegative(!negative)}
+              />
+            </View>
+          )}
+          <View style={styles.actionsButton}>
+            {mode === "edit" && (
+              <CustomButton
+                title="Excluir"
+                variant="primary"
+                style={{ backgroundColor: Colors.light.redColor }}
+                shape="rect"
+                onPress={handleDelete}
+              />
+            )}
+            <CustomButton
+              title="Salvar"
+              variant="primary"
+              style={{ backgroundColor: Colors.light.secondary }}
+              shape="rect"
+              onPress={handleSave}
+            />
+          </View>
         </View>
-      )}
-      <View style={styles.actionsButton}>
-        {mode === "edit" && (
-          <CustomButton
-            title="Excluir"
-            variant="primary"
-            style={{ backgroundColor: Colors.light.redColor }}
-            shape="rect"
-            onPress={() => {}}
-          />
-        )}
-        <CustomButton
-          title="Salvar"
-          variant="primary"
-          style={{ backgroundColor: Colors.dark.darkBlue }}
-          shape="rect"
-          onPress={() => {}}
-        />
       </View>
-    </View>
+    </Modal>
   );
 };
 
@@ -106,6 +241,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 24,
     gap: 24,
+    width: "88%",
   },
   actionsButton: {
     flexDirection: "row",
@@ -133,6 +269,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
   },
+  overlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
 });
 
-export default HabitTodoManger;
+export default HabitTodoManager;

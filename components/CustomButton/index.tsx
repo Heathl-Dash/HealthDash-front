@@ -24,7 +24,8 @@ interface ButtonProps {
   iconPosition?: "start" | "end";
   shape?: ShapeVariants;
   onPress: () => void;
-  toggle?: Boolean;
+  toggle?: boolean;
+  toggled?: boolean;
   toggledColor?: string;
   toggledTextColor?: string;
 }
@@ -41,10 +42,11 @@ const CustomButton = ({
   styleText,
   shape = "rounded",
   toggle = false,
+  toggled,
   toggledColor,
   toggledTextColor,
 }: ButtonProps) => {
-  const [isToggled, setIsToggled] = useState(false);
+  const [isToggled, setIsToggled] = useState(toggled ?? false);
 
   const handlePress = () => {
     if (toggle) {
