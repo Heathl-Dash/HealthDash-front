@@ -55,14 +55,6 @@ export default function HomeScreen() {
 
   const { imcData, loading } = useIMC();
 
-  const { isAuthenticated, loading: isLoading } = useAuth();
-
-  if (isLoading) return null;
-
-  if (!isAuthenticated) {
-    return <Redirect href="/login" />;
-  }
-
   return (
     <SafeAreaView style={[styles.container, { flexGrow: 1 }]}>
       <Header />
