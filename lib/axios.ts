@@ -46,9 +46,10 @@ apiGateway.interceptors.response.use(
 
       if (refresh) {
         try {
-          const response = await Axios.post(`${API_URL}/token/refresh`, {
+          const response = await Axios.post(`${API_URL}/profiles/token/refresh`, {
             DashboardProfileRefresh: refresh,
           });
+          console.log(response.data)
           if (response.status !== 200) {
             await removeAccessToken();
             await removeRefreshToken();
