@@ -11,6 +11,7 @@ import CustomInput from "../CustomInput";
 interface HabitTodoMangerProps {
   mode: "edit" | "create";
   type: "todo" | "habit";
+  backFont: "nutri" | "fit";
   visible: boolean;
   item?: IToDo | IHabit;
   onClose?: () => void;
@@ -20,7 +21,14 @@ function isHabit(item: IToDo | IHabit): item is IHabit {
   return "positive" in item && "negative" in item;
 }
 
-const HabitTodoManager = ({ mode, type, item, visible, onClose }: HabitTodoMangerProps) => {
+const HabitTodoManager = ({
+  mode,
+  type,
+  item,
+  visible,
+  backFont,
+  onClose,
+}: HabitTodoMangerProps) => {
   const {
     createNutriHabitMutation,
     deleteNutriHabitMutation,
@@ -47,13 +55,21 @@ const HabitTodoManager = ({ mode, type, item, visible, onClose }: HabitTodoMange
     (type === "habit" && (item as IHabit)?.negative) ?? false
   );
 
-  const { mutate: createHabit } = createNutriHabitMutation();
-  const { mutate: editHabit } = editNutriHabitMutation();
-  const { mutate: deleteHabit } = deleteNutriHabitMutation();
+  const { mutate: createNutriHabit } = createNutriHabitMutation();
+  const { mutate: editNutriHabit } = editNutriHabitMutation();
+  const { mutate: deleteNutriHabit } = deleteNutriHabitMutation();
 
-  const { mutate: createToDo } = createNutriToDoMutation();
-  const { mutate: editToDo } = editNutriToDoMutation();
-  const { mutate: deleteToDo } = deleteNutriToDoMutation();
+  const { mutate: createNutriToDo } = createNutriToDoMutation();
+  const { mutate: editNutriToDo } = editNutriToDoMutation();
+  const { mutate: deleteNutriToDo } = deleteNutriToDoMutation();
+
+  const { mutate: createFitHabit } = createFitHabitMutation();
+  const { mutate: editFitHabit } = editFitHabitMutation();
+  const { mutate: deleteFitHabit } = deleteFitHabitMutation();
+
+  const { mutate: createFitToDo } = createFitToDoMutation();
+  const { mutate: editFitToDo } = editFitToDoMutation();
+  const { mutate: deleteFitToDo } = deleteFitToDoMutation();
 
   const handleSave = () => {
     const payload = { title, description };
@@ -61,44 +77,81 @@ const HabitTodoManager = ({ mode, type, item, visible, onClose }: HabitTodoMange
     if (type === "habit") {
       const habitPayload: habitForm = {
         title,
-        description,
+        description: description.trim() || "",
         positive,
         negative,
       };
 
       if (mode === "edit" && item?.id) {
-        editHabit(
-          { id: item.id, habitData: habitPayload },
-          {
+        if (backFont === "nutri") {
+          editNutriHabit(
+            { id: item.id, habitData: habitPayload },
+            {
+              onSuccess: () => {
+                onClose?.();
+              },
+            }
+          );
+        } else {
+          editFitHabit(
+            { id: item.id, habitData: habitPayload },
+            {
+              onSuccess: () => {
+                onClose?.();
+              },
+            }
+          );
+        }
+      } else {
+        if (backFont === "nutri") {
+          createNutriHabit(habitPayload, {
             onSuccess: () => {
               onClose?.();
             },
-          }
-        );
-      } else {
-        createHabit(habitPayload, {
-          onSuccess: () => {
-            onClose?.();
-          },
-        });
+          });
+        } else {
+          createFitHabit(habitPayload, {
+            onSuccess: () => {
+              onClose?.();
+            },
+          });
+        }
       }
     } else {
       const toDoPayload: toDoForm = {
         title,
-        description,
+        description: description.trim() || "",
       };
 
       if (mode === "edit" && item?.id) {
-        editToDo(
-          { id: item.id, toDoData: toDoPayload },
-          {
-            onSuccess: () => {
-              onClose?.();
-            },
-          }
-        );
+        if (backFont === "nutri") {
+          editNutriToDo(
+            { id: item.id, toDoData: toDoPayload },
+            {
+              onSuccess: () => {
+                onClose?.();
+              },
+              onError: (err) => {
+                console.error("Erro ao editar:", err);
+              },
+            }
+          );
+        } else {
+          editFitToDo(
+            { id: item.id, toDoData: toDoPayload },
+            {
+              onSuccess: () => {
+                onClose?.();
+              },
+            }
+          );
+        }
       } else {
-        createToDo(toDoPayload);
+        if (backFont === "nutri") {
+          createNutriToDo(toDoPayload);
+        } else {
+          createFitToDo(toDoPayload);
+        }
       }
     }
   };
@@ -112,6 +165,11 @@ const HabitTodoManager = ({ mode, type, item, visible, onClose }: HabitTodoMange
         setPositive(item.positive ?? false);
         setNegative(item.negative ?? false);
       }
+    } else {
+      setTitle("");
+      setDescription("");
+      setPositive(false);
+      setNegative(false);
     }
   }, [mode, item, type]);
 
@@ -119,17 +177,33 @@ const HabitTodoManager = ({ mode, type, item, visible, onClose }: HabitTodoMange
     if (!item?.id) return;
 
     if (type === "habit") {
-      deleteHabit(item.id, {
-        onSuccess: () => {
-          onClose?.();
-        },
-      });
+      if (backFont === "nutri") {
+        deleteNutriHabit(item.id, {
+          onSuccess: () => {
+            onClose?.();
+          },
+        });
+      } else {
+        deleteFitHabit(item.id, {
+          onSuccess: () => {
+            onClose?.();
+          },
+        });
+      }
     } else {
-      deleteToDo(item.id, {
-        onSuccess: () => {
-          onClose?.();
-        },
-      });
+      if (backFont === "nutri") {
+        deleteNutriToDo(item.id, {
+          onSuccess: () => {
+            onClose?.();
+          },
+        });
+      } else {
+        deleteFitToDo(item.id, {
+          onSuccess: () => {
+            onClose?.();
+          },
+        });
+      }
     }
   };
 
@@ -161,7 +235,11 @@ const HabitTodoManager = ({ mode, type, item, visible, onClose }: HabitTodoMange
               placeholderTextColor={Colors.light.reactNativeWhite}
               value={title}
               onChangeText={setTitle}
-              style={{ height: 44, borderColor: Colors.light.reactNativeWhite }}
+              style={{
+                height: 44,
+                borderColor: Colors.light.reactNativeWhite,
+                color: Colors.light.reactNativeWhite,
+              }}
             />
           </View>
           <View>
@@ -170,7 +248,11 @@ const HabitTodoManager = ({ mode, type, item, visible, onClose }: HabitTodoMange
               placeholderTextColor={Colors.light.reactNativeWhite}
               value={description}
               onChangeText={setDescription}
-              style={{ height: 44, borderColor: Colors.light.reactNativeWhite }}
+              style={{
+                height: 44,
+                borderColor: Colors.light.reactNativeWhite,
+                color: Colors.light.reactNativeWhite,
+              }}
             />
           </View>
           {type === "habit" && (

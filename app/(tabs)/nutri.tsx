@@ -95,6 +95,7 @@ export default function Nutri() {
           type={currentTab === "habit" ? "habit" : "todo"}
           visible={showHabitManager}
           item={editItem ?? undefined}
+          backFont="nutri"
           onClose={() => (setShowHabitManager(false), setEditItem(null)) }
         />
         {currentTab === "habit" && (

@@ -75,6 +75,7 @@ export default function Fit() {
         type={currentTab === "habit" ? "habit" : "todo"}
         visible={showHabitManager}
         item={editItem ?? undefined}
+        backFont="fit"
         onClose={() => (setShowHabitManager(false), setEditItem(null))}
       />
       {currentTab === "habit" && (

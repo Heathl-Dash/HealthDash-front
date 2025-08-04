@@ -338,30 +338,30 @@ export const deleteNutriToDo = (id:number) => {
 
 export const createFitHabit = (habitData: habitForm) => {
   return apiGateway
-  .post(`fit/haFit/`, habitData)
+  .post(`fit/habit/`, habitData)
   .then(res => res.data)
   .catch(err => {
-    console.error("Erro ao criar hábito de nutrição: ", err)
+    console.error("Erro ao criar hábito de exercício: ", err)
     throw err;
   })
 };
 
 export const editFitHabit = (habitData: habitForm, id:number) => {
   return apiGateway
-  .patch(`fit/habit/${id}`, habitData)
+  .patch(`fit/habit/${id}/`, habitData)
   .then(res=> res.data)
   .catch(err => {
-    console.error("Erro ao alterar hábito de nutrição: ", err)
+    console.error("Erro ao alterar hábito de exercício: ", err)
     throw err;
   })
 };
 
 export const deleteFitHabit = (id:number) => {
   return apiGateway
-  .delete(`fit/habit/${id}`)
+  .delete(`fit/habit/${id}/`)
   .then(res=>res.data)
   .catch(err=>{
-    console.error("Erro ao deletar hábito de nutrição: ", err)
+    console.error("Erro ao deletar hábito de exercício: ", err)
     throw err;
   })
 }
@@ -371,27 +371,27 @@ export const createFitToDo = (toDoData:toDoForm) => {
   .post(`fit/todo/`, toDoData)
   .then(res => res.data)
   .catch(err => {
-    console.error("Erro ao criar tarefa de nutrição: ", err)
+    console.error("Erro ao criar tarefa de exercício: ", err)
     throw err;
   })
 };
 
 export const editFitToDo = (toDoData:toDoForm, id:number) => {
   return apiGateway
-  .patch(`nutri/todo/${id}`, toDoData)
+  .patch(`fit/todo/${id}/`, toDoData)
   .then(res => res.data)
   .catch(err => {
-    console.error("Erro ao editar tarefa de nutrição: ", err)
+    console.error("Erro ao editar tarefa de exercício: ", err)
     throw err;
   })
 };
 
 export const deleteFitToDo = (id:number) => {
   return apiGateway
-  .delete(`nutri/todo/${id}`)
+  .delete(`fit/todo/${id}/`)
   .then(res => res.data)
   .catch(err => {
-    console.error("Erro ao deletar tarefa de nutrição: ", err)
+    console.error("Erro ao deletar tarefa de exercício: ", err)
     throw err;
   })
 }
