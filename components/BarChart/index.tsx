@@ -11,6 +11,7 @@ interface BarChartProps {
   ykeys: string | number;
   formatYLabel?: (val: any) => string;
   formatXLabel?: (val: any) => string;
+  color?: string;
   domain?:
     | {
         x?: [number] | [number, number];
@@ -19,7 +20,7 @@ interface BarChartProps {
     | undefined;
 }
 
-const BarChart = ({ data, xKey, ykeys, formatXLabel, formatYLabel, domain }: BarChartProps) => {
+const BarChart = ({ data, xKey, ykeys, formatXLabel, formatYLabel, domain ,color}: BarChartProps) => {
   const font = useFont(spaceMono, 12);
   return (
     <View style={{ width: "100%", height: 200 }}>
@@ -39,7 +40,7 @@ const BarChart = ({ data, xKey, ykeys, formatXLabel, formatYLabel, domain }: Bar
           <Bar
             points={points[ykeys as string]}
             chartBounds={chartBounds}
-            color={Colors.light.secondary}
+            color={color ?? Colors.light.secondary}
             barWidth={30}
             roundedCorners={{ topLeft: 10, topRight: 10 }}
           />

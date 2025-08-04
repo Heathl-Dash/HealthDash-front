@@ -8,16 +8,22 @@ import { StyleSheet, View } from "react-native";
 import { CartesianChart, Line } from "victory-native";
 moment.locale("pt-br");
 
-
 interface LineCharProps {
   data: any[];
   xKey: string;
   ykeys: string | number;
-  formatYLabel?: (val:any) => string 
-  formatXLabel?: (val:any) => string 
+  formatYLabel?: (val: any) => string;
+  formatXLabel?: (val: any) => string;
+  domain?:
+    | {
+        x?: [number] | [number, number];
+        y?: [number] | [number, number];
+      }
+    | undefined;
+  color?: string
 }
 
-const LineChart = ({data, xKey, ykeys, formatXLabel, formatYLabel}:LineCharProps) => {
+const LineChart = ({ data, xKey, ykeys, formatXLabel, formatYLabel, domain, color }: LineCharProps) => {
   const font = useFont(spaceMono, 12);
 
   return (
@@ -32,11 +38,12 @@ const LineChart = ({data, xKey, ykeys, formatXLabel, formatYLabel}:LineCharProps
           formatYLabel,
           formatXLabel,
         }}
+        domain={domain}
       >
         {({ points }) => (
           <Line
             points={points[ykeys as string]}
-            color={Colors.light.secondary}
+            color={color ?? Colors.light.secondary}
             strokeWidth={3}
             animate={{ type: "timing", duration: 300 }}
           />
