@@ -85,7 +85,7 @@ export default function User() {
     enabled: !!today,
   });
 
-  const maxDataValue = Math.max(...waterIntakeData.map((item) => item.total_ml));
+  const maxDataValue = Math.max(...(waterIntakeData?.map(item => item.total_ml) || [0]));
   const maxY = Math.min(10000, Math.max(2000, maxDataValue));
 
   return (
