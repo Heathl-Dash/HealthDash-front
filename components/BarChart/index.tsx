@@ -1,20 +1,25 @@
+import spaceMono from "@/assets/fonts/SpaceMono-Regular.ttf";
 import { Colors } from "@/constants/Colors";
+import { useFont } from "@shopify/react-native-skia";
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import { Bar, CartesianChart } from "victory-native";
-import spaceMono from "@/assets/fonts/SpaceMono-Regular.ttf";
-import { useFont } from "@shopify/react-native-skia";
-
 
 interface BarChartProps {
   data: any[];
   xKey: string;
   ykeys: string | number;
-  formatYLabel?: (val:any) => string 
-  formatXLabel?: (val:any) => string 
+  formatYLabel?: (val: any) => string;
+  formatXLabel?: (val: any) => string;
+  domain?:
+    | {
+        x?: [number] | [number, number];
+        y?: [number] | [number, number];
+      }
+    | undefined;
 }
 
-const BarChart = ({data, xKey, ykeys, formatXLabel, formatYLabel}:BarChartProps) => {
+const BarChart = ({ data, xKey, ykeys, formatXLabel, formatYLabel, domain }: BarChartProps) => {
   const font = useFont(spaceMono, 12);
   return (
     <View style={{ width: "100%", height: 200 }}>
@@ -22,6 +27,7 @@ const BarChart = ({data, xKey, ykeys, formatXLabel, formatYLabel}:BarChartProps)
         data={data}
         xKey={xKey}
         yKeys={[ykeys]}
+        domain={domain}
         domainPadding={{ right: 20, bottom: 0, top: 20, left: 15 }}
         axisOptions={{
           font,
@@ -29,9 +35,7 @@ const BarChart = ({data, xKey, ykeys, formatXLabel, formatYLabel}:BarChartProps)
           formatXLabel,
         }}
       >
-
         {({ points, chartBounds }) => (
-          //👇 pass a PointsArray to the Bar component, as well as options.
           <Bar
             points={points[ykeys as string]}
             chartBounds={chartBounds}

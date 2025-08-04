@@ -1,13 +1,20 @@
+import BarChart from "@/components/BarChart";
 import CustomButton from "@/components/CustomButton";
 import UserProfileForm from "@/components/UserProfileForm";
 import { Colors } from "@/constants/Colors";
 import useAuth from "@/hooks/useAuth";
 import useProfile from "@/hooks/useProfile";
+import { getWaterIntakes } from "@/lib/axios";
 import { Entypo, FontAwesome5, FontAwesome6 } from "@expo/vector-icons";
+import { useQuery } from "@tanstack/react-query";
+import moment from "moment";
+import "moment/locale/pt-br";
 import React, { useState } from "react";
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Header from "../../components/Header";
+
+moment.locale("pt-br");
 
 interface UserProps {
   user?: IProfile;
@@ -64,17 +71,29 @@ const UserInfo = ({ user, isLoading }: UserProps) => {
 
 export default function User() {
   const { handleLogout } = useAuth();
-
   const { profile, profileErro, profileLoading } = useProfile();
 
   const [isEditing, setIsEditing] = useState(false);
 
   const handleToggleEdit = () => setIsEditing(!isEditing);
 
+  const today = moment().format("YYYY-MM-DD");
+
+  const { data: waterIntakeData } = useQuery({
+    queryKey: ["waterIntakes", today],
+    queryFn: () => getWaterIntakes(today),
+    enabled: !!today,
+  });
+
+  const maxDataValue = Math.max(...waterIntakeData.map((item) => item.total_ml));
+  const maxY = Math.min(10000, Math.max(2000, maxDataValue));
+
   return (
-    <SafeAreaView style={{ flex: 1, paddingHorizontal: 30 }}>
+    <SafeAreaView style={{ flexGrow: 1, paddingHorizontal: 30 }}>
       <Header />
-      <View style={{ alignItems: "flex-end", marginTop: 32 }}>
+      <ScrollView
+        contentContainerStyle={{ alignItems: "flex-end", marginTop: 32, paddingBottom: 32 }}
+      >
         {!isEditing && (
           <CustomButton
             title={"Editar"}
@@ -95,6 +114,24 @@ export default function User() {
         ) : (
           <>
             <UserInfo user={profile} isLoading={profileLoading} />
+            <View style={styles.chartContainer}>
+              <View style={{ width: "100%" }}>
+                <Text style={styles.chartTitle}>Consumo de água</Text>
+                {waterIntakeData && waterIntakeData.length > 0 ? (
+                  <BarChart
+                    data={waterIntakeData}
+                    xKey="date"
+                    ykeys="total_ml"
+                    formatXLabel={(val) => moment(val).format("ddd")}
+                    formatYLabel={(val) => `${val / 1000}L`}
+                    domain={{ y: [0, maxY] }}
+                  />
+                ) : (
+                  <Text>Sem dados para exibir</Text>
+                )}
+              </View>
+             
+            </View>
             <View style={styles.buttonContainer}>
               <CustomButton
                 title="Sair"
@@ -118,7 +155,7 @@ export default function User() {
             </View>
           </>
         )}
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -144,5 +181,15 @@ const styles = StyleSheet.create({
     gap: 12,
     marginTop: 44,
     alignSelf: "flex-start",
+  },
+  chartContainer: {
+    width: "100%",
+    marginVertical: 20,
+    gap: 30,
+  },
+  chartTitle: {
+    fontSize: 20,
+    fontWeight: "600",
+    marginBottom: 10,
   },
 });

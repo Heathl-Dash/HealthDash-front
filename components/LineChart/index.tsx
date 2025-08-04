@@ -34,7 +34,6 @@ const LineChart = ({data, xKey, ykeys, formatXLabel, formatYLabel}:LineCharProps
         }}
       >
         {({ points }) => (
-          //👇 pass a PointsArray to the Line component, as well as options.
           <Line
             points={points[ykeys as string]}
             color={Colors.light.secondary}

@@ -94,6 +94,16 @@ export const editWaterGoal = (data: Partial<IWaterGoal>) => {
     });
 };
 
+export const getWaterIntakes = (today:string) => {
+  return apiGateway
+  .get('nutri/water_goal/intakes/', {params: {reference: today}})
+  .then((res) => res.data)
+    .catch((err) => {
+      console.error("Erro ao buscar intakes de consumo de água: ", err);
+      throw err;
+    });
+}
+
 
 export const getBottles = () => {
   return apiGateway
