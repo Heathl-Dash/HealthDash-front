@@ -82,7 +82,6 @@ const useHabit = () => {
         return editNutriHabit(habitData, id);
       }, 
       onSuccess: () => {
-        console.log("Hábito editado com sucesso!");
         refetch()
       },
       onError: (error:any) => {
@@ -102,7 +101,6 @@ const useHabit = () => {
         return createFitHabit(habitData);
       },
       onSuccess: () => {
-        console.log("Hábito criado com sucesso!");
         refetchFit()
       },
       onError: (error: any) => {
@@ -134,7 +132,6 @@ const useHabit = () => {
         return editFitHabit(habitData, id);
       }, 
       onSuccess: () => {
-        console.log("Hábito editado com sucesso!");
         refetchFit()
       },
       onError: (error:any) => {

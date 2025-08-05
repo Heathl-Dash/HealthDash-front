@@ -56,7 +56,6 @@ const useTodo = () => {
         return editNutriToDo(toDoData, id);
       },
       onSuccess: () => {
-        console.log("Tarefa editada com sucesso!");
         refetchNutri()
       },
       onError: (error: any) => {
@@ -69,7 +68,6 @@ const useTodo = () => {
     return useMutation({
       mutationFn: (id: number) => deleteNutriToDo(id),
       onSuccess: () => {
-        console.log("Tarefa deletada com sucesso!");
         refetchNutri()
       },
       onError: (error: any) => {
@@ -99,7 +97,6 @@ const useTodo = () => {
         return editFitToDo(toDoData, id);
       },
       onSuccess: () => {
-        console.log("Tarefa editada com sucesso!");
         refetchFit()
       },
       onError: (error: any) => {
@@ -112,7 +109,6 @@ const useTodo = () => {
     return useMutation({
       mutationFn: (id: number) => deleteFitToDo(id),
       onSuccess: () => {
-        console.log("Tarefa deletada com sucesso!");
         refetchFit()
       },
       onError: (error: any) => {

@@ -32,7 +32,6 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({ initialData, onCancel
       },
       {
         onSuccess: () => {
-          console.log("Perfil atualizado com sucesso");
           onSaved();
         },
         onError: (error) => {
