@@ -18,12 +18,14 @@ const useTodo = () => {
     data: nutriToDo = [],
     error: toDoNutriError,
     isLoading: isNutriToDoLoading,
+    refetch: refetchNutri
   } = useQuery<IToDo[]>({ queryKey: ["nutriToDo"], queryFn: getNutriToDo });
 
   const {
     data: fitToDo = [],
     error: toDoFitError,
     isLoading: isFitToDoLoading,
+    refetch: refetchFit
   } = useQuery<IToDo[]>({ queryKey: ["fitToDo"], queryFn: getFitToDo });
 
   const queryClient = useQueryClient();
@@ -40,7 +42,7 @@ const useTodo = () => {
       },
       onSuccess: () => {
         console.log("Tarefa criada com sucesso!");
-        queryClient.invalidateQueries({ queryKey: ["nutriToDos"] });
+        refetchNutri()
       },
       onError: (error: any) => {
         console.error("Erro ao criar tarefa:", error.message ?? error);
@@ -55,7 +57,7 @@ const useTodo = () => {
       },
       onSuccess: () => {
         console.log("Tarefa editada com sucesso!");
-        queryClient.invalidateQueries({ queryKey: ["nutriToDos"] });
+        refetchNutri()
       },
       onError: (error: any) => {
         console.error("Erro ao editar tarefa:", error.message ?? error);
@@ -68,7 +70,7 @@ const useTodo = () => {
       mutationFn: (id: number) => deleteNutriToDo(id),
       onSuccess: () => {
         console.log("Tarefa deletada com sucesso!");
-        queryClient.invalidateQueries({ queryKey: ["nutriToDos"] });
+        refetchNutri()
       },
       onError: (error: any) => {
         console.error("Erro ao deletar tarefa:", error.message ?? error);
@@ -83,7 +85,7 @@ const useTodo = () => {
       },
       onSuccess: () => {
         console.log("Tarefa criada com sucesso!");
-        queryClient.invalidateQueries({ queryKey: ["fitToDos"] });
+        refetchFit()
       },
       onError: (error: any) => {
         console.error("Erro ao criar tarefa:", error.message ?? error);
@@ -98,7 +100,7 @@ const useTodo = () => {
       },
       onSuccess: () => {
         console.log("Tarefa editada com sucesso!");
-        queryClient.invalidateQueries({ queryKey: ["fitToDos"] });
+        refetchFit()
       },
       onError: (error: any) => {
         console.error("Erro ao editar tarefa:", error.message ?? error);
@@ -111,7 +113,7 @@ const useTodo = () => {
       mutationFn: (id: number) => deleteFitToDo(id),
       onSuccess: () => {
         console.log("Tarefa deletada com sucesso!");
-        queryClient.invalidateQueries({ queryKey: ["fitToDos"] });
+        refetchFit()
       },
       onError: (error: any) => {
         console.error("Erro ao deletar tarefa:", error.message ?? error);

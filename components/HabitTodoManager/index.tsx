@@ -55,6 +55,13 @@ const HabitTodoManager = ({
     (type === "habit" && (item as IHabit)?.negative) ?? false
   );
 
+  const resetForm = () => {
+    setTitle("");
+    setDescription("");
+    setPositive(false);
+    setNegative(false);
+  };
+
   const { mutate: createNutriHabit } = createNutriHabitMutation();
   const { mutate: editNutriHabit } = editNutriHabitMutation();
   const { mutate: deleteNutriHabit } = deleteNutriHabitMutation();
@@ -74,6 +81,11 @@ const HabitTodoManager = ({
   const handleSave = () => {
     const payload = { title, description };
 
+    if (!title.trim()) {
+      alert("O título é obrigatório.");
+      return;
+    }
+
     if (type === "habit") {
       const habitPayload: habitForm = {
         title,
@@ -88,6 +100,7 @@ const HabitTodoManager = ({
             { id: item.id, habitData: habitPayload },
             {
               onSuccess: () => {
+                resetForm();
                 onClose?.();
               },
             }
@@ -97,6 +110,7 @@ const HabitTodoManager = ({
             { id: item.id, habitData: habitPayload },
             {
               onSuccess: () => {
+                resetForm();
                 onClose?.();
               },
             }
@@ -106,12 +120,14 @@ const HabitTodoManager = ({
         if (backFont === "nutri") {
           createNutriHabit(habitPayload, {
             onSuccess: () => {
+              resetForm();
               onClose?.();
             },
           });
         } else {
           createFitHabit(habitPayload, {
             onSuccess: () => {
+              resetForm();
               onClose?.();
             },
           });
@@ -129,6 +145,7 @@ const HabitTodoManager = ({
             { id: item.id, toDoData: toDoPayload },
             {
               onSuccess: () => {
+                resetForm();
                 onClose?.();
               },
               onError: (err) => {
@@ -141,6 +158,7 @@ const HabitTodoManager = ({
             { id: item.id, toDoData: toDoPayload },
             {
               onSuccess: () => {
+                resetForm();
                 onClose?.();
               },
             }
@@ -148,9 +166,19 @@ const HabitTodoManager = ({
         }
       } else {
         if (backFont === "nutri") {
-          createNutriToDo(toDoPayload);
+          createNutriToDo(toDoPayload, {
+            onSuccess: () => {
+              resetForm();
+              onClose?.();
+            },
+          });
         } else {
-          createFitToDo(toDoPayload);
+          createFitToDo(toDoPayload, {
+            onSuccess: () => {
+              resetForm();
+              onClose?.();
+            },
+          });
         }
       }
     }

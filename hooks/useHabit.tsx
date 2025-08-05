@@ -29,6 +29,7 @@ const useHabit = () => {
     data: nutriHabits,
     error: habitNutriError,
     isLoading: habitNutriIsLoading,
+    refetch
   } = useQuery({ queryKey: ["nutriHabit"], queryFn: getNutriHabits });
 
   const queryClient = useQueryClient();
@@ -37,6 +38,7 @@ const useHabit = () => {
     return useMutation({
       mutationFn: (habitData: habitForm) => {
         if (!habitData.positive && !habitData.negative) {
+          alert("Hábito deve ser positivo ou negativo.");
           throw new Error("Hábito deve ser positivo ou negativo.");
         }
 
@@ -44,7 +46,7 @@ const useHabit = () => {
       },
       onSuccess: () => {
         console.log("Hábito criado com sucesso!");
-        queryClient.invalidateQueries({queryKey: ["nutriHabits"]});
+        refetch()
       },
       onError: (error: any) => {
         console.error("Erro ao criar hábito:", error.message ?? error);
@@ -57,7 +59,7 @@ const useHabit = () => {
       mutationFn: (id:number) => deleteNutriHabit(id),
       onSuccess: () => {
         console.log("Hábito deletado com sucesso!");
-        queryClient.invalidateQueries({queryKey: ["nutriHabits"]});
+        refetch()
       },
       onError: (error:any) => {
         console.error("Erro ao deletar hábito:", error.message ?? error);
@@ -81,7 +83,7 @@ const useHabit = () => {
       }, 
       onSuccess: () => {
         console.log("Hábito editado com sucesso!");
-        queryClient.invalidateQueries({queryKey: ["nutriHabits"]});
+        refetch()
       },
       onError: (error:any) => {
         console.error("Erro ao deletar hábito:", error.message ?? error);
@@ -93,6 +95,7 @@ const useHabit = () => {
     return useMutation({
       mutationFn: (habitData: habitForm) => {
         if (!habitData.positive && !habitData.negative) {
+          alert("Hábito deve ser positivo ou negativo.");
           throw new Error("Hábito deve ser positivo ou negativo.");
         }
 
@@ -100,7 +103,7 @@ const useHabit = () => {
       },
       onSuccess: () => {
         console.log("Hábito criado com sucesso!");
-        queryClient.invalidateQueries({queryKey: ["nutriHabits"]});
+        refetchFit()
       },
       onError: (error: any) => {
         console.error("Erro ao criar hábito:", error.message ?? error);
@@ -113,7 +116,7 @@ const useHabit = () => {
       mutationFn: (id:number) => deleteFitHabit(id),
       onSuccess: () => {
         console.log("Hábito deletado com sucesso!");
-        queryClient.invalidateQueries({queryKey: ["nutriHabits"]});
+        refetchFit()
       },
       onError: (error:any) => {
         console.error("Erro ao deletar hábito:", error.message ?? error);
@@ -132,7 +135,7 @@ const useHabit = () => {
       }, 
       onSuccess: () => {
         console.log("Hábito editado com sucesso!");
-        queryClient.invalidateQueries({queryKey: ["nutriHabits"]});
+        refetchFit()
       },
       onError: (error:any) => {
         console.error("Erro ao deletar hábito:", error.message ?? error);
@@ -158,19 +161,20 @@ const useHabit = () => {
     data: fitHabits,
     error: habitFitError,
     isLoading: habitFitIsLoading,
+    refetch:refetchFit
   } = useQuery({ queryKey: ["fitHabit"], queryFn: getFitHabits });
 
   const addFitPositiveCounterMutation = useMutation({
     mutationFn: (id: number) => addFitPositiveCounter(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["fitHabit"] });
+      refetchFit()
     },
   });
 
   const addFitNegativeCounterMutation = useMutation({
     mutationFn: (id: number) => addFitNegativeCounter(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["fitHabit"] });
+      refetchFit()
     },
   });
 
