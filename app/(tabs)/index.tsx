@@ -16,7 +16,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import AddBottleModal from "../../components/AddBottleModal";
 import WaterButton from "../../components/WaterButton";
 import WaterModal from "../../components/WaterModal";
-
 export default function HomeScreen() {
   const {
     handleCloseAddBottleModal,
@@ -27,6 +26,11 @@ export default function HomeScreen() {
     waterGoal,
     waterModalIsOpen,
     addBottleModalIsOpen,
+    editBottleModalIsOpen,
+    bottleToEdit,
+    openEditBottleModal,
+    handleEditBottle,
+    handleCloseEditBottleModal
   } = useWater();
 
   const {
@@ -82,8 +86,13 @@ export default function HomeScreen() {
         <Tabs tabs={TABS} initialTabKey="habit" onTabChange={(key: string) => setCurrentTab(key)} />
       </View>
 
-      <TouchableOpacity onPress={() => router.push("/login")}>
-        <Text style={{ color: Colors.light.darkGray }}>tela login</Text>
+      <TouchableOpacity
+        onPress={() => {
+          router.push("/login");
+        }}
+      >
+        {" "}
+        <Text style={{ color: Colors.light.darkGray }}>tela login</Text>{" "}
       </TouchableOpacity>
 
       {currentTab === "habit" && (
@@ -154,8 +163,11 @@ export default function HomeScreen() {
         visible={waterModalIsOpen}
         onPressBottleButton={updateWaterGoalWithBottle}
         onPressAddBottle={openAddBottle}
+        onPressEditBottle={handleEditBottle}
       />
       <AddBottleModal onClose={handleCloseAddBottleModal} visible={addBottleModalIsOpen} />
+
+      <AddBottleModal onClose={handleCloseEditBottleModal} visible={editBottleModalIsOpen} bottleToEdit={bottleToEdit}/>
     </SafeAreaView>
   );
 }
