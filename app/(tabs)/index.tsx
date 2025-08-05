@@ -55,14 +55,6 @@ export default function HomeScreen() {
 
   const { imcData, loading } = useIMC();
 
-  const { isAuthenticated, loading: isLoading } = useAuth();
-
-  if (isLoading) return null;
-
-  if (!isAuthenticated) {
-    return <Redirect href="/login" />;
-  }
-
   return (
     <SafeAreaView style={[styles.container, { flexGrow: 1 }]}>
       <Header />
@@ -85,15 +77,6 @@ export default function HomeScreen() {
       <View style={{ marginTop: 35, marginBottom: 25 }}>
         <Tabs tabs={TABS} initialTabKey="habit" onTabChange={(key: string) => setCurrentTab(key)} />
       </View>
-
-      <TouchableOpacity
-        onPress={() => {
-          router.push("/login");
-        }}
-      >
-        {" "}
-        <Text style={{ color: Colors.light.darkGray }}>tela login</Text>{" "}
-      </TouchableOpacity>
 
       {currentTab === "habit" && (
         <FlatList

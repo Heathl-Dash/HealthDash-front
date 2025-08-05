@@ -15,8 +15,11 @@ export const Colors = {
     lightGray: "#BEBEBE",
     mediumGray: "#828282",
     redColor: "#e65750",
-    surface: '#D4ECDE',
-    reactNativeWhite: '#F2F2F2',
+    surface: "#D4ECDE",
+    reactNativeWhite: "#F2F2F2",
+    accent1: "#7FB069",
+    accent2: "#FFB347",
+    accent3: "#DDA0DD",
   },
   dark: { darkBlue: "#1A405F"},
 };

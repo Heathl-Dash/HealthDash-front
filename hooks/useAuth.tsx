@@ -46,7 +46,6 @@ const useAuth = () => {
 
       if (isSuccessResponse(response)) {
         const idToken = response.data.idToken;
-        console.log(idToken);
         if (idToken !== null) {
           googleLoginMutation.mutate(idToken);
         } else {

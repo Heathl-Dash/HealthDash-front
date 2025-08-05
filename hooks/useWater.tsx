@@ -40,6 +40,10 @@ const useWater = () => {
       await queryClient.invalidateQueries({
         queryKey: ["waterGoal"],
       });
+      await queryClient.invalidateQueries({
+        queryKey: ["waterIntakes"],
+      });
+
     } catch (err) {
       console.error("Erro ao atualizar ml_drinked:", err);
     }

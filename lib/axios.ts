@@ -39,16 +39,18 @@ apiGateway.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (error.response?.status === 401 ||  error.response?.status === 403 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       const refresh = await getRefreshToken();
 
       if (refresh) {
         try {
-          const response = await Axios.post(`${API_URL}/token/refresh`, {
+          console.log("REFRESH:", refresh)
+          const response = await Axios.post(`${API_URL}profiles/token/refresh`, {
             DashboardProfileRefresh: refresh,
           });
+          console.log(response.data)
           if (response.status !== 200) {
             await removeAccessToken();
             await removeRefreshToken();
@@ -92,6 +94,16 @@ export const editWaterGoal = (data: Partial<IWaterGoal>) => {
       throw err;
     });
 };
+
+export const getWaterIntakes = (today:string) => {
+  return apiGateway
+  .get('nutri/water_goal/intakes/', {params: {reference: today}})
+  .then((res) => res.data)
+    .catch((err) => {
+      console.error("Erro ao buscar intakes de consumo de água: ", err);
+      throw err;
+    });
+}
 
 
 export const getBottles = () => {

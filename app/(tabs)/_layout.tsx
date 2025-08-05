@@ -1,11 +1,19 @@
 import { Colors } from "@/constants/Colors";
 import { FontAwesome5, MaterialCommunityIcons, FontAwesome6 } from "@expo/vector-icons";
-import { Tabs } from "expo-router";
+import { Redirect, Tabs } from "expo-router";
 import React from "react";
 import { Platform, StyleSheet, Text, View } from "react-native";
 import TennisShoe from '@/assets/icons/tennis-shoe.svg'
+import useAuth from "@/hooks/useAuth";
 
 export default function TabLayout() {
+  const { isAuthenticated, loading: isLoading } = useAuth();
+  
+    if (isLoading) return null;
+  
+    if (!isAuthenticated) {
+      return <Redirect href="/login" />;
+    }
   return (
     <Tabs
       screenOptions={{

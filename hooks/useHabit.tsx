@@ -22,7 +22,7 @@ const useHabit = () => {
 
   const TABS: TabItem[] = [
     { key: "habit", label: "Hábitos" },
-    { key: "todo", label: "tarefas" },
+    { key: "todo", label: "Tarefas" },
   ];
   
   const {
