@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   ActivityIndicator,
   Pressable,
@@ -24,6 +24,10 @@ interface ButtonProps {
   iconPosition?: "start" | "end";
   shape?: ShapeVariants;
   onPress: () => void;
+  toggle?: boolean;
+  toggled?: boolean;
+  toggledColor?: string;
+  toggledTextColor?: string;
 }
 
 const CustomButton = ({
@@ -36,8 +40,21 @@ const CustomButton = ({
   iconPosition = "start",
   style,
   styleText,
-  shape = 'rounded'
+  shape = "rounded",
+  toggle = false,
+  toggled,
+  toggledColor,
+  toggledTextColor,
 }: ButtonProps) => {
+  const [isToggled, setIsToggled] = useState(toggled ?? false);
+
+  const handlePress = () => {
+    if (toggle) {
+      setIsToggled((prev) => !prev);
+    }
+    onPress();
+  };
+
   return (
     <Pressable
       style={({ pressed }) => [
@@ -46,10 +63,15 @@ const CustomButton = ({
         Shapes[shape],
         style,
         isDisable && DisabledButton.container,
+        toggle &&
+          isToggled &&
+          toggledTextColor && {
+            backgroundColor: toggledColor ?? "#ccc",
+          },
         pressed && styles.buttonPressed,
         isLoading && styles.buttonLoading,
       ]}
-      onPress={onPress}
+      onPress={handlePress}
       disabled={isDisable}
     >
       {isLoading && (
@@ -58,7 +80,14 @@ const CustomButton = ({
         />
       )}
       {icon && iconPosition === "start" && icon}
-      <Text style={[VariantText[variant], styleText, isDisable && DisabledButton.text]}>
+      <Text
+        style={[
+          VariantText[variant],
+          styleText,
+          isDisable && DisabledButton.text,
+          toggle && isToggled && toggledTextColor && { color: toggledTextColor },
+        ]}
+      >
         {title}
       </Text>
       {icon && iconPosition === "end" && icon}

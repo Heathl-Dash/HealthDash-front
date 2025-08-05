@@ -1,11 +1,12 @@
 import Habit from "@/components/Habit";
+import HabitTodoManager from "@/components/HabitTodoManager";
 import Tabs from "@/components/Tabs";
 import ToDo from "@/components/ToDo";
 import { Colors } from "@/constants/Colors";
 import useHabit from "@/hooks/useHabit";
 import useSearchAliment from "@/hooks/useSearchAliment";
 import useTodo from "@/hooks/useToDo";
-import React from "react";
+import React, { useState } from "react";
 import { ActivityIndicator, FlatList, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CustomButton from "../../components/CustomButton";
@@ -36,12 +37,10 @@ export default function Nutri() {
     addNutriNegativeCounterMutation,
   } = useHabit();
 
-  const {
-    nutriToDo,
-    toDoNutriError,
-    isNutriToDoLoading,
-    toggleMarkToDoNutri,
-  } = useTodo();
+  const { nutriToDo, toDoNutriError, isNutriToDoLoading, toggleMarkToDoNutri } = useTodo();
+
+  const [editItem, setEditItem] = useState<IHabit | IToDo | null>(null);
+  const [showHabitManager, setShowHabitManager] = useState(false);
 
   return (
     <SafeAreaView style={{ flex: 1, paddingHorizontal: 30 }}>
@@ -79,6 +78,26 @@ export default function Nutri() {
             <ActivityIndicator size={50} />
           </View>
         )}
+        <CustomButton
+          title="+"
+          shape="rect"
+          variant="primary"
+          onPress={() => setShowHabitManager(true)}
+          style={{
+            width:64,
+            height: 42,
+            alignSelf: "flex-end",
+            marginBottom: 16
+          }}
+        />
+        <HabitTodoManager
+          mode={editItem ? "edit" : "create"}
+          type={currentTab === "habit" ? "habit" : "todo"}
+          visible={showHabitManager}
+          item={editItem ?? undefined}
+          backFont="nutri"
+          onClose={() => (setShowHabitManager(false), setEditItem(null)) }
+        />
         {currentTab === "habit" && (
           <FlatList
             data={nutriHabits || []}
@@ -91,7 +110,10 @@ export default function Nutri() {
                 onPressPositive={() => {
                   addNutriPositiveCounterMutation.mutate(item.id);
                 }}
-                onPressEdit={() => {}}
+                onPressEdit={() => {
+                  setEditItem(item),
+                  setShowHabitManager(true)
+                }}
                 onPressNegative={() => {
                   addNutriNegativeCounterMutation.mutate(item.id);
                 }}
@@ -113,7 +135,10 @@ export default function Nutri() {
             renderItem={({ item }) => (
               <ToDo
                 todo={item}
-                onPressEdit={() => {}}
+                onPressEdit={() => {
+                  setEditItem(item),
+                  setShowHabitManager(true)
+                }}
                 onPressMarkToggle={() => toggleMarkToDoNutri.mutate(item.id)}
               />
             )}

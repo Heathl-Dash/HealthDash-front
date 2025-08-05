@@ -60,7 +60,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="fit"
         options={{
-          title: "Nutri",
+          title: "Fit",
           tabBarIcon: ({ focused }) => (
             <View style={[styles.tab_selected_base, focused && styles.tab_selected_active]}>
               <TennisShoe fill={focused ? "white": Colors.light.darkGray}/>

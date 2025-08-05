@@ -17,7 +17,7 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({ initialData, onCancel
   const [name, setName] = useState(initialData?.name ?? "");
   const [weigth, setWeigth] = useState(initialData?.weigth ?? "");
   const [heigth, setHeigth] = useState(initialData?.heigth ?? "");
-  const [age, setAge] = useState(initialData?.age.toString() ?? "");
+  const [age, setAge] = useState(initialData?.age?.toString() ?? "");
 
   const updateMutation = useUpdateUserProfile();
 
@@ -32,7 +32,6 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({ initialData, onCancel
       },
       {
         onSuccess: () => {
-          console.log("Perfil atualizado com sucesso");
           onSaved();
         },
         onError: (error) => {

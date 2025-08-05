@@ -10,6 +10,9 @@ import { FlatList } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Header from "../../components/Header";
 import useTodo from "@/hooks/useToDo";
+import CustomButton from "@/components/CustomButton";
+import { useState } from "react";
+import HabitTodoManager from "@/components/HabitTodoManager";
 
 export default function Fit() {
   const {
@@ -24,74 +27,96 @@ export default function Fit() {
   } = useHabit();
 
   const { totalCalories, totalDistance, totalSteps } = useFit();
-  const {
-    fitToDo,
-    toDoFitError,
-    toggleMarkToDoFit
-  } = useTodo()
+  const { fitToDo, toDoFitError, toggleMarkToDoFit } = useTodo();
 
+  const [editItem, setEditItem] = useState<IHabit | IToDo | null>(null);
+  const [showHabitManager, setShowHabitManager] = useState(false);
 
   return (
     <SafeAreaView style={{ paddingHorizontal: 30, flexGrow: 1 }}>
       <Header />
-      <View style={{ justifyContent: "center", alignItems: "center", marginTop: 20 }}>
-        <StepCounter steps={totalSteps} goal={1050} size={210} strokeWidth={15} />
-      </View>
-      <View style={styles.otherFitInfoContainer}>
-        <View style={styles.otherFitInfoContent}>
-          <Text style={styles.otherFitInfoText}>{totalCalories.toFixed(2)}</Text>
-          <Text style={styles.otherFitInfoUnitText}>KCal</Text>
+      <View style={{flex: 1}}>
+        <View style={{ justifyContent: "center", alignItems: "center", marginTop: 20 }}>
+          <StepCounter steps={totalSteps} goal={1050} size={210} strokeWidth={15} />
         </View>
-        <View style={styles.otherFitInfoContent}>
-          <Text style={styles.otherFitInfoText}>{totalDistance.toFixed(2)}</Text>
-          <Text style={styles.otherFitInfoUnitText}>m</Text>
+        <View style={styles.otherFitInfoContainer}>
+          <View style={styles.otherFitInfoContent}>
+            <Text style={styles.otherFitInfoText}>{totalCalories.toFixed(2)}</Text>
+            <Text style={styles.otherFitInfoUnitText}>KCal</Text>
+          </View>
+          <View style={styles.otherFitInfoContent}>
+            <Text style={styles.otherFitInfoText}>{totalDistance.toFixed(2)}</Text>
+            <Text style={styles.otherFitInfoUnitText}>m</Text>
+          </View>
         </View>
-      </View>
-
-      <View style={{ marginTop: 30, marginBottom: 25 }}>
-        <Tabs tabs={TABS} initialTabKey="habit" onTabChange={(key: string) => setCurrentTab(key)} />
-      </View>
-
-      {habitFitIsLoading && (
-        <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-          <ActivityIndicator size={50} />
+        <View style={{ marginTop: 30, marginBottom: 25 }}>
+          <Tabs tabs={TABS} initialTabKey="habit" onTabChange={(key: string) => setCurrentTab(key)} />
         </View>
-      )}
-
-      {currentTab === "habit" && (
-        <FlatList
-          data={fitHabits || []}
-          keyExtractor={(item) => item.id.toString()}
-          contentContainerStyle={styles.habitTodoContainer}
-          showsVerticalScrollIndicator={false}
-          renderItem={({ item }) => (
-            <Habit
-              habit={item}
-              onPressPositive={() => {
-                addFitPositiveCounterMutation.mutate(item.id);
-              }}
-              onPressEdit={() => {}}
-              onPressNegative={() => {
-                addFitNegativeCounterMutation.mutate(item.id);
-              }}
-            />
-          )}
-          ListEmptyComponent={
-            <Text style={{ color: Colors.light.darkGray, textAlign: "center" }}>
-              Nenhum hábito encontrado.
-            </Text>
-          }
+        {habitFitIsLoading && (
+          <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+            <ActivityIndicator size={50} />
+          </View>
+        )}
+        <CustomButton
+          title="+"
+          shape="rect"
+          variant="primary"
+          onPress={() => setShowHabitManager(true)}
+          style={{
+            width: 64,
+            height: 42,
+            alignSelf: "flex-end",
+            marginBottom: 16,
+          }}
         />
-      )}{currentTab === "todo" && (
+        <HabitTodoManager
+          mode={editItem ? "edit" : "create"}
+          type={currentTab === "habit" ? "habit" : "todo"}
+          visible={showHabitManager}
+          item={editItem ?? undefined}
+          backFont="fit"
+          onClose={() => (setShowHabitManager(false), setEditItem(null))}
+        />
+        {currentTab === "habit" && (
           <FlatList
-            data={fitToDo}
+            data={fitHabits || []}
             keyExtractor={(item) => item.id.toString()}
             contentContainerStyle={styles.habitTodoContainer}
             showsVerticalScrollIndicator={false}
             renderItem={({ item }) => (
+              <Habit
+                habit={item}
+                onPressPositive={() => {
+                  addFitPositiveCounterMutation.mutate(item.id);
+                }}
+                onPressEdit={() => {
+                  setEditItem(item), setShowHabitManager(true);
+                }}
+                onPressNegative={() => {
+                  addFitNegativeCounterMutation.mutate(item.id);
+                }}
+              />
+            )}
+            ListEmptyComponent={
+              <Text style={{ color: Colors.light.darkGray, textAlign: "center" }}>
+                Nenhum hábito encontrado.
+              </Text>
+            }
+          />
+        )}
+        {currentTab === "todo" && (
+          <FlatList
+            data={fitToDo}
+            keyExtractor={(item) => item.id.toString()}
+            contentContainerStyle={styles.habitTodoContainer}
+            style={{flex:1}}
+            showsVerticalScrollIndicator={false}
+            renderItem={({ item }) => (
               <ToDo
                 todo={item}
-                onPressEdit={() => {}}
+                onPressEdit={() => {
+                  setEditItem(item), setShowHabitManager(true);
+                }}
                 onPressMarkToggle={() => toggleMarkToDoFit.mutate(item.id)}
               />
             )}
@@ -102,11 +127,12 @@ export default function Fit() {
             }
           />
         )}
-      {habitFitError && (
-        <View style={styles.errorContent}>
-          <Text style={{ color: Colors.light.redColor }}>Não foi possível carregar os hábitos</Text>
-        </View>
-      )}
+        {habitFitError && (
+          <View style={styles.errorContent}>
+            <Text style={{ color: Colors.light.redColor }}>Não foi possível carregar os hábitos</Text>
+          </View>
+        )}
+      </View>
     </SafeAreaView>
   );
 }
