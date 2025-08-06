@@ -429,3 +429,24 @@ export const deleteFitToDo = (id:number) => {
     throw err;
   })
 }
+
+export const getFitData = () => {
+  return apiGateway
+    .get(`fit/fitdata/`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("Erro ao buscar dados de fit: ", err);
+      throw err;
+    });
+};
+
+
+export const createFitData = (data:IFitData) => {
+  return apiGateway
+    .post(`fit/fitdata/`, data)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("Erro ao buscar dados de fit: ", err);
+      throw err;
+    });
+};
