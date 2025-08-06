@@ -1,50 +1,39 @@
-# Welcome to your Expo app 👋
+# HealthDash front
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
-
-## Get started
-
-1. Install dependencies
+### Passo 1:
+instalar ddependencias:
 
    ```bash
    npm install
    ```
 
-2. Start the app
+### Passo 2
 
-   ```bash
-   npx expo start
-   ```
+configurar .env
+- crie um arquio na raiz do projeto .env
 
-In the output, you'll find options to open the app in a
+```
+EXPO_PUBLIC_IP_MAQUINA=
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+EXPO_PUBLIC_WEB_CLIENT=
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+- para saber o ip da maquina use `ifconfig` (linux) ou `ipconfig` (windows)
+- para saber ´EXPO_PUBLIC_WEB_CLIENT´ pergunte aos criadores do projeto
 
-## Learn more
 
-To learn more about developing your project with Expo, look at the following resources:
+### Passo 3
+baixe o arqquivo .apk presente no repositorio 
+(Disponivel apenas para android)
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+### passo 4
+- ligar ambiente
 
-## Join the community
+   ```bash
+   npx expo start --dev-client
 
-Join our community of developers creating universal apps.
+- ler o QR Code
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+
+### Abra o APK
+
