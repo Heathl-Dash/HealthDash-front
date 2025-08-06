@@ -23,7 +23,10 @@ EXPO_PUBLIC_WEB_CLIENT=
 
 
 ### Passo 3
-baixe o arqquivo .apk presente no repositorio 
+baixe o arquivo .apk presente na release
+
+[Release](https://github.com/Heathl-Dash/HealthDash-front/releases/tag/1.0)
+
 (Disponivel apenas para android)
 
 ### passo 4
