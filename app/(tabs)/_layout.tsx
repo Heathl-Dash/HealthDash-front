@@ -4,6 +4,7 @@ import { Redirect, Tabs } from "expo-router";
 import React from "react";
 import { Platform, StyleSheet, Text, View } from "react-native";
 import TennisShoe from '@/assets/icons/tennis-shoe.svg'
+import SocialMediaIcon from '@/assets/icons/social-midia.svg'
 import useAuth from "@/hooks/useAuth";
 
 export default function TabLayout() {
@@ -61,6 +62,22 @@ export default function TabLayout() {
           tabBarLabel: ({ focused }) => (
             <Text style={[styles.tab_label, focused && { color: Colors.light.primary }]}>
               Nutrição
+            </Text>
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="socialMedia"
+        options={{
+          title: "SocialMedia",
+          tabBarIcon: ({ focused }) => (
+            <View style={[styles.tab_selected_base, focused && styles.tab_selected_active]}>
+              <SocialMediaIcon fill={focused ? "white": Colors.light.darkGray}/>
+            </View>
+          ),
+          tabBarLabel: ({ focused }) => (
+            <Text style={[styles.tab_label, focused && { color: Colors.light.primary }]}>
+              Rede
             </Text>
           ),
         }}

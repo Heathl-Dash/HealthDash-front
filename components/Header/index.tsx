@@ -1,26 +1,37 @@
 import { Colors } from "@/constants/Colors";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import React from "react";
-import { View, Text, StyleSheet, ViewStyle } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-const Header = () => {
+interface HeaderProps {
+  feedSocialMedia?: boolean;
+}
+
+const Header = ({ feedSocialMedia }: HeaderProps) => {
   return (
-    <View style={[styles.container]}>
+    <View style={[styles.container, { justifyContent: "space-between" }]}>
       <Text style={styles.title}>HealthDash</Text>
+      {feedSocialMedia && (
+        <TouchableOpacity>
+          <MaterialCommunityIcons name="menu" size={28} />
+        </TouchableOpacity>
+      )}
     </View>
   );
 };
 
-export default Header
+export default Header;
 
 const styles = StyleSheet.create({
   container: {
-    paddingLeft: 12,
-    paddingBottom: 12,
+    flexDirection: "row",
+    paddingVertical: 12,
     borderBottomLeftRadius: 12,
     borderBottomRightRadius: 12,
     width: "100%",
     height: 60,
-    justifyContent: "flex-end",
+    alignItems: "center",
+    justifyContent: "flex-start",
   },
   title: {
     color: Colors.light.darkGray,
