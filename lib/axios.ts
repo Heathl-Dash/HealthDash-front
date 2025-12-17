@@ -47,7 +47,7 @@ apiGateway.interceptors.response.use(
       if (refresh) {
         try {
           console.log("REFRESH:", refresh)
-          const response = await Axios.post(`${API_URL}profiles/token/refresh`, {
+          const response = await Axios.post(`${API_URL}profiles/token/refresh/`, {
             DashboardProfileRefresh: refresh,
           });
           console.log(response.data)
