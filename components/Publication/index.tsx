@@ -1,7 +1,7 @@
 import { Colors } from "@/constants/Colors";
 import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Attach from "../Attach";
 
 interface PublicationProps {
@@ -9,6 +9,8 @@ interface PublicationProps {
   description?: string;
   images?: string[];
   profileId: number;
+  profileName: string;
+  profileAvatar: string | null;
   isPublic?: boolean;
   type?: "normal" | "toDo" | "habit";
   attach?: IAttach | null;
@@ -28,12 +30,20 @@ const Publication = ({
   isLike,
   likesCount,
   commentsCount,
+  profileName,
+  profileAvatar,
 }: PublicationProps) => {
   return (
     <View style={styles.container}>
       <View style={styles.profileContainer}>
-        <View style={styles.profileImage}></View>
-        <Text>Fulano</Text>
+        <View style={styles.profileImage}>
+          {profileAvatar !== null ? (
+            <Image source={{ uri: profileAvatar }} style={styles.profileAvatar} />
+          ) : (
+            <View style={styles.profileAvatarNull} />
+          )}
+        </View>
+        <Text>{profileName}</Text>
       </View>
       {description && (
         <View>
@@ -54,10 +64,11 @@ const Publication = ({
           <Text>{likesCount}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.action}>
-          <FontAwesome name="comment-o" size={28} color={Colors.light.darkGray}/> <Text>{commentsCount}</Text>
+          <FontAwesome name="comment-o" size={28} color={Colors.light.darkGray} />{" "}
+          <Text>{commentsCount}</Text>
         </TouchableOpacity>
       </View>
-      <View style={{width: '100%', borderTopColor: Colors.light.lightGray, borderTopWidth: 1}}/>
+      <View style={{ width: "100%", borderTopColor: Colors.light.lightGray, borderTopWidth: 1 }} />
     </View>
   );
 };
@@ -78,6 +89,15 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 50,
+    overflow: "hidden"
+  },
+  profileAvatar: {
+    width: "100%",
+    height: "100%",
+  },
+  profileAvatarNull: {
+    width: "100%",
+    height: "100%",
     backgroundColor: Colors.light.primary,
   },
   actionsContainer: {
