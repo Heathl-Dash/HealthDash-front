@@ -1,6 +1,8 @@
+import CustomButton from "@/components/CustomButton";
 import Header from "@/components/Header";
 import { Colors } from "@/constants/Colors";
 import useProfile from "@/hooks/useProfile";
+import { MaterialIcons, Octicons } from "@expo/vector-icons";
 import ReadMore from "@fawazahmed/react-native-read-more";
 import { Stack, useLocalSearchParams } from "expo-router";
 import React from "react";
@@ -76,12 +78,12 @@ const AccountPage = () => {
   const followersNumber =
     currentProfile.followersNumber > 1000
       ? `${currentProfile.followersNumber / 1000}k`
-      : currentProfile.followersNumber;
+      : currentProfile.followersNumber ?? "--";
 
   const followingNumber =
     currentProfile.followingNumber > 1000
       ? `${currentProfile.followingNumber / 1000}k`
-      : currentProfile.followingNumber;
+      : currentProfile.followingNumber ?? "--";
 
   return (
     <SafeAreaView style={{ paddingHorizontal: 30, flexGrow: 1, backgroundColor: "white" }}>
@@ -95,7 +97,7 @@ const AccountPage = () => {
             {currentProfile.avatar !== null ? (
               <Image source={{ uri: currentProfile.avatar }} style={styles.profileAvatar} />
             ) : (
-              <View  style={styles.profileAvatarNull}/>
+              <View style={styles.profileAvatarNull} />
             )}
           </View>
           <View style={styles.infoContainer}>
@@ -121,6 +123,35 @@ const AccountPage = () => {
           </View>
         )}
       </View>
+      {isMyProfile ? (
+        <View>
+          <CustomButton
+            title="Editar perfil"
+            variant="outLine"
+            onPress={() => {}}
+            style={{ borderColor: Colors.light.secondary, width: "50%" }}
+            styleText={{ color: Colors.light.secondary }}
+            icon={<MaterialIcons name="edit" size={20} color={Colors.light.secondary} />}
+            iconPosition="end"
+          />
+        </View>
+      ) : (
+        <View>
+          <CustomButton
+            title="Seguir"
+            variant="primary"
+            icon={<Octicons name="plus" color="white" size={20} />}
+            style={{ width: "50%" }}
+            onPress={() => {}}
+          />
+          <CustomButton
+            title="Deixar de seguir"
+            variant="secondary"
+            style={{ width: "50%" }}
+            onPress={() => {}}
+          />
+        </View>
+      )}
     </SafeAreaView>
   );
 };
@@ -138,9 +169,9 @@ const styles = StyleSheet.create({
     aspectRatio: 1,
     borderRadius: 50,
     backgroundColor: Colors.light.primary,
-    overflow: "hidden"
+    overflow: "hidden",
   },
-   profileAvatar: {
+  profileAvatar: {
     width: "100%",
     height: "100%",
   },
