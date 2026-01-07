@@ -68,6 +68,8 @@ export default function SocialMedia() {
       commentsCount: 0,
     },
   ];
+
+
   return (
     <SafeAreaView style={{ flex: 1, paddingHorizontal: 30 }}>
       <Header feedSocialMedia />
