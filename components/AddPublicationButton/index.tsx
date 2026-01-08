@@ -3,9 +3,13 @@ import { FontAwesome6 } from "@expo/vector-icons";
 import React from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
 
-const AddPublicationButton = () => {
+interface AddPublicationButtonProps{
+  onPress: () => void;
+}
+
+const AddPublicationButton = ({onPress}:AddPublicationButtonProps) => {
   return (
-    <TouchableOpacity style={styles.container}>
+    <TouchableOpacity style={styles.container} onPress={onPress}>
       <FontAwesome6 name="plus" size={21} color="white" />
     </TouchableOpacity>
   );

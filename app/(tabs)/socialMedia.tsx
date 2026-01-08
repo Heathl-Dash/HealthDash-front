@@ -5,6 +5,8 @@ import { StyleSheet, Text, View } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Colors } from "react-native/Libraries/NewAppScreen";
+import { useRouter } from "expo-router";
+
 
 export default function SocialMedia() {
   const PUBLICATIONS: IPublication[] = [
@@ -70,6 +72,11 @@ export default function SocialMedia() {
     },
   ];
 
+  const router = useRouter()
+
+  const AddPublicationClick = () => {
+    router.push('/createPublication')
+  }
 
   return (
     <SafeAreaView style={{ flex: 1, paddingHorizontal: 30 }}>
@@ -98,7 +105,7 @@ export default function SocialMedia() {
           </Text>
         }
       />
-        <AddPublicationButton/>
+        <AddPublicationButton onPress={AddPublicationClick}/>
     </SafeAreaView>
   );
 

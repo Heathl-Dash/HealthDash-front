@@ -8,6 +8,9 @@ export const Variants = StyleSheet.create({
   secondary:{
     backgroundColor: Colors.light.secondary
   },
+  tertiary:{
+    backgroundColor: Colors.light.tertiary
+  },
   outLine: {
     borderWidth: 1,
     borderColor: Colors.light.primary,
