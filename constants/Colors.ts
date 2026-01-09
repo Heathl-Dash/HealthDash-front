@@ -10,6 +10,7 @@ export const Colors = {
   light: {
     primary: "#528D95",
     secondary: "#6CA1D7",
+    tertiary: "#ECECEC",
     mediumBlue: "#4288ca",
     darkGray: "#444444",
     lightGray: "#BEBEBE",

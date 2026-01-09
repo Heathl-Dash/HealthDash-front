@@ -1,9 +1,12 @@
+import AddPublicationButton from "@/components/AddPublicationButton";
 import Header from "@/components/Header";
 import Publication from "@/components/Publication";
-import { Text } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Colors } from "react-native/Libraries/NewAppScreen";
+import { useRouter } from "expo-router";
+
 
 export default function SocialMedia() {
   const PUBLICATIONS: IPublication[] = [
@@ -69,6 +72,11 @@ export default function SocialMedia() {
     },
   ];
 
+  const router = useRouter()
+
+  const AddPublicationClick = () => {
+    router.push('/createPublication')
+  }
 
   return (
     <SafeAreaView style={{ flex: 1, paddingHorizontal: 30 }}>
@@ -97,20 +105,9 @@ export default function SocialMedia() {
           </Text>
         }
       />
-
-      {/* <View style={{ gap: 10 }}>
-        {publications.map((publication, index) => (
-          <Publication
-            profileId={publication.profileId}
-            attach={publication.attach}
-            description={publication.description}
-            isPublic={publication.isPublic}
-            type={publication.type}
-            isLike={publication.isLike}
-            likesCount={publication.likesCount}
-          />
-        ))}
-      </View> */}
+        <AddPublicationButton onPress={AddPublicationClick}/>
     </SafeAreaView>
   );
+
 }
+
