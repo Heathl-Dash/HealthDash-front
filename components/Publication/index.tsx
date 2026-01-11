@@ -5,67 +5,47 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Attach from "../Attach";
 
 interface PublicationProps {
-  title?: string;
-  description?: string;
-  images?: string[];
-  profileId: number;
-  profileName: string;
-  profileAvatar: string | null;
-  isPublic?: boolean;
-  type?: "normal" | "toDo" | "habit";
-  attach?: IAttach | null;
-  isLike?: boolean;
-  likesCount: number;
-  commentsCount: number;
+  publication:IPublication
+  onPressComments: () => void;
 }
 
 const Publication = ({
-  isPublic = true,
-  profileId,
-  type = "normal",
-  attach = null,
-  description,
-  images,
-  title,
-  isLike,
-  likesCount,
-  commentsCount,
-  profileName,
-  profileAvatar,
+  publication, onPressComments
 }: PublicationProps) => {
+
   return (
     <View style={styles.container}>
       <View style={styles.profileContainer}>
         <View style={styles.profileImage}>
-          {profileAvatar !== null ? (
-            <Image source={{ uri: profileAvatar }} style={styles.profileAvatar} />
+          {publication.profileAvatar !== null ? (
+            <Image source={{ uri: publication.profileAvatar }} style={styles.profileAvatar} />
           ) : (
             <View style={styles.profileAvatarNull} />
           )}
         </View>
-        <Text>{profileName}</Text>
+        <Text>{publication.profileName}</Text>
       </View>
-      {description && (
+      {publication.description && (
         <View>
-          <Text>{description}</Text>
+          <Text>{publication.description}</Text>
         </View>
       )}
 
-      {attach && type != "normal" && <Attach attach={attach} type={type} />}
-      {images && <View>imagens</View>}
+      {publication.attach && publication.type != "normal" && <Attach attach={publication.attach} type={publication.type} />}
+      {publication.images && <View>imagens</View>}
 
       <View style={styles.actionsContainer}>
         <TouchableOpacity style={styles.action}>
-          {isLike ? (
+          {publication.isLike ? (
             <MaterialCommunityIcons size={30} color={Colors.light.darkGray} name="heart" />
           ) : (
             <MaterialCommunityIcons size={30} color={Colors.light.darkGray} name="heart-outline" />
           )}
-          <Text>{likesCount}</Text>
+          <Text>{publication.likesCount}</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.action}>
+        <TouchableOpacity style={styles.action} onPress={onPressComments}>
           <FontAwesome name="comment-o" size={28} color={Colors.light.darkGray} />{" "}
-          <Text>{commentsCount}</Text>
+          <Text>{publication.commentsCount}</Text>
         </TouchableOpacity>
       </View>
       <View style={{ width: "100%", borderTopColor: Colors.light.lightGray, borderTopWidth: 1 }} />
@@ -89,7 +69,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 50,
-    overflow: "hidden"
+    overflow: "hidden",
   },
   profileAvatar: {
     width: "100%",
