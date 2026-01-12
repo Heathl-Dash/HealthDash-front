@@ -1,11 +1,14 @@
 import AddPublicationButton from "@/components/AddPublicationButton";
 import Header from "@/components/Header";
 import Publication from "@/components/Publication";
-import { StyleSheet, Text, View } from "react-native";
+import { useRouter } from "expo-router";
+import { useRef, useState } from "react";
+import { Text } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Colors } from "react-native/Libraries/NewAppScreen";
-import { useRouter } from "expo-router";
+import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
+import Comments from "@/components/Comments";
 
 
 export default function SocialMedia() {
@@ -19,6 +22,7 @@ export default function SocialMedia() {
       profileAvatar: null,
       isPublic: true,
       type: "habit",
+      images: null,
       attach: {
         title: "Beber mais água",
         description:
@@ -41,6 +45,7 @@ export default function SocialMedia() {
       profileAvatar: null,
       isPublic: true,
       type: "toDo",
+      images: null,
       attach: {
         title: "Beber mais água",
         description:
@@ -60,6 +65,7 @@ export default function SocialMedia() {
       profileAvatar: "https://cdn.omlet.com/images/originals/breed_abyssinian_cat.jpg",
       isPublic: true,
       type: "toDo",
+      images: null,
       attach: {
         title: "Beber mais água",
         description:
@@ -72,11 +78,19 @@ export default function SocialMedia() {
     },
   ];
 
-  const router = useRouter()
+  const bottomSheetRef = useRef<BottomSheetMethods | null>(null);
+  const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
+
+  const router = useRouter();
+
+  const openComments = (publicationId: number) => {
+    setSelectedPostId(publicationId)
+    bottomSheetRef.current?.expand()
+  }
 
   const AddPublicationClick = () => {
-    router.push('/createPublication')
-  }
+    router.push("/createPublication");
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, paddingHorizontal: 30 }}>
@@ -87,16 +101,8 @@ export default function SocialMedia() {
         contentContainerStyle={{ gap: 25 }}
         renderItem={({ item }) => (
           <Publication
-            profileId={item.profileId}
-            profileAvatar={item.profileAvatar}
-            profileName={item.profileName}
-            attach={item.attach}
-            description={item.description}
-            isPublic={item.isPublic}
-            type={item.type}
-            isLike={item.isLike}
-            likesCount={item.likesCount}
-            commentsCount={item.commentsCount}
+            publication={item}
+            onPressComments={() => openComments(item.id)}
           />
         )}
         ListEmptyComponent={
@@ -105,9 +111,8 @@ export default function SocialMedia() {
           </Text>
         }
       />
-        <AddPublicationButton onPress={AddPublicationClick}/>
+      <AddPublicationButton onPress={AddPublicationClick} />
+      <Comments bottomSheetRef={bottomSheetRef}/>
     </SafeAreaView>
   );
-
 }
-
