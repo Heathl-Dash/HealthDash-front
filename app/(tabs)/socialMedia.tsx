@@ -85,7 +85,7 @@ export default function SocialMedia() {
 
   const openComments = (publicationId: number) => {
     setSelectedPostId(publicationId)
-    bottomSheetRef.current?.snapToIndex(0)
+    bottomSheetRef.current?.expand()
   }
 
   const AddPublicationClick = () => {

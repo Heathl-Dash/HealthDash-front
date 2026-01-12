@@ -16,6 +16,7 @@ interface CustomInputProps extends TextInputProps {
   errorMessage?: string;
   style?: StyleProp<TextStyle>;
   styleContainer?: StyleProp<ViewStyle>
+  InputComponent?: React.ComponentType<any>
 }
 
 const CustomInput = ({
@@ -28,6 +29,7 @@ const CustomInput = ({
   secureTextEntry,
   keyboardType,
   styleContainer,
+  InputComponent = TextInput,
   ...rest
 }: CustomInputProps) => {
   const flattenedStyle = StyleSheet.flatten(style) || {};
@@ -35,7 +37,7 @@ const CustomInput = ({
   return (
     <View style={[styles.container, styleContainer]}>
       {label && <Text style={[styles.label, { color: borderColor }]}>{label}:</Text>}
-      <TextInput
+      <InputComponent
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
