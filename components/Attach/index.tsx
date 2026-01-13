@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
     gap: 10,
     padding: 20,
     paddingTop: 25,
-    borderRadius: 25,
+    borderRadius: 15,
     backgroundColor: Colors.light.primary,
   },
   textContent: {
