@@ -1,15 +1,15 @@
 import AddPublicationButton from "@/components/AddPublicationButton";
+import Comments from "@/components/Comments";
 import Header from "@/components/Header";
+import ImageCarrousel from "@/components/ImageCarrousel";
 import Publication from "@/components/Publication";
+import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import { useRouter } from "expo-router";
 import { useRef, useState } from "react";
 import { Text } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Colors } from "react-native/Libraries/NewAppScreen";
-import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
-import Comments from "@/components/Comments";
-
 
 export default function SocialMedia() {
   const PUBLICATIONS: IPublication[] = [
@@ -22,7 +22,10 @@ export default function SocialMedia() {
       profileAvatar: null,
       isPublic: true,
       type: "habit",
-      images: null,
+      images: [
+        "https://inovaveterinaria.com.br/wp-content/uploads/2015/04/gato-sem-raca-INOVA-1024x683.jpg",
+        "https://static.vecteezy.com/system/resources/thumbnails/002/098/203/small/silver-tabby-cat-sitting-on-green-background-free-photo.jpg",
+      ],
       attach: {
         title: "Beber mais água",
         description:
@@ -84,9 +87,9 @@ export default function SocialMedia() {
   const router = useRouter();
 
   const openComments = (publicationId: number) => {
-    setSelectedPostId(publicationId)
-    bottomSheetRef.current?.expand()
-  }
+    setSelectedPostId(publicationId);
+    bottomSheetRef.current?.expand();
+  };
 
   const AddPublicationClick = () => {
     router.push("/createPublication");
@@ -100,10 +103,7 @@ export default function SocialMedia() {
         keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={{ gap: 25 }}
         renderItem={({ item }) => (
-          <Publication
-            publication={item}
-            onPressComments={() => openComments(item.id)}
-          />
+          <Publication publication={item} onPressComments={() => openComments(item.id)} />
         )}
         ListEmptyComponent={
           <Text style={{ color: Colors.light.darkGray, textAlign: "center" }}>
@@ -112,7 +112,7 @@ export default function SocialMedia() {
         }
       />
       <AddPublicationButton onPress={AddPublicationClick} />
-      <Comments bottomSheetRef={bottomSheetRef}/>
+      <Comments bottomSheetRef={bottomSheetRef} />
     </SafeAreaView>
   );
 }

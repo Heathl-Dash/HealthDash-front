@@ -3,16 +3,14 @@ import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
 import React from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Attach from "../Attach";
+import ImageCarrousel from "../ImageCarrousel";
 
 interface PublicationProps {
-  publication:IPublication
+  publication: IPublication;
   onPressComments: () => void;
 }
 
-const Publication = ({
-  publication, onPressComments
-}: PublicationProps) => {
-
+const Publication = ({ publication, onPressComments }: PublicationProps) => {
   return (
     <View style={styles.container}>
       <View style={styles.profileContainer}>
@@ -31,8 +29,12 @@ const Publication = ({
         </View>
       )}
 
-      {publication.attach && publication.type != "normal" && <Attach attach={publication.attach} type={publication.type} />}
-      {publication.images && <View>imagens</View>}
+      <View style={[{ gap: 10 }, publication.images && publication.attach && styles.imagesAndAttachStyle]}>
+        {publication.images && <ImageCarrousel images={publication.images} />}
+        {publication.attach && publication.type != "normal" && (
+          <Attach attach={publication.attach} type={publication.type} />
+        )}
+      </View>
 
       <View style={styles.actionsContainer}>
         <TouchableOpacity style={styles.action}>
@@ -79,6 +81,11 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     backgroundColor: Colors.light.primary,
+  },
+  imagesAndAttachStyle: {
+    backgroundColor: Colors.light.tertiary,
+    padding: 20,
+    borderRadius: 25,
   },
   actionsContainer: {
     flexDirection: "row",
