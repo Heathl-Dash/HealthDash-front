@@ -2,19 +2,17 @@ import { googleLogin } from "@/lib/axios";
 import { GoogleSignin, isSuccessResponse } from "@react-native-google-signin/google-signin";
 import { useMutation } from "@tanstack/react-query";
 import { router } from "expo-router";
-import useStorage from "./useStorage";
+import { storage } from "@/services/storage";
 import { useEffect, useState } from "react";
 
 const useAuth = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const { saveTokens, removeAccessToken, removeRefreshToken, getAccessToken } = useStorage();
-
 
   useEffect(() => {
     const checkAuth = async () => {
-      const token = await getAccessToken();
+      const token = await storage.getAccessToken();
       setIsAuthenticated(!!token);
       setLoading(false);
     };
@@ -29,8 +27,8 @@ const useAuth = () => {
 
   const googleLoginMutation = useMutation({
     mutationFn: (googleToken: string) => googleLogin(googleToken),
-    onSuccess: (data) => {
-      saveTokens(data);
+    onSuccess: async (data) => {
+      await storage.saveTokens(data);
       setIsAuthenticated(true)
       router.push("/(tabs)");
     },
@@ -60,8 +58,8 @@ const useAuth = () => {
   const handleLogout = async () => {
     try {
       await GoogleSignin.signOut(); 
-      await removeAccessToken()
-      await removeRefreshToken()
+      await storage.removeAccessToken()
+      await storage.removeRefreshToken()
       setIsAuthenticated(false)
       router.push('/login')
     } catch (error) {

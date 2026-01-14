@@ -1,4 +1,4 @@
-import useStorage from "@/hooks/useStorage";
+import { storage } from "@/services/storage";
 import Axios from "axios";
 
 const API_URL = `http://${process.env.EXPO_PUBLIC_IP_MAQUINA}:8004/api/v1/`;
@@ -10,68 +10,59 @@ const apiGateway = Axios.create({
   // },
 });
 
-const {
-  getTokens,
-  getAccessToken,
-  getRefreshToken,
-  setAccessToken,
-  setRefreshToken,
-  removeAccessToken,
-  removeRefreshToken,
-} = useStorage();
-
 apiGateway.interceptors.request.use(
   async (config) => {
-    const token = await getTokens();
+    const token = await storage.getTokens();
 
     if (token?.access) {
-      config.headers["Authorization"] = `Bearer ${token.access}`;
+      config.headers.Authorization = `Bearer ${token.access}`;
     }
+
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 apiGateway.interceptors.response.use(
   (response) => response,
   async (error) => {
-    const originalRequest = error.config;
+    const originalRequest = error.config as any;
 
-    if (error.response?.status === 401 ||  error.response?.status === 403 && !originalRequest._retry) {
+    if (
+      (error.response?.status === 401 || error.response?.status === 403) &&
+      !originalRequest._retry
+    ) {
       originalRequest._retry = true;
 
-      const refresh = await getRefreshToken();
+      const refresh = await storage.getRefreshToken();
 
-      if (refresh) {
-        try {
-          console.log("REFRESH:", refresh)
-          const response = await Axios.post(`${API_URL}profiles/token/refresh/`, {
-            DashboardProfileRefresh: refresh,
-          });
-          console.log(response.data)
-          if (response.status !== 200) {
-            await removeAccessToken();
-            await removeRefreshToken();
-            return Promise.reject(error);
-          }
-          const newAccessToken = response.data.DashboardProfileAccess;
-          const newRefreshToken = response.data.DashboardProfileRefresh;
+      if (!refresh) {
+        await storage.removeAccessToken();
+        await storage.removeRefreshToken();
+        return Promise.reject(error);
+      }
 
-          await setAccessToken(newAccessToken);
-          await setRefreshToken(newRefreshToken);
+      try {
+        const response = await Axios.post(`${API_URL}profiles/token/refresh/`, {
+          DashboardProfileRefresh: refresh,
+        });
 
-          originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
+        const newAccessToken = response.data.DashboardProfileAccess;
+        const newRefreshToken = response.data.DashboardProfileRefresh;
 
-          return apiGateway(originalRequest);
-        } catch (err) {
-          await removeAccessToken();
-          await removeRefreshToken();
-          console.log("Erro ao fazer refresh do token:", err);
-        }
+        await storage.setAccessToken(newAccessToken);
+        await storage.setRefreshToken(newRefreshToken);
+
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+
+        return apiGateway(originalRequest);
+      } catch (err) {
+        await storage.removeAccessToken();
+        await storage.removeRefreshToken();
+        return Promise.reject(err);
       }
     }
+
     return Promise.reject(error);
   }
 );
@@ -95,16 +86,15 @@ export const editWaterGoal = (data: Partial<IWaterGoal>) => {
     });
 };
 
-export const getWaterIntakes = (today:string) => {
+export const getWaterIntakes = (today: string) => {
   return apiGateway
-  .get('nutri/water_goal/intakes/', {params: {reference: today}})
-  .then((res) => res.data)
+    .get("nutri/water_goal/intakes/", { params: { reference: today } })
+    .then((res) => res.data)
     .catch((err) => {
       console.error("Erro ao buscar intakes de consumo de água: ", err);
       throw err;
     });
-}
-
+};
 
 export const getBottles = () => {
   return apiGateway
@@ -126,8 +116,7 @@ export const editWaterBottle = (id: number, data: Partial<IBottle>) => {
     });
 };
 
-
-export const deleteWaterBottle = (id:number) => {
+export const deleteWaterBottle = (id: number) => {
   return apiGateway
     .delete(`nutri/water_bottle/${id}`)
     .then((res) => res.data)
@@ -135,7 +124,7 @@ export const deleteWaterBottle = (id:number) => {
       console.error("Erro ao deletar garrafa ", err);
       throw err;
     });
-}
+};
 
 export const createBottles = (data: Partial<IBottle>) => {
   return apiGateway
@@ -308,127 +297,127 @@ export const googleLogin = (googleToken: string) => {
 };
 
 export type habitForm = Pick<IHabit, "title" | "description" | "positive" | "negative">;
-export type toDoForm = Pick<IToDo, "title" | "description">
+export type toDoForm = Pick<IToDo, "title" | "description">;
 
 export const createNutriHabit = (habitData: habitForm) => {
   return apiGateway
-  .post(`nutri/habit/`, habitData)
-  .then(res => res.data)
-  .catch(err => {
-    console.error("Erro ao criar hábito de nutrição: ", err)
-    throw err;
-  })
+    .post(`nutri/habit/`, habitData)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("Erro ao criar hábito de nutrição: ", err);
+      throw err;
+    });
 };
 
-export const editNutriHabit = (habitData: habitForm, id:number) => {
+export const editNutriHabit = (habitData: habitForm, id: number) => {
   return apiGateway
-  .patch(`nutri/habit/${id}`, habitData)
-  .then(res=> res.data)
-  .catch(err => {
-    console.error("Erro ao alterar hábito de nutrição: ", err)
-    throw err;
-  })
+    .patch(`nutri/habit/${id}`, habitData)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("Erro ao alterar hábito de nutrição: ", err);
+      throw err;
+    });
 };
 
-export const deleteNutriHabit = (id:number) => {
+export const deleteNutriHabit = (id: number) => {
   return apiGateway
-  .delete(`nutri/habit/${id}`)
-  .then(res=>res.data)
-  .catch(err=>{
-    console.error("Erro ao deletar hábito de nutrição: ", err)
-    throw err;
-  })
-}
-
-export const createNutriToDo = (toDoData:toDoForm) => {
-  return apiGateway
-  .post(`nutri/todo/`, toDoData)
-  .then(res => res.data)
-  .catch(err => {
-    console.error("Erro ao criar tarefa de nutrição: ", err)
-    throw err;
-  })
+    .delete(`nutri/habit/${id}`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("Erro ao deletar hábito de nutrição: ", err);
+      throw err;
+    });
 };
 
-export const editNutriToDo = (toDoData:toDoForm, id:number) => {
+export const createNutriToDo = (toDoData: toDoForm) => {
   return apiGateway
-  .patch(`nutri/todo/${id}`, toDoData)
-  .then(res => res.data)
-  .catch(err => {
-    console.error("Erro ao editar tarefa de nutrição: ", err)
-    throw err;
-  })
+    .post(`nutri/todo/`, toDoData)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("Erro ao criar tarefa de nutrição: ", err);
+      throw err;
+    });
 };
 
-export const deleteNutriToDo = (id:number) => {
+export const editNutriToDo = (toDoData: toDoForm, id: number) => {
   return apiGateway
-  .delete(`nutri/todo/${id}`)
-  .then(res => res.data)
-  .catch(err => {
-    console.error("Erro ao deletar tarefa de nutrição: ", err)
-    throw err;
-  })
-}
+    .patch(`nutri/todo/${id}`, toDoData)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("Erro ao editar tarefa de nutrição: ", err);
+      throw err;
+    });
+};
+
+export const deleteNutriToDo = (id: number) => {
+  return apiGateway
+    .delete(`nutri/todo/${id}`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("Erro ao deletar tarefa de nutrição: ", err);
+      throw err;
+    });
+};
 
 export const createFitHabit = (habitData: habitForm) => {
   return apiGateway
-  .post(`fit/habit/`, habitData)
-  .then(res => res.data)
-  .catch(err => {
-    console.error("Erro ao criar hábito de exercício: ", err)
-    throw err;
-  })
+    .post(`fit/habit/`, habitData)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("Erro ao criar hábito de exercício: ", err);
+      throw err;
+    });
 };
 
-export const editFitHabit = (habitData: habitForm, id:number) => {
+export const editFitHabit = (habitData: habitForm, id: number) => {
   return apiGateway
-  .patch(`fit/habit/${id}/`, habitData)
-  .then(res=> res.data)
-  .catch(err => {
-    console.error("Erro ao alterar hábito de exercício: ", err)
-    throw err;
-  })
+    .patch(`fit/habit/${id}/`, habitData)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("Erro ao alterar hábito de exercício: ", err);
+      throw err;
+    });
 };
 
-export const deleteFitHabit = (id:number) => {
+export const deleteFitHabit = (id: number) => {
   return apiGateway
-  .delete(`fit/habit/${id}/`)
-  .then(res=>res.data)
-  .catch(err=>{
-    console.error("Erro ao deletar hábito de exercício: ", err)
-    throw err;
-  })
-}
-
-export const createFitToDo = (toDoData:toDoForm) => {
-  return apiGateway
-  .post(`fit/todo/`, toDoData)
-  .then(res => res.data)
-  .catch(err => {
-    console.error("Erro ao criar tarefa de exercício: ", err)
-    throw err;
-  })
+    .delete(`fit/habit/${id}/`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("Erro ao deletar hábito de exercício: ", err);
+      throw err;
+    });
 };
 
-export const editFitToDo = (toDoData:toDoForm, id:number) => {
+export const createFitToDo = (toDoData: toDoForm) => {
   return apiGateway
-  .patch(`fit/todo/${id}/`, toDoData)
-  .then(res => res.data)
-  .catch(err => {
-    console.error("Erro ao editar tarefa de exercício: ", err)
-    throw err;
-  })
+    .post(`fit/todo/`, toDoData)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("Erro ao criar tarefa de exercício: ", err);
+      throw err;
+    });
 };
 
-export const deleteFitToDo = (id:number) => {
+export const editFitToDo = (toDoData: toDoForm, id: number) => {
   return apiGateway
-  .delete(`fit/todo/${id}/`)
-  .then(res => res.data)
-  .catch(err => {
-    console.error("Erro ao deletar tarefa de exercício: ", err)
-    throw err;
-  })
-}
+    .patch(`fit/todo/${id}/`, toDoData)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("Erro ao editar tarefa de exercício: ", err);
+      throw err;
+    });
+};
+
+export const deleteFitToDo = (id: number) => {
+  return apiGateway
+    .delete(`fit/todo/${id}/`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("Erro ao deletar tarefa de exercício: ", err);
+      throw err;
+    });
+};
 
 export const getFitData = () => {
   return apiGateway
@@ -440,8 +429,7 @@ export const getFitData = () => {
     });
 };
 
-
-export const createFitData = (data:IFitData) => {
+export const createFitData = (data: IFitData) => {
   return apiGateway
     .post(`fit/fitdata/`, data)
     .then((res) => res.data)
