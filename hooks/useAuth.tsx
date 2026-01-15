@@ -1,13 +1,13 @@
+import { storage } from "@/service/storage";
 import { makeRedirectUri, useAuthRequest } from "expo-auth-session";
 import { router } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import { useEffect, useState } from "react";
-import useStorage from "./useStorage";
 
 WebBrowser.maybeCompleteAuthSession();
 
 // --- CONFIGURAÇÕES DO KEYCLOAK ---
-const KEYCLOAK_URL = process.env.EXPO_PUBLIC_KEYCLOAK_URL; 
+const KEYCLOAK_URL = process.env.EXPO_PUBLIC_KEYCLOAK_URL;
 const REALM = process.env.EXPO_PUBLIC_KEYCLOAK_REALM;
 const CLIENT_ID = process.env.EXPO_PUBLIC_KEYCLOAK_CLIENT_ID;
 
@@ -27,13 +27,10 @@ const useAuth = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const { saveTokens, removeAccessToken, removeRefreshToken, getAccessToken, getRefreshToken } =
-    useStorage();
-
   const [request, response, promptAsync] = useAuthRequest(
     {
       clientId: CLIENT_ID!,
-      scopes: ["openid", "profile", "email", "offline_access"], 
+      scopes: ["openid", "profile", "email", "offline_access"],
       redirectUri: redirectUri,
     },
     discovery
@@ -41,12 +38,12 @@ const useAuth = () => {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const token = await getAccessToken();
+      const token = await storage.getAccessToken();
       setIsAuthenticated(!!token);
       setLoading(false);
     };
     checkAuth();
-  }, [getAccessToken]);
+  }, []);
 
   useEffect(() => {
     if (response?.type === "success") {
@@ -81,10 +78,12 @@ const useAuth = () => {
       const access = data.access_token;
       const refresh = data.refresh_token;
 
+      console.log("auth", { access, refresh });
+
       if (data.access_token) {
-        await saveTokens({
-          access: access,
-          refresh: refresh,
+        await storage.saveTokens({
+          DashboardProfileAccess: access,
+          DashboardProfileRefresh: refresh,
         });
 
         setIsAuthenticated(true);
@@ -103,7 +102,7 @@ const useAuth = () => {
 
   const handleLogout = async () => {
     try {
-      const refreshToken = await getRefreshToken();
+      const refreshToken = await storage.getRefreshToken();
 
       if (refreshToken) {
         await fetch(discovery.endSessionEndpoint, {
@@ -116,10 +115,9 @@ const useAuth = () => {
         }).catch((err) => console.log("Erro logout remoto", err));
       }
 
-      await removeAccessToken();
-      await removeRefreshToken();
+      await storage.removeAccessToken();
+      await storage.removeRefreshToken();
       setIsAuthenticated(false);
-
 
       router.replace("/login");
     } catch (error) {
