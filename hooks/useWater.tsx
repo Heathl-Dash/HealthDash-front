@@ -1,4 +1,4 @@
-import { editWaterGoal, getWaterGoal } from "@/lib/axios";
+import { editWaterGoal, getWaterGoal } from "@/lib/nutri";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Alert } from "react-native";

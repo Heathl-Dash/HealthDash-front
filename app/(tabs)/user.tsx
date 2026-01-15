@@ -1,11 +1,11 @@
 import BarChart from "@/components/BarChart";
 import CustomButton from "@/components/CustomButton";
+import LineChart from "@/components/LineChart";
 import UserProfileForm from "@/components/UserProfileForm";
 import { Colors } from "@/constants/Colors";
 import useAuth from "@/hooks/useAuth";
 import useProfile from "@/hooks/useProfile";
-import useStorage from "@/hooks/useStorage";
-import { getFitData, getWaterIntakes } from "@/lib/axios";
+import { getFitData, getWaterIntakes } from "@/lib/profile";
 import { Entypo, FontAwesome5, FontAwesome6 } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
 import moment from "moment";
@@ -14,9 +14,8 @@ import React, { useState } from "react";
 import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Header from "../../components/Header";
-import LineChart from "@/components/LineChart";
 
-moment.locale("pt-br",{week:{dow: 1}});
+moment.locale("pt-br", { week: { dow: 1 } });
 
 interface UserProps {
   user?: IProfile;
@@ -189,7 +188,7 @@ export default function User() {
                     ykeys="burned_calories"
                     formatXLabel={(val) => moment(val).format("ddd")}
                     formatYLabel={(val) => `${val}Kcal`}
-                    domain={{y:[0, maxYWaterCalorie]}}
+                    domain={{ y: [0, maxYWaterCalorie] }}
                     color={Colors.light.accent2}
                   />
                 ) : (

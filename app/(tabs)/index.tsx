@@ -9,7 +9,6 @@ import useHabit from "@/hooks/useHabit";
 import useIMC from "@/hooks/useIMC";
 import useTodo from "@/hooks/useToDo";
 import useWater from "@/hooks/useWater";
-import { Redirect, router } from "expo-router";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -28,7 +27,6 @@ export default function HomeScreen() {
     addBottleModalIsOpen,
     editBottleModalIsOpen,
     bottleToEdit,
-    openEditBottleModal,
     handleEditBottle,
     handleCloseEditBottleModal
   } = useWater();

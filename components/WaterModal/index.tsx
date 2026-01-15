@@ -1,5 +1,5 @@
 import { Colors } from "@/constants/Colors";
-import { deleteWaterBottle } from "@/lib/axios";
+import { deleteWaterBottle } from "@/lib/profile";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
