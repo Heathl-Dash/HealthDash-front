@@ -1,13 +1,10 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const useStorage = () => {
-  const saveTokens = async (data: {
-    DashboardProfileRefresh: string;
-    DashboardProfileAccess: string;
-  }) => {
+  const saveTokens = async (data: { refresh: string; access: string }) => {
     try {
-      await AsyncStorage.setItem("access", data.DashboardProfileAccess);
-      await AsyncStorage.setItem("refresh", data.DashboardProfileRefresh);
+      await AsyncStorage.setItem("access", data.access);
+      await AsyncStorage.setItem("refresh", data.refresh);
     } catch (error) {
       console.log("Erro ao salvar:", error);
     }

@@ -1,16 +1,43 @@
-import { googleLogin } from "@/lib/axios";
-import { GoogleSignin, isSuccessResponse } from "@react-native-google-signin/google-signin";
-import { useMutation } from "@tanstack/react-query";
+import { makeRedirectUri, useAuthRequest } from "expo-auth-session";
 import { router } from "expo-router";
-import useStorage from "./useStorage";
+import * as WebBrowser from "expo-web-browser";
 import { useEffect, useState } from "react";
+import useStorage from "./useStorage";
+
+WebBrowser.maybeCompleteAuthSession();
+
+// --- CONFIGURAÇÕES DO KEYCLOAK ---
+const KEYCLOAK_URL = process.env.EXPO_PUBLIC_KEYCLOAK_URL; 
+const REALM = process.env.EXPO_PUBLIC_KEYCLOAK_REALM;
+const CLIENT_ID = process.env.EXPO_PUBLIC_KEYCLOAK_CLIENT_ID;
+
+const discovery = {
+  authorizationEndpoint: `${KEYCLOAK_URL}/realms/${REALM}/protocol/openid-connect/auth`,
+  tokenEndpoint: `${KEYCLOAK_URL}/realms/${REALM}/protocol/openid-connect/token`,
+  revocationEndpoint: `${KEYCLOAK_URL}/realms/${REALM}/protocol/openid-connect/revoke`,
+  endSessionEndpoint: `${KEYCLOAK_URL}/realms/${REALM}/protocol/openid-connect/logout`,
+};
+
+const redirectUri = makeRedirectUri({
+  scheme: "healthdash",
+  path: "login",
+});
 
 const useAuth = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const { saveTokens, removeAccessToken, removeRefreshToken, getAccessToken } = useStorage();
+  const { saveTokens, removeAccessToken, removeRefreshToken, getAccessToken, getRefreshToken } =
+    useStorage();
 
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      clientId: CLIENT_ID!,
+      scopes: ["openid", "profile", "email", "offline_access"], 
+      redirectUri: redirectUri,
+    },
+    discovery
+  );
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -18,63 +45,94 @@ const useAuth = () => {
       setIsAuthenticated(!!token);
       setLoading(false);
     };
-
     checkAuth();
-  }, []);
+  }, [getAccessToken]);
 
-  GoogleSignin.configure({
-    webClientId: `${process.env.EXPO_PUBLIC_WEB_CLIENT}`,
-  });
-
-
-  const googleLoginMutation = useMutation({
-    mutationFn: (googleToken: string) => googleLogin(googleToken),
-    onSuccess: (data) => {
-      saveTokens(data);
-      setIsAuthenticated(true)
-      router.push("/(tabs)");
-    },
-    onError: (error) => {
-      console.log(error);
-    },
-  });
-
-  async function handleGoogleSignIn() {
-    try {
-      await GoogleSignin.hasPlayServices();
-      const response = await GoogleSignin.signIn();
-
-      if (isSuccessResponse(response)) {
-        const idToken = response.data.idToken;
-        if (idToken !== null) {
-          googleLoginMutation.mutate(idToken);
-        } else {
-          console.error("Token não pode ser null");
-        }
-      }
-    } catch (err) {
-      console.log(err);
+  useEffect(() => {
+    if (response?.type === "success") {
+      const { code } = response.params;
+      exchangeCodeForToken(code);
+    } else if (response?.type === "error") {
+      console.error("Erro no login:", response.error);
     }
-  }
+  }, [response]);
+
+  const exchangeCodeForToken = async (code: string) => {
+    try {
+      const redirectUri = makeRedirectUri({ scheme: "healthdash", path: "login" });
+
+      console.log("redirectUrl", redirectUri);
+
+      const params = new URLSearchParams({
+        grant_type: "authorization_code",
+        client_id: CLIENT_ID!,
+        code: code,
+        redirect_uri: redirectUri,
+        code_verifier: request?.codeVerifier || "",
+      });
+
+      const res = await fetch(discovery.tokenEndpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: params.toString(),
+      });
+
+      const data = await res.json();
+      const access = data.access_token;
+      const refresh = data.refresh_token;
+
+      if (data.access_token) {
+        await saveTokens({
+          access: access,
+          refresh: refresh,
+        });
+
+        setIsAuthenticated(true);
+        router.replace("/(tabs)");
+      } else {
+        console.error("Falha ao obter token:", data);
+      }
+    } catch (error) {
+      console.error("Erro na troca de token:", error);
+    }
+  };
+
+  const handleLogin = () => {
+    promptAsync();
+  };
 
   const handleLogout = async () => {
     try {
-      await GoogleSignin.signOut(); 
-      await removeAccessToken()
-      await removeRefreshToken()
-      setIsAuthenticated(false)
-      router.push('/login')
+      const refreshToken = await getRefreshToken();
+
+      if (refreshToken) {
+        await fetch(discovery.endSessionEndpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams({
+            client_id: CLIENT_ID!,
+            refresh_token: refreshToken,
+          }).toString(),
+        }).catch((err) => console.log("Erro logout remoto", err));
+      }
+
+      await removeAccessToken();
+      await removeRefreshToken();
+      setIsAuthenticated(false);
+
+
+      router.replace("/login");
     } catch (error) {
       console.error("Erro ao deslogar:", error);
     }
   };
 
   return {
-    GoogleSignin,
-    handleGoogleSignIn,
+    handleLogin,
     handleLogout,
     isAuthenticated,
     loading,
+    request,
   };
 };
 
