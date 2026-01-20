@@ -1,7 +1,6 @@
 import AddPublicationButton from "@/components/AddPublicationButton";
 import Comments from "@/components/Comments";
 import Header from "@/components/Header";
-import ImageCarrousel from "@/components/ImageCarrousel";
 import Publication from "@/components/Publication";
 import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import { useRouter } from "expo-router";

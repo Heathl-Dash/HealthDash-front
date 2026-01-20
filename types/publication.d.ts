@@ -7,7 +7,7 @@ declare interface IPublication {
   isPublic: boolean;
   type: "toDo" | "habit" | "normal";
   images: string[] | null;
-  attach: IAttach;
+  attach: IAttach | null;
   isLike?: boolean;
   likesCount: number;
   commentsCount: number;
