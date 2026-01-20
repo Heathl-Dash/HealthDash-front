@@ -1,4 +1,5 @@
 import { profileApi } from "@/service/apis";
+import { PhysicalProfileDTO } from "@/dto/PhysicalProfile.dto";
 
 export type IProfileIMC = Pick<IProfile, "imc" | "imcDescription">;
 
@@ -42,6 +43,16 @@ export const getPostsByprofile = (id:number) => {
     .then((res) => res.data)
     .catch((err) => {
       console.error("erro ao receber perfil: ", err);
+      throw err;
+    });
+};
+
+export const createProfile = (data:PhysicalProfileDTO) => {
+  return profileApi
+    .post(`/profiles/onboarding`, data)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("erro ao criar perfil: ", err);
       throw err;
     });
 };
