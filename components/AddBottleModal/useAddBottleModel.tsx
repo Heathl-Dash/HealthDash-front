@@ -1,4 +1,4 @@
-import { createBottles, editWaterBottle } from "@/lib/axios";
+import { createBottles, editWaterBottle } from "@/lib/profile";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 

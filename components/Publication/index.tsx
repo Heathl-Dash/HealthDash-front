@@ -29,8 +29,15 @@ const Publication = ({ publication, onPressComments }: PublicationProps) => {
         </View>
       )}
 
-      <View style={[{ gap: 10 }, publication.images && publication.attach && styles.imagesAndAttachStyle]}>
-        {publication.images && <ImageCarrousel images={publication.images} />}
+      <View
+        style={[
+          { gap: 10 },
+          publication.images && publication.attach && styles.imagesAndAttachStyle,
+        ]}
+      >
+        {publication.images && publication.images.length > 0 && (
+          <ImageCarrousel images={publication.images} />
+        )}
         {publication.attach && publication.type != "normal" && (
           <Attach attach={publication.attach} type={publication.type} />
         )}

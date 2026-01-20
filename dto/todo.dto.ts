@@ -1,0 +1,1 @@
+export type ToDoForm = Pick<IToDo, "title" | "description">;

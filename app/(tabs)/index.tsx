@@ -9,7 +9,6 @@ import useHabit from "@/hooks/useHabit";
 import useIMC from "@/hooks/useIMC";
 import useTodo from "@/hooks/useToDo";
 import useWater from "@/hooks/useWater";
-import { Redirect, router } from "expo-router";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -28,7 +27,6 @@ export default function HomeScreen() {
     addBottleModalIsOpen,
     editBottleModalIsOpen,
     bottleToEdit,
-    openEditBottleModal,
     handleEditBottle,
     handleCloseEditBottleModal
   } = useWater();
@@ -61,8 +59,8 @@ export default function HomeScreen() {
       <View style={{ flexDirection: "row" }}>
         <View style={{ width: "50%", padding: 5 }}>
           <IMCCard
-            calc_IMC={imcData?.calc_IMC || null}
-            imc_classification={imcData?.imc_classification}
+            calc_IMC={imcData?.imc || null}
+            imc_classification={imcData?.imcDescription}
           />
         </View>
         <View style={{ width: "50%", padding: 5 }}>

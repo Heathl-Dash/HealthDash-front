@@ -119,7 +119,7 @@ const Comments = ({ bottomSheetRef }: CommentsProps) => {
         ))}
       </BottomSheetScrollView>
       <View style={styles.inputContainer}>
-        <CommentInput profileAvatar={profile?.avatar ?? null} profileUserName={profile?.name} />
+        <CommentInput profileAvatar={profile?.avatar ?? null} profileUserName={profile?.socialName}/>
       </View>
     </BottomSheet>
   );

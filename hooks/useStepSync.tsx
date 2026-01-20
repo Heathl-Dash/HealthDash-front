@@ -1,4 +1,4 @@
-import { createFitData } from "@/lib/axios";
+import { createFitData } from "@/lib/profile";
 import NetInfo from "@react-native-community/netinfo";
 import { useMutation } from "@tanstack/react-query";
 import { useSQLiteContext } from "expo-sqlite";

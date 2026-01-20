@@ -1,25 +1,29 @@
+import Comments from "@/components/Comments";
 import CustomButton from "@/components/CustomButton";
 import Header from "@/components/Header";
+import Publication from "@/components/Publication";
 import { Colors } from "@/constants/Colors";
 import useProfile from "@/hooks/useProfile";
+import { useProfilePosts } from "@/hooks/useProfilePost";
 import { MaterialIcons, Octicons } from "@expo/vector-icons";
 import ReadMore from "@fawazahmed/react-native-read-more";
+import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import { Stack, useLocalSearchParams } from "expo-router";
-import React from "react";
+import React, { useRef, useState } from "react";
 import { ActivityIndicator, Image, StatusBar, StyleSheet, Text, View } from "react-native";
+import { FlatList } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const MOCK_USERS: IProfile[] = [
   {
     id: 11,
-    name: "Gabriella Silva",
+    socialName: "Gabriella Silva",
     email: "gabriella@email.com",
-    weigth: "58",
-    heigth: "1.65",
+    weight: 58.0,
+    height: 1.65,
     age: 24,
-    calc_IMC: 21.3,
-    imc_classification: "Normal",
-    imc_degree: "Grau 0",
+    imc: 21.3,
+    imcDescription: "Normal",
     bio: "Apaixonada por tecnologia e bem-estar.",
     avatar: null,
     followingNumber: 128,
@@ -27,14 +31,13 @@ const MOCK_USERS: IProfile[] = [
   },
   {
     id: 22,
-    name: "Lucas Andrade",
+    socialName: "Lucas Andrade",
     email: "lucas.andrade@email.com",
-    weigth: "82",
-    heigth: "1.78",
+    weight: 82,
+    height: 1.78,
     age: 29,
-    calc_IMC: 25.9,
-    imc_classification: "Sobrepeso",
-    imc_degree: "Grau I",
+    imc: 25.9,
+    imcDescription: "Sobrepeso",
     bio: "Corrida, café e constância. Corrida, café e constância. Corrida, café e constância. Corrida, café e constância. Corrida, café e constância.",
     avatar: "https://i.pravatar.cc/300?img=12",
     followingNumber: 589,
@@ -42,14 +45,13 @@ const MOCK_USERS: IProfile[] = [
   },
   {
     id: 33,
-    name: "Marina Costa",
+    socialName: "Marina Costa",
     email: "marina.costa@email.com",
-    weigth: "64",
-    heigth: "1.70",
+    weight: 64,
+    height: 1.7,
     age: 26,
-    calc_IMC: 22.1,
-    imc_classification: "Normal",
-    imc_degree: "Grau 0",
+    imc: 22.1,
+    imcDescription: "Normal",
     bio: "Yoga, leitura e hábitos simples.",
     avatar: "https://i.pravatar.cc/300?img=32",
     followingNumber: 210,
@@ -67,6 +69,17 @@ const AccountPage = () => {
     ? profile
     : MOCK_USERS.find((u) => u.id === Number(id));
 
+  const bottomSheetRef = useRef<BottomSheetMethods | null>(null);
+  const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
+
+  if (!currentProfile) {
+    return (
+      <SafeAreaView>
+        <Text>Perfil não encontrado</Text>
+      </SafeAreaView>
+    );
+  }
+
   if (profileLoading && isMyProfile) {
     return (
       <SafeAreaView>
@@ -74,17 +87,21 @@ const AccountPage = () => {
       </SafeAreaView>
     );
   }
+  const { data: posts = [], isLoading: postsLoading } = useProfilePosts(currentProfile?.id);
+
+  const followers = currentProfile.followersNumber ?? 0;
+  const following = currentProfile.followingNumber ?? 0;
 
   const followersNumber =
-    currentProfile.followersNumber > 1000
-      ? `${currentProfile.followersNumber / 1000}k`
-      : currentProfile.followersNumber ?? "--";
+    followers > 1000 ? `${(followers / 1000).toFixed(1)}k` : followers || "--";
 
   const followingNumber =
-    currentProfile.followingNumber > 1000
-      ? `${currentProfile.followingNumber / 1000}k`
-      : currentProfile.followingNumber ?? "--";
+    following > 1000 ? `${(following / 1000).toFixed(1)}k` : following || "--";
 
+  const openComments = (publicationId: number) => {
+    setSelectedPostId(publicationId);
+    bottomSheetRef.current?.expand();
+  };
   return (
     <SafeAreaView style={{ paddingHorizontal: 30, flexGrow: 1, backgroundColor: "white" }}>
       <Stack.Screen options={{ headerShown: false }} />
@@ -101,7 +118,7 @@ const AccountPage = () => {
             )}
           </View>
           <View style={styles.infoContainer}>
-            <Text style={styles.infoName}>{currentProfile?.name}</Text>
+            <Text style={styles.infoName}>{currentProfile?.socialName}</Text>
             <View style={styles.followingContainer}>
               <Text style={styles.followingContainer}>{followersNumber ?? "--"} seguidores</Text>
               <Text style={styles.followingContainer}>|</Text>
@@ -152,6 +169,23 @@ const AccountPage = () => {
           />
         </View>
       )}
+
+      <View style={styles.publicationsContainer}>
+        {postsLoading ? (
+          <ActivityIndicator size="large" color={Colors.light.primary} />
+        ) : (
+          <FlatList
+            data={posts}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => (
+              <Publication publication={item} onPressComments={() => openComments(item.id)} />
+            )}
+            contentContainerStyle={{ gap: 20, paddingBottom: 40 }}
+            showsVerticalScrollIndicator={false}
+          />
+        )}
+      </View>
+      <Comments bottomSheetRef={bottomSheetRef} />
     </SafeAreaView>
   );
 };
@@ -196,6 +230,11 @@ const styles = StyleSheet.create({
   seeMore: {
     color: Colors.light.primary,
     fontWeight: "700",
+  },
+  publicationsContainer: {
+    gap: 5,
+    marginTop: 50,
+    marginBottom: 50,
   },
 });
 

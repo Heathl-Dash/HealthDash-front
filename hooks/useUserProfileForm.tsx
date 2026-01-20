@@ -1,5 +1,5 @@
+import { profileForm, updateProfile } from "@/lib/profile";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { updateProfile, profileForm } from "@/lib/axios";
 
 export const useUpdateUserProfile = () => {
   const queryClient = useQueryClient();
@@ -7,7 +7,7 @@ export const useUpdateUserProfile = () => {
   return useMutation({
     mutationFn: (data: profileForm) => updateProfile(data),
     onSuccess: () => {
-      queryClient.invalidateQueries(["profile"]); 
+      queryClient.invalidateQueries(["profile"]);
     },
     onError: (error) => {
       console.error("Erro ao atualizar perfil:", error);

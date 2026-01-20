@@ -1,27 +1,28 @@
 import GoogleIcon from "@/assets/icons/google.svg";
+import HealthDashLogo from "@/assets/images/healthDashLogo48.svg";
 import { Colors } from "@/constants/Colors";
 import useAuth from "@/hooks/useAuth";
 import { Redirect, Stack } from "expo-router";
 import React from "react";
 import { SafeAreaView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import HealthDashLogo from '@/assets/images/healthDashLogo48.svg'
 
 const LogoPlaceholder = () => (
   <View style={styles.logoContainer}>
     <View style={styles.logoCircle}>
-      <HealthDashLogo/>
+      <HealthDashLogo />
     </View>
   </View>
 );
 
 const LoginScreen = () => {
-  const { handleGoogleSignIn, isAuthenticated, loading } = useAuth();
+  const { handleLogin, isAuthenticated, loading, request } = useAuth();
 
-  if (loading) return null;
+  if (loading) return null; // Ou um Spinner
 
   if (isAuthenticated) {
     return <Redirect href="/(tabs)" />;
   }
+
   return (
     <SafeAreaView style={styles.container}>
       <Stack.Screen options={{ headerShown: false }} />
@@ -39,13 +40,14 @@ const LoginScreen = () => {
 
         <View style={styles.actionSection}>
           <TouchableOpacity
-            style={styles.googleButton}
-            onPress={handleGoogleSignIn}
+            style={[styles.googleButton, !request && { opacity: 0.5 }]}
+            onPress={handleLogin}
+            disabled={!request}
             activeOpacity={0.8}
           >
             <GoogleIcon width={30} height={30} />
             <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-              <Text style={styles.googleButtonText}>Entrar com Google</Text>
+              <Text style={styles.googleButtonText}>Entrar</Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -76,11 +78,6 @@ const styles = StyleSheet.create({
     height: 125,
     justifyContent: "center",
     alignItems: "center",
-  },
-  logoText: {
-    fontSize: 36,
-    fontWeight: "bold",
-    color: "#ffffff",
   },
   welcomeSection: {
     flex: 0.3,
@@ -120,37 +117,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.light.lightGray,
   },
-  googleIcon: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: "#ffffff",
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 12,
-  },
-  googleIconText: {
-    fontSize: 14,
-    fontWeight: "bold",
-    color: Colors.light.primary,
-  },
   googleButtonText: {
     fontSize: 16,
     fontWeight: "600",
     color: Colors.light.darkGray,
     fontFamily: "System",
-  },
-  termsText: {
-    fontSize: 12,
-    color: "#BEBEBE",
-    textAlign: "center",
-    lineHeight: 18,
-    paddingHorizontal: 16,
-    fontFamily: "System",
-  },
-  linkText: {
-    color: Colors.light.primary,
-    fontWeight: "500",
   },
 });
 

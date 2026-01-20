@@ -1,19 +1,21 @@
 import { TabItem } from "@/components/Tabs";
+import { HabitForm } from "@/dto/habit.dto";
 import {
   addFitNegativeCounter,
   addFitPositiveCounter,
+  createFitHabit,
+  deleteFitHabit,
+  editFitHabit,
+  getFitHabits,
+} from "@/lib/fit";
+import {
   addNutriNegativeCounter,
   addNutriPositiveCounter,
-  createFitHabit,
   createNutriHabit,
-  deleteFitHabit,
   deleteNutriHabit,
-  editFitHabit,
   editNutriHabit,
-  getFitHabits,
   getNutriHabits,
-  habitForm,
-} from "@/lib/axios";
+} from "@/lib/nutri";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 
@@ -24,19 +26,19 @@ const useHabit = () => {
     { key: "habit", label: "Hábitos" },
     { key: "todo", label: "Tarefas" },
   ];
-  
+
   const {
     data: nutriHabits,
     error: habitNutriError,
     isLoading: habitNutriIsLoading,
-    refetch
+    refetch,
   } = useQuery({ queryKey: ["nutriHabit"], queryFn: getNutriHabits });
 
   const queryClient = useQueryClient();
 
   const createNutriHabitMutation = () => {
     return useMutation({
-      mutationFn: (habitData: habitForm) => {
+      mutationFn: (habitData: HabitForm) => {
         if (!habitData.positive && !habitData.negative) {
           alert("Hábito deve ser positivo ou negativo.");
           throw new Error("Hábito deve ser positivo ou negativo.");
@@ -46,7 +48,7 @@ const useHabit = () => {
       },
       onSuccess: () => {
         console.log("Hábito criado com sucesso!");
-        refetch()
+        refetch();
       },
       onError: (error: any) => {
         console.error("Erro ao criar hábito:", error.message ?? error);
@@ -56,43 +58,43 @@ const useHabit = () => {
 
   const deleteNutriHabitMutation = () => {
     return useMutation({
-      mutationFn: (id:number) => deleteNutriHabit(id),
+      mutationFn: (id: number) => deleteNutriHabit(id),
       onSuccess: () => {
         console.log("Hábito deletado com sucesso!");
-        refetch()
+        refetch();
       },
-      onError: (error:any) => {
+      onError: (error: any) => {
         console.error("Erro ao deletar hábito:", error.message ?? error);
-      }
-    })
+      },
+    });
   };
 
   type editHabitPayload = {
-    id: number,
-    habitData: habitForm
+    id: number;
+    habitData: HabitForm;
   };
 
   const editNutriHabitMutation = () => {
     return useMutation({
-      mutationFn: ({id, habitData}: editHabitPayload) => {
+      mutationFn: ({ id, habitData }: editHabitPayload) => {
         if (!habitData.positive && !habitData.negative) {
           throw new Error("Hábito deve ser positivo ou negativo.");
         }
 
         return editNutriHabit(habitData, id);
-      }, 
-      onSuccess: () => {
-        refetch()
       },
-      onError: (error:any) => {
+      onSuccess: () => {
+        refetch();
+      },
+      onError: (error: any) => {
         console.error("Erro ao deletar hábito:", error.message ?? error);
-      }
-    })
-  }
+      },
+    });
+  };
 
   const createFitHabitMutation = () => {
     return useMutation({
-      mutationFn: (habitData: habitForm) => {
+      mutationFn: (habitData: HabitForm) => {
         if (!habitData.positive && !habitData.negative) {
           alert("Hábito deve ser positivo ou negativo.");
           throw new Error("Hábito deve ser positivo ou negativo.");
@@ -101,7 +103,7 @@ const useHabit = () => {
         return createFitHabit(habitData);
       },
       onSuccess: () => {
-        refetchFit()
+        refetchFit();
       },
       onError: (error: any) => {
         console.error("Erro ao criar hábito:", error.message ?? error);
@@ -111,34 +113,34 @@ const useHabit = () => {
 
   const deleteFitHabitMutation = () => {
     return useMutation({
-      mutationFn: (id:number) => deleteFitHabit(id),
+      mutationFn: (id: number) => deleteFitHabit(id),
       onSuccess: () => {
         console.log("Hábito deletado com sucesso!");
-        refetchFit()
+        refetchFit();
       },
-      onError: (error:any) => {
+      onError: (error: any) => {
         console.error("Erro ao deletar hábito:", error.message ?? error);
-      }
-    })
+      },
+    });
   };
 
   const editFitHabitMutation = () => {
     return useMutation({
-      mutationFn: ({id, habitData}: editHabitPayload) => {
+      mutationFn: ({ id, habitData }: editHabitPayload) => {
         if (!habitData.positive && !habitData.negative) {
           throw new Error("Hábito deve ser positivo ou negativo.");
         }
 
         return editFitHabit(habitData, id);
-      }, 
-      onSuccess: () => {
-        refetchFit()
       },
-      onError: (error:any) => {
+      onSuccess: () => {
+        refetchFit();
+      },
+      onError: (error: any) => {
         console.error("Erro ao deletar hábito:", error.message ?? error);
-      }
-    })
-  }
+      },
+    });
+  };
 
   const addNutriPositiveCounterMutation = useMutation({
     mutationFn: (id: number) => addNutriPositiveCounter(id),
@@ -158,20 +160,20 @@ const useHabit = () => {
     data: fitHabits,
     error: habitFitError,
     isLoading: habitFitIsLoading,
-    refetch:refetchFit
+    refetch: refetchFit,
   } = useQuery({ queryKey: ["fitHabit"], queryFn: getFitHabits });
 
   const addFitPositiveCounterMutation = useMutation({
     mutationFn: (id: number) => addFitPositiveCounter(id),
     onSuccess: () => {
-      refetchFit()
+      refetchFit();
     },
   });
 
   const addFitNegativeCounterMutation = useMutation({
     mutationFn: (id: number) => addFitNegativeCounter(id),
     onSuccess: () => {
-      refetchFit()
+      refetchFit();
     },
   });
 
