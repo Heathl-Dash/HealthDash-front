@@ -72,6 +72,7 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   inputStyle:{
-    borderColor: Colors.light.lightGray
+    borderColor: Colors.light.lightGray,
+    color: Colors.light.darkGray
   }
 });

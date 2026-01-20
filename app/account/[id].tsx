@@ -1,3 +1,4 @@
+import Comments from "@/components/Comments";
 import CustomButton from "@/components/CustomButton";
 import Header from "@/components/Header";
 import Publication from "@/components/Publication";
@@ -6,8 +7,9 @@ import useProfile from "@/hooks/useProfile";
 import { useProfilePosts } from "@/hooks/useProfilePost";
 import { MaterialIcons, Octicons } from "@expo/vector-icons";
 import ReadMore from "@fawazahmed/react-native-read-more";
+import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import { Stack, useLocalSearchParams } from "expo-router";
-import React from "react";
+import React, { useRef, useState } from "react";
 import { ActivityIndicator, Image, StatusBar, StyleSheet, Text, View } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -67,6 +69,9 @@ const AccountPage = () => {
     ? profile
     : MOCK_USERS.find((u) => u.id === Number(id));
 
+  const bottomSheetRef = useRef<BottomSheetMethods | null>(null);
+  const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
+
   if (!currentProfile) {
     return (
       <SafeAreaView>
@@ -93,6 +98,10 @@ const AccountPage = () => {
   const followingNumber =
     following > 1000 ? `${(following / 1000).toFixed(1)}k` : following || "--";
 
+  const openComments = (publicationId: number) => {
+    setSelectedPostId(publicationId);
+    bottomSheetRef.current?.expand();
+  };
   return (
     <SafeAreaView style={{ paddingHorizontal: 30, flexGrow: 1, backgroundColor: "white" }}>
       <Stack.Screen options={{ headerShown: false }} />
@@ -168,12 +177,15 @@ const AccountPage = () => {
           <FlatList
             data={posts}
             keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => <Publication publication={item} onPressComments={() => {}} />}
+            renderItem={({ item }) => (
+              <Publication publication={item} onPressComments={() => openComments(item.id)} />
+            )}
             contentContainerStyle={{ gap: 20, paddingBottom: 40 }}
             showsVerticalScrollIndicator={false}
           />
         )}
       </View>
+      <Comments bottomSheetRef={bottomSheetRef} />
     </SafeAreaView>
   );
 };
@@ -219,11 +231,11 @@ const styles = StyleSheet.create({
     color: Colors.light.primary,
     fontWeight: "700",
   },
-  publicationsContainer:{
+  publicationsContainer: {
     gap: 5,
     marginTop: 50,
-    marginBottom: 50
-  }
+    marginBottom: 50,
+  },
 });
 
 export default AccountPage;
