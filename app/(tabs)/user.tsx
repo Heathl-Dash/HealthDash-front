@@ -5,7 +5,8 @@ import UserProfileForm from "@/components/UserProfileForm";
 import { Colors } from "@/constants/Colors";
 import useAuth from "@/hooks/useAuth";
 import useProfile from "@/hooks/useProfile";
-import { getFitData, getWaterIntakes } from "@/lib/profile";
+import { getFitData } from "@/lib/fit";
+import { getWaterIntakes } from "@/lib/nutri";
 import { Entypo, FontAwesome5, FontAwesome6 } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
 import moment from "moment";
@@ -35,15 +36,15 @@ const UserInfo = ({ user, isLoading }: UserProps) => {
     <View style={styles.userInfoContainer}>
       <View style={styles.userInfoWrapper}>
         <Text style={styles.userInfoLabel}>Nome</Text>
-        <Text>{user?.name !== null ? user?.name : "Não informado"}</Text>
+        <Text>{user?.socialName !== null ? user?.socialName : "Não informado"}</Text>
       </View>
       <View style={styles.userInfoWrapper}>
         <Text style={styles.userInfoLabel}>Altura</Text>
-        <Text>{user?.heigth !== null ? user?.heigth : "Não informado"}</Text>
+        <Text>{user?.height !== null ? user?.height : "Não informado"}</Text>
       </View>
       <View style={styles.userInfoWrapper}>
         <Text style={styles.userInfoLabel}>Peso</Text>
-        <Text>{user?.weigth !== null ? user?.weigth : "Não informado"}</Text>
+        <Text>{user?.weight !== null ? user?.weight : "Não informado"}</Text>
       </View>
       <View style={styles.userInfoWrapper}>
         <Text style={styles.userInfoLabel}>Idade</Text>
@@ -53,17 +54,13 @@ const UserInfo = ({ user, isLoading }: UserProps) => {
       <View style={styles.userImcInfo}>
         <View style={styles.userInfoWrapper}>
           <Text style={styles.userInfoLabel}>IMC</Text>
-          <Text>{user?.calc_IMC !== null ? user?.calc_IMC : "Não informado"}</Text>
+          <Text>{user?.imc !== null ? user?.imc : "Não informado"}</Text>
         </View>
         <View style={styles.userInfoWrapper}>
           <Text style={styles.userInfoLabel}>Classificação</Text>
           <Text>
-            {user?.imc_classification !== null ? user?.imc_classification : "Não informado"}
+            {user?.imcDescription !== null ? user?.imcDescription : "Não informado"}
           </Text>
-        </View>
-        <View style={styles.userInfoWrapper}>
-          <Text style={styles.userInfoLabel}>Grau de obesidade</Text>
-          <Text>{user?.imc_degree !== null ? user?.imc_degree : "Não informado"}</Text>
         </View>
       </View>
     </View>
@@ -73,6 +70,7 @@ const UserInfo = ({ user, isLoading }: UserProps) => {
 export default function User() {
   const { handleLogout } = useAuth();
   const { profile, profileErro, profileLoading } = useProfile();
+  console.log(profile)
 
   const [isEditing, setIsEditing] = useState(false);
 

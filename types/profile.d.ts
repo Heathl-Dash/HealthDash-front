@@ -1,15 +1,14 @@
 declare interface IProfile {
   id: number;
-  name: string;
-  email: string;
-  weigth?: string;
-  heigth?: string;
+  socialName: string;
+  email?: string;
+  weight?: number;
+  height?: number;
   age?: number;
-  calc_IMC: number;
-  imc_classification: string;
-  imc_degree: string;
-  bio?: string
-  avatar: string | null
-  followingNumber: number,
-  followersNumber: number
+  imc: number;
+  imcDescription: string;
+  bio?: string;
+  avatarUrl: string | null;
+  followingNumber?: number | null;
+  followersNumber?: number | null;
 }

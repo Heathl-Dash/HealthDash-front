@@ -1,11 +1,11 @@
 import { ProfileForm } from "@/dto/profile.dto";
 import { profileApi } from "@/service/apis";
 
-export type IProfileIMC = Pick<IProfile, "calc_IMC" | "imc_classification">;
+export type IProfileIMC = Pick<IProfile, "imc" | "imcDescription">;
 
 export const getProfile = () => {
   return profileApi
-    .get(`profiles/retrieveprofile/`)
+    .get(`/profiles/me`)
     .then((res) => res.data)
     .catch((err) => {
       console.error("erro ao receber perfil: ", err);
@@ -15,10 +15,10 @@ export const getProfile = () => {
 
 export const getProfileIMC = async (): Promise<IProfileIMC | null> => {
   try {
-    const { data } = await profileApi.get<IProfile>("profiles/retrieveprofile/");
+    const { data } = await profileApi.get<IProfile>("profiles/me");
     return {
-      calc_IMC: data.calc_IMC,
-      imc_classification: data.imc_classification,
+      imc: data.imc,
+      imcDescription: data.imcDescription,
     };
   } catch (error: any) {
     console.error("Erro ao pegar imc:", error);
@@ -26,22 +26,4 @@ export const getProfileIMC = async (): Promise<IProfileIMC | null> => {
   }
 };
 
-export const updateProfile = async (data: ProfileForm) => {
-  return profileApi
-    .patch(`profiles/updateprofile/`, data)
-    .then((res) => res.data)
-    .catch((err) => {
-      console.error("Erro ao atualizar o perfil: ", err);
-      throw err;
-    });
-};
 
-export const googleLogin = (googleToken: string) => {
-  return profileApi
-    .post(`profiles/googlelogin/`, { token: googleToken })
-    .then((res) => res.data)
-    .catch((err) => {
-      console.error("Erro ao buscar token do google: ", err);
-      throw err;
-    });
-};
