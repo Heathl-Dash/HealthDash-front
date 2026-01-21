@@ -1,8 +1,11 @@
 import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CustomInput from "@/components/CustomInput";
 import { useCreatePhysicalProfile } from "@/hooks/useCreatePhysicalProfile";
 import { useRouter } from "expo-router";
+import { decodeToken } from "./utils/decodeToken";
+import { storage } from "@/service/storage";
+import { Colors } from "@/constants/Colors";
 
 export default function CreateProfile() {
   const [socialName, setSocialName] = useState("");
@@ -11,6 +14,26 @@ export default function CreateProfile() {
   const [gender, setGender] = useState<"FEMININO" | "MASCULINO" | "OUTRO" | "">("");
   const [height, setHeight] = useState("");
   const [weight, setWeight] = useState("");
+
+  useEffect(() => {
+  async function loadUserInfo() {
+    const tokens = await storage.getTokens();
+
+    if (!tokens?.access) return;
+
+    const decoded = decodeToken(tokens.access);
+
+    if (decoded?.name) {
+      setSocialName(decoded.name);
+    }
+
+    if (decoded?.picture) {
+      setAvatar(decoded.picture);
+    }
+  }
+
+  loadUserInfo();
+}, []);
 
   const createPhysicalProfile = useCreatePhysicalProfile();
 
@@ -57,6 +80,7 @@ export default function CreateProfile() {
         value={socialName}
         onChangeText={setSocialName}
         styleContainer={styles.inputSpacing}
+        placeholderTextColor={Colors.light.darkGray}
       />
 
 
@@ -66,6 +90,7 @@ export default function CreateProfile() {
         value={birthDate}
         onChangeText={setBirthDate}
         styleContainer={styles.inputSpacing}
+        placeholderTextColor={Colors.light.darkGray}
       />
 
       <Text style={styles.genderLabel}>Gênero</Text>
@@ -91,6 +116,7 @@ export default function CreateProfile() {
         value={height}
         onChangeText={setHeight}
         styleContainer={styles.inputSpacing}
+        placeholderTextColor={Colors.light.darkGray}
       />
 
       <CustomInput
@@ -100,6 +126,7 @@ export default function CreateProfile() {
         value={weight}
         onChangeText={setWeight}
         styleContainer={styles.inputSpacingLarge}
+        placeholderTextColor={Colors.light.darkGray}
       />
 
       <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
@@ -139,9 +166,11 @@ const styles = StyleSheet.create({
   },
   inputSpacing: {
     marginBottom: 12,
+    color: Colors.light.darkGray
   },
   inputSpacingLarge: {
     marginBottom: 24,
+    color: Colors.light.darkGray
   },
   genderLabel: {
     marginBottom: 8,
@@ -157,10 +186,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#e5e7eb",
   },
   genderButtonActive: {
-    backgroundColor: "#22c55e",
+    backgroundColor: Colors.light.primary,
   },
   submitButton: {
-    backgroundColor: "#22c55e",
+    backgroundColor: Colors.light.primary,
     padding: 14,
     borderRadius: 8,
     alignItems: "center",
