@@ -5,6 +5,7 @@ import { useCreatePhysicalProfile } from "@/hooks/useCreatePhysicalProfile";
 import { storage } from "@/service/storage";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
+import { useLocalSearchParams } from "expo-router";
 
 import {
   Image,
@@ -18,6 +19,8 @@ import {
 } from "react-native";
 import { decodeToken } from "./utils/decodeToken";
 
+type Mode = "create" | "edit";
+
 export default function CreateProfile() {
   const [socialName, setSocialName] = useState("");
   const [avatar, setAvatar] = useState("");
@@ -29,27 +32,33 @@ export default function CreateProfile() {
   const [height, setHeight] = useState("");
   const [weight, setWeight] = useState("");
 
+  const { mode } = useLocalSearchParams<{ mode?: Mode }>();
+
+  const isEdit = mode === "edit";
+
   useEffect(() => {
-    async function loadUserInfo() {
-      const tokens = await storage.getTokens();
+  if (isEdit) return;
 
-      if (!tokens?.access) return;
+  async function loadUserInfo() {
+    const tokens = await storage.getTokens();
+    if (!tokens?.access) return;
 
-      const decoded = decodeToken(tokens.access);
+    const decoded = decodeToken(tokens.access);
 
-      if (decoded?.name) {
-        setSocialName(decoded.name);
-      }
-
-      if (decoded?.picture) {
-        setAvatar(decoded.picture);
-      }
+    if (decoded?.name) {
+      setSocialName(decoded.name);
     }
 
-    loadUserInfo();
-  }, []);
+    if (decoded?.picture) {
+      setAvatar(decoded.picture);
+    }
+  }
+
+  loadUserInfo();
+}, [isEdit]);
 
   const createPhysicalProfile = useCreatePhysicalProfile();
+// const updatePhysicalProfile = useUpdatePhysicalProfile();
 
   const { push } = useRouter();
 
