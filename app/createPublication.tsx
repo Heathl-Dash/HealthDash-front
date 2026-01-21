@@ -2,6 +2,7 @@ import CustomButton from "@/components/CustomButton";
 import CustomInput from "@/components/CustomInput";
 import ImageInput from "@/components/ImageInput";
 import { Colors } from "@/constants/Colors";
+import { Entypo } from "@expo/vector-icons";
 import { Stack } from "expo-router";
 import React, { useState } from "react";
 import { Image, KeyboardAvoidingView, Platform, StyleSheet, View } from "react-native";
@@ -54,7 +55,12 @@ const CreatePublication = () => {
             )}
 
             <View style={styles.optionsContainer}>
-              <ImageInput onChangeImages={setImages} />
+              <ImageInput
+                onChangeImages={setImages}
+                allowsMultipleSelection
+                label="Adicionar imagem"
+                icon={<Entypo name="attachment" size={20} />}
+              />
             </View>
           </View>
         </View>

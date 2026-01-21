@@ -1,45 +1,51 @@
-import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
-import { useEffect, useState } from "react";
 import CustomInput from "@/components/CustomInput";
-import { useCreatePhysicalProfile } from "@/hooks/useCreatePhysicalProfile";
-import { useRouter } from "expo-router";
-import { decodeToken } from "./utils/decodeToken";
-import { storage } from "@/service/storage";
+import ImageInput from "@/components/ImageInput";
 import { Colors } from "@/constants/Colors";
+import { useCreatePhysicalProfile } from "@/hooks/useCreatePhysicalProfile";
+import { storage } from "@/service/storage";
+import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { decodeToken } from "./utils/decodeToken";
 
 export default function CreateProfile() {
   const [socialName, setSocialName] = useState("");
   const [avatar, setAvatar] = useState("");
+  const [birthDay, setBirthDay] = useState("");
+  const [birthMonth, setBirthMonth] = useState("");
+  const [birthYear, setBirthYear] = useState("");
   const [birthDate, setBirthDate] = useState("");
   const [gender, setGender] = useState<"FEMININO" | "MASCULINO" | "OUTRO" | "">("");
   const [height, setHeight] = useState("");
   const [weight, setWeight] = useState("");
 
   useEffect(() => {
-  async function loadUserInfo() {
-    const tokens = await storage.getTokens();
+    async function loadUserInfo() {
+      const tokens = await storage.getTokens();
 
-    if (!tokens?.access) return;
+      if (!tokens?.access) return;
 
-    const decoded = decodeToken(tokens.access);
+      const decoded = decodeToken(tokens.access);
 
-    if (decoded?.name) {
-      setSocialName(decoded.name);
+      if (decoded?.name) {
+        setSocialName(decoded.name);
+      }
+
+      if (decoded?.picture) {
+        setAvatar(decoded.picture);
+      }
     }
 
-    if (decoded?.picture) {
-      setAvatar(decoded.picture);
-    }
-  }
-
-  loadUserInfo();
-}, []);
+    loadUserInfo();
+  }, []);
 
   const createPhysicalProfile = useCreatePhysicalProfile();
 
-  const {push} = useRouter() 
+  const { push } = useRouter();
 
   function handleSubmit() {
+    const birthDate = `${birthYear}-${birthMonth.padStart(2, "0")}-${birthDay.padStart(2, "0")}`;
+
     const physicalPayload = {
       birthDate,
       gender: gender as "FEMININO" | "MASCULINO",
@@ -53,7 +59,7 @@ export default function CreateProfile() {
 
         // futuro:
         // updateSocialProfile({ socialName, avatar });
-        push("/(tabs)")
+        push("/(tabs)");
       },
     });
   }
@@ -63,16 +69,15 @@ export default function CreateProfile() {
       <Text style={styles.title}>Meu perfil</Text>
 
       <View style={styles.avatarContainer}>
-        {avatar ? (
-          <Image source={{ uri: avatar }} style={styles.avatarImage} />
-        ) : (
-          <View style={styles.avatarPlaceholder}>
-            <Text>Avatar</Text>
-          </View>
-        )}
+        <Image
+          source={{ uri: avatar || "https://via.placeholder.com/96" }}
+          style={styles.avatarImage}
+        />
 
+        <View>
+          <ImageInput onChangeImage={setAvatar} label="Trocar avatar" />
+        </View>
       </View>
-        
 
       <CustomInput
         label="nome social"
@@ -83,15 +88,39 @@ export default function CreateProfile() {
         placeholderTextColor={Colors.light.darkGray}
       />
 
+      <Text style={styles.label}>Data de nascimento</Text>
 
-      <CustomInput
-        label="data de nascimento"
-        placeholder="YYYY-MM-DD"
-        value={birthDate}
-        onChangeText={setBirthDate}
-        styleContainer={styles.inputSpacing}
-        placeholderTextColor={Colors.light.darkGray}
-      />
+      <View style={styles.dateContainer}>
+        <CustomInput
+          placeholder="DD"
+          keyboardType="number-pad"
+          maxLength={2}
+          value={birthDay}
+          onChangeText={setBirthDay}
+          styleContainer={styles.dateInput}
+          placeholderTextColor={Colors.light.darkGray}
+        />
+
+        <CustomInput
+          placeholder="MM"
+          keyboardType="number-pad"
+          maxLength={2}
+          value={birthMonth}
+          onChangeText={setBirthMonth}
+          styleContainer={styles.dateInput}
+          placeholderTextColor={Colors.light.darkGray}
+        />
+
+        <CustomInput
+          placeholder="AAAA"
+          keyboardType="number-pad"
+          maxLength={4}
+          value={birthYear}
+          onChangeText={setBirthYear}
+          styleContainer={styles.dateInput}
+          placeholderTextColor={Colors.light.darkGray}
+        />
+      </View>
 
       <Text style={styles.genderLabel}>Gênero</Text>
       <View style={styles.genderContainer}>
@@ -99,10 +128,7 @@ export default function CreateProfile() {
           <TouchableOpacity
             key={item}
             onPress={() => setGender(item as any)}
-            style={[
-              styles.genderButton,
-              gender === item && styles.genderButtonActive,
-            ]}
+            style={[styles.genderButton, gender === item && styles.genderButtonActive]}
           >
             <Text>{item}</Text>
           </TouchableOpacity>
@@ -111,7 +137,7 @@ export default function CreateProfile() {
 
       <CustomInput
         label="altura"
-        placeholder="Ex: 1.68"
+        placeholder="Ex: 168"
         keyboardType="decimal-pad"
         value={height}
         onChangeText={setHeight}
@@ -166,11 +192,11 @@ const styles = StyleSheet.create({
   },
   inputSpacing: {
     marginBottom: 12,
-    color: Colors.light.darkGray
+    color: Colors.light.darkGray,
   },
   inputSpacingLarge: {
     marginBottom: 24,
-    color: Colors.light.darkGray
+    color: Colors.light.darkGray,
   },
   genderLabel: {
     marginBottom: 8,
@@ -186,7 +212,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#e5e7eb",
   },
   genderButtonActive: {
-    backgroundColor: Colors.light.primary,
+    backgroundColor: Colors.light.secondary,
   },
   submitButton: {
     backgroundColor: Colors.light.primary,
@@ -198,5 +224,18 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "600",
   },
-});
+  label: {
+    marginBottom: 8,
+  },
 
+  dateContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 12,
+  },
+
+  dateInput: {
+    flex: 1,
+    marginRight: 8,
+  },
+});
