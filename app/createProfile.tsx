@@ -5,7 +5,17 @@ import { useCreatePhysicalProfile } from "@/hooks/useCreatePhysicalProfile";
 import { storage } from "@/service/storage";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+
+import {
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { decodeToken } from "./utils/decodeToken";
 
 export default function CreateProfile() {
@@ -65,100 +75,116 @@ export default function CreateProfile() {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Meu perfil</Text>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 30}
+    >
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.container}>
+          <Text style={styles.title}>Meu perfil</Text>
 
-      <View style={styles.avatarContainer}>
-        <Image
-          source={{ uri: avatar || "https://via.placeholder.com/96" }}
-          style={styles.avatarImage}
-        />
+          <View style={styles.avatarContainer}>
+            {avatar ? (
+              <Image
+                source={{ uri: avatar || "https://via.placeholder.com/96" }}
+                style={styles.avatarImage}
+              />
+            ) : (
+              <ImageInput onChangeImage={setAvatar} label="" style={styles.avatarPlaceholder} />
+            )}
 
-        <View>
-          <ImageInput onChangeImage={setAvatar} label="Trocar avatar" />
-        </View>
-      </View>
+            <View>
+              <ImageInput onChangeImage={setAvatar} label="Trocar avatar" />
+            </View>
+          </View>
 
-      <CustomInput
-        label="nome social"
-        placeholder="Digite seu nome social"
-        value={socialName}
-        onChangeText={setSocialName}
-        styleContainer={styles.inputSpacing}
-        placeholderTextColor={Colors.light.darkGray}
-      />
+          <CustomInput
+            label="nome social"
+            placeholder="Digite seu nome social"
+            value={socialName}
+            onChangeText={setSocialName}
+            styleContainer={styles.inputSpacing}
+            placeholderTextColor={Colors.light.darkGray}
+          />
 
-      <Text style={styles.label}>Data de nascimento</Text>
+          <Text style={styles.label}>* Data de nascimento</Text>
 
-      <View style={styles.dateContainer}>
-        <CustomInput
-          placeholder="DD"
-          keyboardType="number-pad"
-          maxLength={2}
-          value={birthDay}
-          onChangeText={setBirthDay}
-          styleContainer={styles.dateInput}
-          placeholderTextColor={Colors.light.darkGray}
-        />
+          <View style={styles.dateContainer}>
+            <CustomInput
+              placeholder="DD"
+              keyboardType="number-pad"
+              maxLength={2}
+              value={birthDay}
+              onChangeText={setBirthDay}
+              styleContainer={styles.dateInput}
+              placeholderTextColor={Colors.light.darkGray}
+            />
 
-        <CustomInput
-          placeholder="MM"
-          keyboardType="number-pad"
-          maxLength={2}
-          value={birthMonth}
-          onChangeText={setBirthMonth}
-          styleContainer={styles.dateInput}
-          placeholderTextColor={Colors.light.darkGray}
-        />
+            <CustomInput
+              placeholder="MM"
+              keyboardType="number-pad"
+              maxLength={2}
+              value={birthMonth}
+              onChangeText={setBirthMonth}
+              styleContainer={styles.dateInput}
+              placeholderTextColor={Colors.light.darkGray}
+            />
 
-        <CustomInput
-          placeholder="AAAA"
-          keyboardType="number-pad"
-          maxLength={4}
-          value={birthYear}
-          onChangeText={setBirthYear}
-          styleContainer={styles.dateInput}
-          placeholderTextColor={Colors.light.darkGray}
-        />
-      </View>
+            <CustomInput
+              placeholder="AAAA"
+              keyboardType="number-pad"
+              maxLength={4}
+              value={birthYear}
+              onChangeText={setBirthYear}
+              styleContainer={styles.dateInput}
+              placeholderTextColor={Colors.light.darkGray}
+            />
+          </View>
 
-      <Text style={styles.genderLabel}>Gênero</Text>
-      <View style={styles.genderContainer}>
-        {["FEMININO", "MASCULINO"].map((item) => (
-          <TouchableOpacity
-            key={item}
-            onPress={() => setGender(item as any)}
-            style={[styles.genderButton, gender === item && styles.genderButtonActive]}
-          >
-            <Text>{item}</Text>
+          <Text style={styles.genderLabel}>Gênero</Text>
+          <View style={styles.genderContainer}>
+            {["FEMININO", "MASCULINO"].map((item) => (
+              <TouchableOpacity
+                key={item}
+                onPress={() => setGender(item as any)}
+                style={[styles.genderButton, gender === item && styles.genderButtonActive]}
+              >
+                <Text>{item}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          <CustomInput
+            label="altura"
+            placeholder="Ex: 168"
+            keyboardType="decimal-pad"
+            value={height}
+            onChangeText={setHeight}
+            styleContainer={styles.inputSpacing}
+            placeholderTextColor={Colors.light.darkGray}
+          />
+
+          <CustomInput
+            label="peso"
+            placeholder="Ex: 69.0"
+            keyboardType="decimal-pad"
+            value={weight}
+            onChangeText={setWeight}
+            styleContainer={styles.inputSpacingLarge}
+            placeholderTextColor={Colors.light.darkGray}
+          />
+
+          <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+            <Text style={styles.submitText}>Salvar</Text>
           </TouchableOpacity>
-        ))}
-      </View>
-
-      <CustomInput
-        label="altura"
-        placeholder="Ex: 168"
-        keyboardType="decimal-pad"
-        value={height}
-        onChangeText={setHeight}
-        styleContainer={styles.inputSpacing}
-        placeholderTextColor={Colors.light.darkGray}
-      />
-
-      <CustomInput
-        label="peso"
-        placeholder="Ex: 69.0"
-        keyboardType="decimal-pad"
-        value={weight}
-        onChangeText={setWeight}
-        styleContainer={styles.inputSpacingLarge}
-        placeholderTextColor={Colors.light.darkGray}
-      />
-
-      <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-        <Text style={styles.submitText}>Salvar</Text>
-      </TouchableOpacity>
-    </View>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -166,6 +192,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
+    marginBottom: 50,
   },
   title: {
     fontSize: 22,
@@ -180,7 +207,8 @@ const styles = StyleSheet.create({
   avatarImage: {
     width: 96,
     height: 96,
-    borderRadius: 48,
+    borderRadius: 50,
+    backgroundColor: "#e5e7eb",
   },
   avatarPlaceholder: {
     width: 96,
