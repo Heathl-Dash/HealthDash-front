@@ -42,10 +42,11 @@ export default function SocialMedia() {
       id: 2,
       description:
         "Começando a compartilhar um pouco da minha rotina por aqui. A ideia é registrar pequenos momentos, aprendizados do dia a dia e acompanhar minha evolução ao longo do tempo.",
-      profileId: 1,
+      profileId: 2,
       profileName: "Fulano01",
       profileAvatar: null,
       isPublic: true,
+      isCollected: true,
       type: "toDo",
       images: null,
       attach: {
