@@ -6,12 +6,16 @@ import {
   View,
   TouchableOpacity,
   FlatList,
+  Pressable,
+  Dimensions,
 } from 'react-native';
 
 interface DropDownProps {
   icon: React.ReactNode;
   options: DropDownOption[];
 }
+
+const { width: WINDOW_WIDTH, height: WINDOW_HEIGHT } = Dimensions.get('window');
 
 const DropDown = ({ icon, options }: DropDownProps) => {
   const [visible, setVisible] = useState(false);
@@ -29,17 +33,20 @@ const DropDown = ({ icon, options }: DropDownProps) => {
         {icon}
       </TouchableOpacity>
       {visible && (
-        <View style={styles.dropdown}>
-          <FlatList
-            data={options}
-            keyExtractor={(_, index) => index.toString()}
-            renderItem={({ item }) => (
-              <TouchableOpacity style={styles.item} onPress={() => onItemPress(item)}>
-                <Text style={styles.itemText}>{item.label}</Text>
-              </TouchableOpacity>
-            )}
-          />
-        </View>
+        <>
+          <Pressable style={styles.backdrop} onPress={() => setVisible(false)} />
+          <View style={styles.dropdown}>
+            <FlatList
+              data={options}
+              keyExtractor={(_, index) => index.toString()}
+              renderItem={({ item }) => (
+                <TouchableOpacity style={styles.item} onPress={() => onItemPress(item)}>
+                  <Text style={styles.itemText}>{item.label}</Text>
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+        </>
       )}
     </View>
   );
@@ -57,6 +64,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  backdrop: {
+    position: 'absolute',
+    top: -WINDOW_HEIGHT,
+    left: -WINDOW_WIDTH,
+    width: WINDOW_WIDTH * 3,
+    height: WINDOW_HEIGHT * 3,
+    backgroundColor: 'transparent',
+    zIndex: 5,
+  },
   dropdown: {
     position: 'absolute',
     top: 32,
@@ -64,13 +80,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     width: 180,
     borderRadius: 12,
-    // Sombras para Android/iOS
     elevation: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 4.65,
-    overflow: 'hidden', // Garante que o efeito de clique respeite o border radius
+    overflow: 'hidden',
     zIndex: 10,
   },
   item: {
