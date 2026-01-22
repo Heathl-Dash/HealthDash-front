@@ -28,7 +28,7 @@ export const getProfileIMC = async (): Promise<IProfileIMC | null> => {
 
 export const getPosts = () => {
   return profileApi
-    .get(`/posts/`)
+    .get(`/posts`)
     .then((res) => res.data)
     .catch((err) => {
       console.error("erro ao receber perfil: ", err);
