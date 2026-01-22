@@ -5,9 +5,10 @@ import AttachSelectorModal from "@/components/AttachSelectorModal";
 import ImageInput from "@/components/ImageInput";
 import { Colors } from "@/constants/Colors";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
+  Alert,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -15,13 +16,23 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { createPublication, uploadPublicationImages } from "@/lib/profile";
+
+const PUBLICATION_TYPE_ID = {
+  normal: 1,
+  toDo: 2,
+  habit: 3,
+};
 
 const CreatePublication = () => {
   const [images, setImages] = useState<string[]>([]);
   const [attachType, setAttachType] = useState<"habit" | "toDo" | null>(null);
   const [attachDraft, setAttachDraft] = useState<IAttach | null>(null);
   const [isAttachModalVisible, setIsAttachModalVisible] = useState(false);
+  const [description, setDescription] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
   const show = images.length > 0;
+  const router = useRouter();
 
   const openAttachModal = () => {
     setIsAttachModalVisible(true);
@@ -52,6 +63,54 @@ const CreatePublication = () => {
     setIsAttachModalVisible(false);
   };
 
+  const handlePublish = async () => {
+    if (!description.trim() && images.length === 0 && !attachDraft) {
+      Alert.alert("Conteúdo vazio", "Adicione um texto, imagem ou anexo antes de publicar.");
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+      const typeId = attachType ? PUBLICATION_TYPE_ID[attachType] : PUBLICATION_TYPE_ID.normal;
+
+      const normalizedDescription = description.trim();
+      const safeDescription = normalizedDescription.length > 0 ? normalizedDescription : " ";
+      const payload: any = {
+        title: normalizedDescription.length > 0 ? normalizedDescription : "Sem titulo",
+        description: safeDescription,
+        typeId,
+        isPublic: true,
+      };
+
+      console.log("payload create post:", payload);
+
+      // Backend ainda nao aceita attach na publicacao.
+
+      const created = await createPublication(payload);
+      const postId = created?.id ?? created?.post?.id ?? created?.data?.id;
+
+      if (!postId) {
+        throw new Error("ID da publicação não retornado.");
+      }
+
+      if (images.length > 0) {
+        await uploadPublicationImages(postId, images);
+      }
+
+      setDescription("");
+      setImages([]);
+      setAttachDraft(null);
+      setAttachType(null);
+      Alert.alert("Publicado", "Sua publicação foi criada com sucesso.");
+      router.back();
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Erro", "Não foi possível publicar agora. Tente novamente.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <Stack.Screen
@@ -61,7 +120,9 @@ const CreatePublication = () => {
             <CustomButton
               variant="primary"
               title="Publicar"
-              onPress={() => {}}
+              onPress={handlePublish}
+              isDisable={isSaving}
+              isLoading={isSaving}
               style={{ backgroundColor: Colors.light.mediumBlue }}
             />
           ),
@@ -81,6 +142,8 @@ const CreatePublication = () => {
               placeholder="O que você está pensando?"
               styleContainer={{ flex: 1 }}
               style={styles.inputStyle}
+              value={description}
+              onChangeText={setDescription}
             />
           </View>
 
