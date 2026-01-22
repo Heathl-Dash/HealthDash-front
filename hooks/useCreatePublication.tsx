@@ -56,6 +56,8 @@ export const useCreatePublication = ({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["posts"] });
       queryClient.invalidateQueries({ queryKey: ["profile-posts"] });
+      queryClient.refetchQueries({ queryKey: ["posts"], type: "all" });
+      queryClient.refetchQueries({ queryKey: ["profile-posts"], type: "all" });
     },
   });
 
