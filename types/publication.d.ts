@@ -9,6 +9,7 @@ declare interface IPublication {
   images: string[] | null;
   attach: IAttach | null;
   isLike?: boolean;
+  isCollected?: boolean;
   likesCount: number;
   commentsCount: number;
 }

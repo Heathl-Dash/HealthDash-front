@@ -1,9 +1,12 @@
 import { Colors } from "@/constants/Colors";
+import useProfile from "@/hooks/useProfile";
+import { DropDownOption } from "@/types/dropdownOptions";
 import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
 import React from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Attach from "../Attach";
 import ImageCarrousel from "../ImageCarrousel";
+import DropDown from "../dropDown";
 
 interface PublicationProps {
   publication: IPublication;
@@ -11,6 +14,19 @@ interface PublicationProps {
 }
 
 const Publication = ({ publication, onPressComments }: PublicationProps) => {
+  const { profile } = useProfile();
+  const isMyPublication = profile?.id === publication.profileId;
+  const isCollected = publication.isCollected ?? false;
+  const saveLabel = isCollected ? "Remover dos salvos" : "Salvar";
+  const dropdownItems: DropDownOption[] = isMyPublication
+    ? [
+        { label: saveLabel, onPress: () => {} },
+        { label: "Editar", onPress: () => {} },
+        { label: "Excluir", onPress: () => {} },
+      ]
+    : [{ label: saveLabel, onPress: () => {} }];
+
+
   return (
     <View style={styles.container}>
       <View style={styles.profileContainer}>
@@ -21,7 +37,27 @@ const Publication = ({ publication, onPressComments }: PublicationProps) => {
             <View style={styles.profileAvatarNull} />
           )}
         </View>
-        <Text>{publication.profileName}</Text>
+        <View
+          style={{
+            flexDirection: "row",
+            flex: 1,
+            justifyContent: "space-between",
+            alignItems: "center",
+            boxSizing: "border-box",
+          }}
+        >
+          <Text>{publication.profileName}</Text>
+          <DropDown
+            icon={
+              <MaterialCommunityIcons
+                name="dots-vertical"
+                color={Colors.light.darkGray}
+                size={20}
+              />
+            }
+            options={dropdownItems}
+          />
+        </View>
       </View>
       {publication.description && (
         <View>
@@ -66,8 +102,10 @@ export default Publication;
 
 const styles = StyleSheet.create({
   container: {
+    position: "relative",
     width: "100%",
     gap: 10,
+    minHeight: 300
   },
   profileContainer: {
     flexDirection: "row",
