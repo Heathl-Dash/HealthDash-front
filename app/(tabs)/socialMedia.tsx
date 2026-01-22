@@ -27,6 +27,7 @@ export default function SocialMedia() {
   const AddPublicationClick = () => {
     router.push("/createPublication");
   };
+  
 
   return (
     <SafeAreaView style={{ flex: 1, paddingHorizontal: 30 }}>

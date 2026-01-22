@@ -7,6 +7,7 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Attach from "../Attach";
 import ImageCarrousel from "../ImageCarrousel";
 import DropDown from "../dropDown";
+import { useToggleLike } from "@/hooks/useToggleLike";
 
 interface PublicationProps {
   publication: IPublication;
@@ -26,6 +27,7 @@ const Publication = ({ publication, onPressComments }: PublicationProps) => {
       ]
     : [{ label: saveLabel, onPress: () => {} }];
 
+  const toggleLikeMutation = useToggleLike(publication.id);
 
   return (
     <View style={styles.container}>
@@ -80,7 +82,7 @@ const Publication = ({ publication, onPressComments }: PublicationProps) => {
       </View>
 
       <View style={styles.actionsContainer}>
-        <TouchableOpacity style={styles.action}>
+        <TouchableOpacity style={styles.action} onPress={() => toggleLikeMutation.mutate()}>
           {publication.isLike ? (
             <MaterialCommunityIcons size={30} color={Colors.light.darkGray} name="heart" />
           ) : (

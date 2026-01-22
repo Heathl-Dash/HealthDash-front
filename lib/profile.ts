@@ -45,3 +45,13 @@ export const getPostsByprofile = (id:number) => {
       throw err;
     });
 };
+
+export const toggleLike = (id: number) => {
+  return profileApi
+    .patch(`/like/toggle_like/${id}`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("erro ao curtir publicação: ", err);
+      throw err;
+    });
+};
