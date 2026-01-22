@@ -1,15 +1,56 @@
 import CustomButton from "@/components/CustomButton";
 import CustomInput from "@/components/CustomInput";
+import Attach from "@/components/Attach";
+import AttachSelectorModal from "@/components/AttachSelectorModal";
 import ImageInput from "@/components/ImageInput";
 import { Colors } from "@/constants/Colors";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Stack } from "expo-router";
 import React, { useState } from "react";
-import { Image, KeyboardAvoidingView, Platform, StyleSheet, View } from "react-native";
+import {
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const CreatePublication = () => {
   const [images, setImages] = useState<string[]>([]);
+  const [attachType, setAttachType] = useState<"habit" | "toDo" | null>(null);
+  const [attachDraft, setAttachDraft] = useState<IAttach | null>(null);
+  const [isAttachModalVisible, setIsAttachModalVisible] = useState(false);
   const show = images.length > 0;
+
+  const openAttachModal = () => {
+    setIsAttachModalVisible(true);
+  };
+
+  const handleSelectHabit = (habit: IHabit) => {
+    const attach: IAttach = {
+      title: habit.title,
+      description: habit.description ?? undefined,
+      isPositive: habit.positive ?? false,
+      isNegative: habit.negative ?? false,
+      positiveCount: habit.positive_count,
+      negativeCount: habit.negative_count,
+    };
+    setAttachType("habit");
+    setAttachDraft(attach);
+    setIsAttachModalVisible(false);
+  };
+
+  const handleSelectTodo = (todo: IToDo) => {
+    const attach: IAttach = {
+      title: todo.title,
+      description: todo.description ?? undefined,
+      done: todo.done,
+    };
+    setAttachType("toDo");
+    setAttachDraft(attach);
+    setIsAttachModalVisible(false);
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
@@ -53,12 +94,32 @@ const CreatePublication = () => {
               </View>
             )}
 
+            {!!attachDraft && attachType && (
+              <View style={styles.attachContainer}>
+                <Attach type={attachType} attach={attachDraft} />
+              </View>
+            )}
+
             <View style={styles.optionsContainer}>
               <ImageInput onChangeImages={setImages} />
+              <CustomButton
+                title="Adicionar hábito/tarefa"
+                onPress={openAttachModal}
+                variant="tertiary"
+                shape="rect"
+                icon={<MaterialCommunityIcons name="clipboard-text-outline" size={20} />}
+              />
             </View>
           </View>
         </View>
       </KeyboardAvoidingView>
+
+      <AttachSelectorModal
+        visible={isAttachModalVisible}
+        onClose={() => setIsAttachModalVisible(false)}
+        onSelectHabit={handleSelectHabit}
+        onSelectTodo={handleSelectTodo}
+      />
     </SafeAreaView>
   );
 };
@@ -80,6 +141,9 @@ const styles = StyleSheet.create({
   bottomContent: {
     marginTop: "auto",
   },
+  attachContainer: {
+    marginBottom: 12,
+  },
   imagesContainer: {
     flexDirection: "row",
     width: "100%",
@@ -97,8 +161,10 @@ const styles = StyleSheet.create({
     aspectRatio: 1,
   },
   optionsContainer: {
-    alignItems: "flex-end",
-    justifyContent: "center",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    gap: 10,
     paddingBottom: Platform.OS === "android" ? 60 : 0,
   },
 });
