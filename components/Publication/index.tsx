@@ -105,6 +105,7 @@ const styles = StyleSheet.create({
     position: "relative",
     width: "100%",
     gap: 10,
+    minHeight: 300
   },
   profileContainer: {
     flexDirection: "row",
