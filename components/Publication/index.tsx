@@ -3,11 +3,13 @@ import useProfile from "@/hooks/useProfile";
 import { DropDownOption } from "@/types/dropdownOptions";
 import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
 import React from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Attach from "../Attach";
 import ImageCarrousel from "../ImageCarrousel";
 import DropDown from "../dropDown";
 import { useToggleLike } from "@/hooks/useToggleLike";
+import { useRouter } from "expo-router";
+import useDeletePublication from "@/hooks/useDeletePublication";
 
 interface PublicationProps {
   publication: IPublication;
@@ -19,11 +21,44 @@ const Publication = ({ publication, onPressComments }: PublicationProps) => {
   const isMyPublication = profile?.id === publication.profileId;
   const isCollected = publication.isCollected ?? false;
   const saveLabel = isCollected ? "Remover dos salvos" : "Salvar";
+  const router = useRouter();
+  const deleteMutation = useDeletePublication();
+
+  const handleEdit = () => {
+    router.push({
+      pathname: "/editPublication/[id]",
+      params: {
+        id: publication.id.toString(),
+        description: publication.description ?? "",
+        images: JSON.stringify(publication.images ?? []),
+      },
+    });
+  };
+
+  const handleDelete = () => {
+    Alert.alert("Excluir publicação", "Tem certeza que deseja excluir?", [
+      { text: "Cancelar", style: "cancel" },
+      {
+        text: "Excluir",
+        style: "destructive",
+        onPress: () => {
+          deleteMutation.mutate(publication.id, {
+            onSuccess: () => {
+              Alert.alert("Excluída", "Sua publicação foi removida.");
+            },
+            onError: () => {
+              Alert.alert("Erro", "Não foi possível excluir agora. Tente novamente.");
+            },
+          });
+        },
+      },
+    ]);
+  };
   const dropdownItems: DropDownOption[] = isMyPublication
     ? [
         { label: saveLabel, onPress: () => {} },
-        { label: "Editar", onPress: () => {} },
-        { label: "Excluir", onPress: () => {} },
+        { label: "Editar", onPress: handleEdit },
+        { label: "Excluir", onPress: handleDelete },
       ]
     : [{ label: saveLabel, onPress: () => {} }];
 

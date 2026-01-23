@@ -117,3 +117,36 @@ export const uploadPublicationImages = async (postId: number, imageUris: string[
     throw err;
   }
 };
+
+export const updatePublication = async (
+  id: number,
+  data: { description?: string; title?: string }
+) => {
+  try {
+    const response = await profileApi.patch(`/posts/${id}`, data);
+    return response.data;
+  } catch (err: any) {
+    const status = err?.response?.status;
+    if (status === 405) {
+      try {
+        const response = await profileApi.put(`/posts/${id}`, data);
+        return response.data;
+      } catch (fallbackError) {
+        console.error("erro ao editar publicação (PUT): ", fallbackError);
+        throw fallbackError;
+      }
+    }
+    console.error("erro ao editar publicação: ", err);
+    throw err;
+  }
+};
+
+export const deletePublication = (id: number) => {
+  return profileApi
+    .delete(`/posts/${id}`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("erro ao excluir publicação: ", err);
+      throw err;
+    });
+};
