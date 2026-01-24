@@ -18,6 +18,40 @@ const Publication = ({ publication, onPressComments }: PublicationProps) => {
   const isMyPublication = profile?.id === publication.profileId;
   const isCollected = publication.isCollected ?? false;
   const saveLabel = isCollected ? "Remover dos salvos" : "Salvar";
+  const router = useRouter();
+  const deleteMutation = useDeletePublication();
+
+  const handleEdit = () => {
+    router.push({
+      pathname: "/editPublication/[id]",
+      params: {
+        id: publication.id.toString(),
+        description: publication.description ?? "",
+        images: JSON.stringify(publication.images ?? []),
+      },
+    });
+  };
+
+  const handleDelete = () => {
+    Alert.alert("Excluir publicação", "Tem certeza que deseja excluir?", [
+      { text: "Cancelar", style: "cancel" },
+      {
+        text: "Excluir",
+        style: "destructive",
+        onPress: () => {
+          deleteMutation.mutate(publication.id, {
+            onSuccess: () => {
+              Alert.alert("Excluída", "Sua publicação foi removida.");
+            },
+            onError: () => {
+              Alert.alert("Erro", "Não foi possível excluir agora. Tente novamente.");
+            },
+          });
+        },
+      },
+    ]);
+  };
+
   const dropdownItems: DropDownOption[] = isMyPublication
     ? [
         { label: saveLabel, onPress: () => {} },
@@ -32,7 +66,16 @@ const Publication = ({ publication, onPressComments }: PublicationProps) => {
       <View style={styles.profileContainer}>
         <View style={styles.profileImage}>
           {publication.profileAvatar !== null ? (
-            <Image source={{ uri: publication.profileAvatar }} style={styles.profileAvatar} />
+            <TouchableOpacity
+              onPress={() => {
+                router.push({
+                  pathname: "/editPublication/[id]",
+                  params: { id: publication.id },
+                });
+              }}
+            >
+              <Image source={{ uri: publication.profileAvatar }} style={styles.profileAvatar} />
+            </TouchableOpacity>
           ) : (
             <View style={styles.profileAvatarNull} />
           )}

@@ -9,6 +9,7 @@ export const createApi = (baseURL: string) => {
       const tokens = await storage.getTokens();
 
       console.log("tokens", tokens);
+      console.log(config.url)
 
       if (tokens?.access) {
         config.headers.Authorization = `Bearer ${tokens.access}`;

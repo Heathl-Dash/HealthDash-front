@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import Publication from "@/components/Publication";
 import { Colors } from "@/constants/Colors";
 import useProfile from "@/hooks/useProfile";
+import useProfileById from "@/hooks/useProfileById";
 import { useProfilePosts } from "@/hooks/useProfilePost";
 import { MaterialIcons, Octicons } from "@expo/vector-icons";
 import ReadMore from "@fawazahmed/react-native-read-more";
@@ -14,65 +15,34 @@ import { ActivityIndicator, Image, StatusBar, StyleSheet, Text, View } from "rea
 import { FlatList } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const MOCK_USERS: IProfile[] = [
-  {
-    id: 11,
-    socialName: "Gabriella Silva",
-    email: "gabriella@email.com",
-    weight: 58.0,
-    height: 1.65,
-    age: 24,
-    imc: 21.3,
-    imcDescription: "Normal",
-    bio: "Apaixonada por tecnologia e bem-estar.",
-    avatar: null,
-    followingNumber: 128,
-    followersNumber: 342,
-  },
-  {
-    id: 22,
-    socialName: "Lucas Andrade",
-    email: "lucas.andrade@email.com",
-    weight: 82,
-    height: 1.78,
-    age: 29,
-    imc: 25.9,
-    imcDescription: "Sobrepeso",
-    bio: "Corrida, café e constância. Corrida, café e constância. Corrida, café e constância. Corrida, café e constância. Corrida, café e constância.",
-    avatar: "https://i.pravatar.cc/300?img=12",
-    followingNumber: 589,
-    followersNumber: 1200,
-  },
-  {
-    id: 33,
-    socialName: "Marina Costa",
-    email: "marina.costa@email.com",
-    weight: 64,
-    height: 1.7,
-    age: 26,
-    imc: 22.1,
-    imcDescription: "Normal",
-    bio: "Yoga, leitura e hábitos simples.",
-    avatar: "https://i.pravatar.cc/300?img=32",
-    followingNumber: 210,
-    followersNumber: 198,
-  },
-];
+
 
 const AccountPage = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { profile, profileLoading } = useProfile();
 
-  const isMyProfile = id === "me" || id === profile?.id;
+  const numericId = id ? Number(id) : undefined;
+  const isMyProfile = id === "me" || (numericId ? numericId === profile?.id : false);
+  const {
+    profile: profileById,
+    profileLoading: profileByIdLoading,
+    profileErro: profileByIdErro,
+  } = useProfileById(!isMyProfile ? numericId : undefined);
 
-  const currentProfile: IProfile = isMyProfile
-    ? profile
-    : MOCK_USERS.find((u) => u.id === Number(id));
+  const currentProfile: IProfile | undefined = isMyProfile ? profile : profileById;
 
   const bottomSheetRef = useRef<BottomSheetMethods | null>(null);
   const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
 
-  if (!currentProfile) {
+  if (!currentProfile && (profileLoading || profileByIdLoading)) {
+    return (
+      <SafeAreaView>
+        <ActivityIndicator size="large" color={Colors.light.primary} />
+      </SafeAreaView>
+    );
+  }
+
+  if (!currentProfile || profileByIdErro) {
     return (
       <SafeAreaView>
         <Text>Perfil não encontrado</Text>
@@ -80,13 +50,6 @@ const AccountPage = () => {
     );
   }
 
-  if (profileLoading && isMyProfile) {
-    return (
-      <SafeAreaView>
-        <ActivityIndicator size="large" color={Colors.light.primary} />
-      </SafeAreaView>
-    );
-  }
   const { data: posts = [], isLoading: postsLoading } = useProfilePosts(currentProfile?.id);
 
   const followers = currentProfile.followersNumber ?? 0;
@@ -102,6 +65,7 @@ const AccountPage = () => {
     setSelectedPostId(publicationId);
     bottomSheetRef.current?.expand();
   };
+
   return (
     <SafeAreaView style={{ paddingHorizontal: 30, flexGrow: 1, backgroundColor: "white" }}>
       <Stack.Screen options={{ headerShown: false }} />

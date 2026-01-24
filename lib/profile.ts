@@ -12,6 +12,16 @@ export const getProfile = () => {
     });
 };
 
+export const getProfileById = (id: number) => {
+  return profileApi
+    .get(`/profiles/${id}`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("erro ao receber perfil por id: ", err);
+      throw err;
+    });
+};
+
 export const getProfileIMC = async (): Promise<IProfileIMC | null> => {
   try {
     const { data } = await profileApi.get<IProfile>("profiles/me");
