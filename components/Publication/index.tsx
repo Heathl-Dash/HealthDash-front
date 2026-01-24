@@ -1,9 +1,12 @@
 import { Colors } from "@/constants/Colors";
+import useDeletePublication from "@/hooks/useDeletePublication";
 import useProfile from "@/hooks/useProfile";
+import { useToggleLike } from "@/hooks/useToggleLike";
 import { DropDownOption } from "@/types/dropdownOptions";
 import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import React from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Attach from "../Attach";
 import ImageCarrousel from "../ImageCarrousel";
 import DropDown from "../dropDown";
@@ -18,14 +21,48 @@ const Publication = ({ publication, onPressComments }: PublicationProps) => {
   const isMyPublication = profile?.id === publication.profileId;
   const isCollected = publication.isCollected ?? false;
   const saveLabel = isCollected ? "Remover dos salvos" : "Salvar";
+  const router = useRouter();
+  const deleteMutation = useDeletePublication();
+
+  const handleEdit = () => {
+    router.push({
+      pathname: "/editPublication/[id]",
+      params: {
+        id: publication.id.toString(),
+        description: publication.description ?? "",
+        images: JSON.stringify(publication.images ?? []),
+      },
+    });
+  };
+
+  const handleDelete = () => {
+    Alert.alert("Excluir publicação", "Tem certeza que deseja excluir?", [
+      { text: "Cancelar", style: "cancel" },
+      {
+        text: "Excluir",
+        style: "destructive",
+        onPress: () => {
+          deleteMutation.mutate(publication.id, {
+            onSuccess: () => {
+              Alert.alert("Excluída", "Sua publicação foi removida.");
+            },
+            onError: () => {
+              Alert.alert("Erro", "Não foi possível excluir agora. Tente novamente.");
+            },
+          });
+        },
+      },
+    ]);
+  };
   const dropdownItems: DropDownOption[] = isMyPublication
     ? [
         { label: saveLabel, onPress: () => {} },
-        { label: "Editar", onPress: () => {} },
-        { label: "Excluir", onPress: () => {} },
+        { label: "Editar", onPress: handleEdit },
+        { label: "Excluir", onPress: handleDelete },
       ]
     : [{ label: saveLabel, onPress: () => {} }];
 
+  const toggleLikeMutation = useToggleLike(publication.id);
 
   return (
     <View style={styles.container}>
@@ -59,28 +96,28 @@ const Publication = ({ publication, onPressComments }: PublicationProps) => {
           />
         </View>
       </View>
-      {publication.description && (
-        <View>
-          <Text>{publication.description}</Text>
+      <View style={{ minHeight: 100 }}>
+        {publication.description && (
+          <View>
+            <Text>{publication.description}</Text>
+          </View>
+        )}
+        <View
+          style={[
+            { gap: 10 },
+            publication.images && publication.attach && styles.imagesAndAttachStyle,
+          ]}
+        >
+          {publication.images && publication.images.length > 0 && (
+            <ImageCarrousel images={publication.images} />
+          )}
+          {publication.attach && publication.type != "normal" && (
+            <Attach attach={publication.attach} type={publication.type} />
+          )}
         </View>
-      )}
-
-      <View
-        style={[
-          { gap: 10 },
-          publication.images && publication.attach && styles.imagesAndAttachStyle,
-        ]}
-      >
-        {publication.images && publication.images.length > 0 && (
-          <ImageCarrousel images={publication.images} />
-        )}
-        {publication.attach && publication.type != "normal" && (
-          <Attach attach={publication.attach} type={publication.type} />
-        )}
       </View>
-
       <View style={styles.actionsContainer}>
-        <TouchableOpacity style={styles.action}>
+        <TouchableOpacity style={styles.action} onPress={() => toggleLikeMutation.mutate()}>
           {publication.isLike ? (
             <MaterialCommunityIcons size={30} color={Colors.light.darkGray} name="heart" />
           ) : (
@@ -93,6 +130,7 @@ const Publication = ({ publication, onPressComments }: PublicationProps) => {
           <Text>{publication.commentsCount}</Text>
         </TouchableOpacity>
       </View>
+
       <View style={{ width: "100%", borderTopColor: Colors.light.lightGray, borderTopWidth: 1 }} />
     </View>
   );
@@ -105,7 +143,6 @@ const styles = StyleSheet.create({
     position: "relative",
     width: "100%",
     gap: 10,
-    minHeight: 300
   },
   profileContainer: {
     flexDirection: "row",
