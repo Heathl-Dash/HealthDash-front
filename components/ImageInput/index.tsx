@@ -30,6 +30,7 @@ const ImageInput = ({ onChangeImages }: ImageInputProps) => {
       selectionLimit: 3,
     });
 
+    
     if (!result.canceled) {
       const uris = result.assets.map((asset) => asset.uri);
       onChangeImages(uris);

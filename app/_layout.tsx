@@ -9,6 +9,8 @@ import { initDB } from "@/storage/sqliteHelpers";
 import { useEffect } from "react";
 import { SQLiteProvider, useSQLiteContext, type SQLiteDatabase } from 'expo-sqlite';
 
+const queryClient = new QueryClient();
+
 export default function RootLayout() {
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
@@ -19,8 +21,6 @@ export default function RootLayout() {
     // Async font loading only occurs in development.
     return null;
   }
-
-  const queryClient = new QueryClient();
 
   return (
     <>

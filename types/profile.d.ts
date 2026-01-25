@@ -8,7 +8,7 @@ declare interface IProfile {
   imc: number;
   imcDescription: string;
   bio?: string;
-  avatar: string | null;
+  avatarUrl: string | null;
   followingNumber?: number | null;
   followersNumber?: number | null;
 }

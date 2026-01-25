@@ -75,8 +75,8 @@ const AccountPage = () => {
       <View style={styles.header}>
         <View style={styles.headerContent}>
           <View style={styles.avatarContainer}>
-            {currentProfile.avatar !== null ? (
-              <Image source={{ uri: currentProfile.avatar }} style={styles.profileAvatar} />
+            {currentProfile.avatarUrl !== null ? (
+              <Image source={{ uri: currentProfile.avatarUrl }} style={styles.profileAvatar} />
             ) : (
               <View style={styles.profileAvatarNull} />
             )}
