@@ -61,7 +61,7 @@ export default function SocialMedia() {
         }
       />
       <AddPublicationButton onPress={AddPublicationClick} />
-      <Comments bottomSheetRef={bottomSheetRef} />
+      <Comments bottomSheetRef={bottomSheetRef} postId={selectedPostId} />
     </SafeAreaView>
   );
 }
