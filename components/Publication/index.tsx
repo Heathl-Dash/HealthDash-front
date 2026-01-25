@@ -69,20 +69,20 @@ const Publication = ({ publication, onPressComments }: PublicationProps) => {
     <View style={styles.container}>
       <View style={styles.profileContainer}>
         <View style={styles.profileImage}>
-          {publication.profileAvatar !== null ? (
-            <TouchableOpacity
-              onPress={() => {
-                router.push({
-                  pathname: "/editPublication/[id]",
-                  params: { id: publication.id },
-                });
-              }}
-            >
+          <TouchableOpacity
+            onPress={() => {
+              router.push({
+                pathname: "/account/[id]",
+                params: { id: publication.profileId },
+              });
+            }}
+          >
+            {publication.profileAvatar !== null ? (
               <Image source={{ uri: publication.profileAvatar }} style={styles.profileAvatar} />
-            </TouchableOpacity>
-          ) : (
-            <View style={styles.profileAvatarNull} />
-          )}
+            ) : (
+              <View style={styles.profileAvatarNull} />
+            )}
+          </TouchableOpacity>
         </View>
         <View
           style={{

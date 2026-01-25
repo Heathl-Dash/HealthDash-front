@@ -14,7 +14,7 @@ export const getProfile = () => {
 
 export const getProfileById = (id: number) => {
   return profileApi
-    .get(`/profiles/${id}`)
+    .get(`/profiles/id/${id}`)
     .then((res) => res.data)
     .catch((err) => {
       console.error("erro ao receber perfil por id: ", err);
