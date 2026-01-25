@@ -25,7 +25,7 @@ const MOCK_USERS: IProfile[] = [
     imc: 21.3,
     imcDescription: "Normal",
     bio: "Apaixonada por tecnologia e bem-estar.",
-    avatar: null,
+    avatarUrl: null,
     followingNumber: 128,
     followersNumber: 342,
   },
@@ -39,7 +39,7 @@ const MOCK_USERS: IProfile[] = [
     imc: 25.9,
     imcDescription: "Sobrepeso",
     bio: "Corrida, café e constância. Corrida, café e constância. Corrida, café e constância. Corrida, café e constância. Corrida, café e constância.",
-    avatar: "https://i.pravatar.cc/300?img=12",
+    avatarUrl: "https://i.pravatar.cc/300?img=12",
     followingNumber: 589,
     followersNumber: 1200,
   },
@@ -53,7 +53,7 @@ const MOCK_USERS: IProfile[] = [
     imc: 22.1,
     imcDescription: "Normal",
     bio: "Yoga, leitura e hábitos simples.",
-    avatar: "https://i.pravatar.cc/300?img=32",
+    avatarUrl: "https://i.pravatar.cc/300?img=32",
     followingNumber: 210,
     followersNumber: 198,
   },
@@ -63,7 +63,7 @@ const AccountPage = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { profile, profileLoading } = useProfile();
 
-  const isMyProfile = id === "me" || id === profile?.id;
+  const isMyProfile = id === "me" || Number(id) === profile?.id;
 
   const currentProfile: IProfile = isMyProfile
     ? profile
@@ -102,6 +102,8 @@ const AccountPage = () => {
     setSelectedPostId(publicationId);
     bottomSheetRef.current?.expand();
   };
+
+  console.log(currentProfile)
   return (
     <SafeAreaView style={{ paddingHorizontal: 30, flexGrow: 1, backgroundColor: "white" }}>
       <Stack.Screen options={{ headerShown: false }} />
@@ -111,8 +113,8 @@ const AccountPage = () => {
       <View style={styles.header}>
         <View style={styles.headerContent}>
           <View style={styles.avatarContainer}>
-            {currentProfile.avatar !== null ? (
-              <Image source={{ uri: currentProfile.avatar }} style={styles.profileAvatar} />
+            {currentProfile.avatarUrl !== null ? (
+              <Image source={{ uri: currentProfile.avatarUrl }} style={styles.profileAvatar} />
             ) : (
               <View style={styles.profileAvatarNull} />
             )}

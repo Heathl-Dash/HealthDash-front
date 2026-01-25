@@ -9,6 +9,7 @@ export const adaptPostToPublication = (post: any): IPublication => ({
   images: post.imagesUrls?.length ? post.imagesUrls : null,
   attach: null,
   isLike: post.isLiked,
+  isCollected: post.isCollected,
   likesCount: post.likesCount,
   commentsCount: post.commentariesCount,
 });

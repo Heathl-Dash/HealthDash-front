@@ -43,6 +43,7 @@ const ImageInput = ({
       selectionLimit: allowsMultipleSelection ? 3 : 1,
     });
 
+    
     if (!result.canceled) {
       const uris = result.assets.map((asset) => asset.uri);
       if (allowsMultipleSelection) {
