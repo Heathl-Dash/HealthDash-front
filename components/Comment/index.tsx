@@ -1,15 +1,25 @@
 import { Colors } from "@/constants/Colors";
 import ReadMore from "@fawazahmed/react-native-read-more";
 import React from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
 interface CommentProps {
   comment: IComment;
+  onLongPress?: (comment: IComment) => void;
+  disabled?: boolean;
 }
 
-const Comment = ({ comment }: CommentProps) => {
+const Comment = ({ comment, onLongPress, disabled = false }: CommentProps) => {
+  const handleLongPress = () => {
+    if (disabled || !onLongPress) return;
+    onLongPress(comment);
+  };
   return (
-    <View style={styles.container}>
+    <Pressable
+      style={styles.container}
+      onLongPress={handleLongPress}
+      delayLongPress={300}
+    >
       <View style={styles.profileContainer}>
         <View style={styles.profileImage}>
           {comment.profileAvatar !== null ? (
@@ -31,7 +41,7 @@ const Comment = ({ comment }: CommentProps) => {
           {comment.content}
         </ReadMore>
       </View>
-    </View>
+    </Pressable>
   );
 };
 

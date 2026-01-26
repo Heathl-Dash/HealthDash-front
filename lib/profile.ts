@@ -171,3 +171,13 @@ export const createComment = (postId: number, data: { content: string }) => {
       throw err;
     });
 };
+
+export const deleteComment = (postId: number, commentId: number) => {
+  return profileApi
+    .delete(`/posts/${postId}/comments/${commentId}`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("erro ao excluir comentario: ", err);
+      throw err;
+    });
+};

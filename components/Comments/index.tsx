@@ -1,10 +1,11 @@
 import useProfile from "@/hooks/useProfile";
 import useCommentsByPost from "@/hooks/useCommentsByPost";
 import useCreateComment from "@/hooks/useCreateComment";
+import useDeleteComment from "@/hooks/useDeleteComment";
 import BottomSheet, { BottomSheetBackdrop, BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Alert, StyleSheet, Text, View } from "react-native";
 import Comment from "../Comment";
 import CommentInput from "../CommentInput";
 
@@ -19,6 +20,7 @@ const Comments = ({ bottomSheetRef, postId }: CommentsProps) => {
   const { data: comments = [], isLoading } = useCommentsByPost(postId ?? undefined);
   const [content, setContent] = useState("");
   const createCommentMutation = useCreateComment(postId ?? 0);
+  const deleteCommentMutation = useDeleteComment(postId ?? 0);
   useEffect(() => {
     setContent("");
   }, [postId]);
@@ -40,6 +42,19 @@ const Comments = ({ bottomSheetRef, postId }: CommentsProps) => {
       }
     );
   };
+  const handleLongPress = (comment: IComment) => {
+    if (!postId || comment.profileId !== profile?.id) return;
+    Alert.alert("Excluir comentário", "Tem certeza que deseja excluir?", [
+      { text: "Cancelar", style: "cancel" },
+      {
+        text: "Excluir",
+        style: "destructive",
+        onPress: () => {
+          deleteCommentMutation.mutate(comment.id);
+        },
+      },
+    ]);
+  };
   return (
     <BottomSheet
       ref={bottomSheetRef}
@@ -56,7 +71,14 @@ const Comments = ({ bottomSheetRef, postId }: CommentsProps) => {
         {isLoading ? (
           <ActivityIndicator size="large" color="#999" />
         ) : comments.length ? (
-          comments.map((comment) => <Comment key={comment.id} comment={comment} />)
+          comments.map((comment) => (
+            <Comment
+              key={comment.id}
+              comment={comment}
+              onLongPress={handleLongPress}
+              disabled={comment.profileId !== profile?.id}
+            />
+          ))
         ) : (
           <Text style={styles.emptyText}>Sem comentários ainda.</Text>
         )}
