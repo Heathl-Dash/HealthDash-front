@@ -150,3 +150,34 @@ export const deletePublication = (id: number) => {
       throw err;
     });
 };
+
+// Comentarios
+export const getCommentsByPost = (postId: number) => {
+  return profileApi
+    .get(`/posts/${postId}/comments`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("erro ao receber comentarios: ", err);
+      throw err;
+    });
+};
+
+export const createComment = (postId: number, data: { content: string }) => {
+  return profileApi
+    .post(`/posts/${postId}/comments`, data)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("erro ao criar comentario: ", err);
+      throw err;
+    });
+};
+
+export const deleteComment = (postId: number, commentId: number) => {
+  return profileApi
+    .delete(`/posts/${postId}/comments/${commentId}`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("erro ao excluir comentario: ", err);
+      throw err;
+    });
+};
