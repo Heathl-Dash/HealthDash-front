@@ -19,7 +19,12 @@ const Header = ({ feedSocialMedia, accountPage }: HeaderProps) => {
   };
 
   const accountOptions: DropDownOption[] = [
-    {label: "Salvos", onPress: () => {}}
+    {
+      label: "Salvos",
+      onPress: () => {
+        router.push({ pathname: "/collection/[id]", params: { id: "1" } });
+      },
+    },
   ];
   return (
     <View style={[styles.container, { justifyContent: "space-between" }]}>
@@ -31,7 +36,10 @@ const Header = ({ feedSocialMedia, accountPage }: HeaderProps) => {
       )}
       {accountPage && (
         <TouchableOpacity>
-          <DropDown icon={<MaterialCommunityIcons name="menu" size={28} />} options={accountOptions} />
+          <DropDown
+            icon={<MaterialCommunityIcons name="menu" size={28} />}
+            options={accountOptions}
+          />
         </TouchableOpacity>
       )}
     </View>
@@ -52,7 +60,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "flex-start",
     zIndex: 20,
-    elevation: 20,
   },
   title: {
     color: Colors.light.darkGray,
