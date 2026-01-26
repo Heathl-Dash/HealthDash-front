@@ -19,6 +19,10 @@ export function useToggleCollection(publicationId: number) {
 
       const nextIsCollected = !isCollected;
 
+      const previousQueries = queryClient.getQueriesData({
+        predicate: (query) => Array.isArray(query.state.data),
+      });
+
       const updateCollectionState = (items?: IPublication[]) => {
         if (!items) return items;
 
@@ -36,10 +40,13 @@ export function useToggleCollection(publicationId: number) {
         { predicate: (query) => Array.isArray(query.state.data) },
         updateCollectionState
       );
+
+      return { previousQueries };
     },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["posts"] });
-      queryClient.invalidateQueries({ queryKey: ["profile-posts"] });
+    onError: (_error, _variables, context) => {
+      context?.previousQueries?.forEach(([queryKey, data]) => {
+        queryClient.setQueryData(queryKey, data);
+      });
     },
   });
 }
