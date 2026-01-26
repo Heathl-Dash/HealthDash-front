@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 4.65,
     overflow: 'hidden',
-    zIndex: 10,
+    zIndex: 1000,
   },
   item: {
     paddingHorizontal: 20,
