@@ -97,15 +97,11 @@ export const uploadPublicationImages = async (postId: number, imageUris: string[
   });
 
   try {
-    const response = await profileApi.post(
-      `/posts/images/upload-multiple/${postId}`,
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
+    const response = await profileApi.post(`/posts/images/upload-multiple/${postId}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
     return response.data;
   } catch (err) {
     console.error("erro ao enviar imagens da publicação: ", err);
@@ -178,6 +174,37 @@ export const deleteComment = (postId: number, commentId: number) => {
     .then((res) => res.data)
     .catch((err) => {
       console.error("erro ao excluir comentario: ", err);
+      throw err;
+    });
+};
+
+//collections
+export const getCollectionById = (id: number) => {
+  return profileApi
+    .get(`/collections/${id}/posts`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("erro ao receber coleção: ", err);
+      throw err;
+    });
+};
+
+export const addPostToCollection = (collectionId: number, postId: number) => {
+  return profileApi
+    .post(`/collections/${collectionId}/posts/${postId}`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("erro ao adicionar a publicação na coleção: ", err);
+      throw err;
+    });
+};
+
+export const deletePostToCollection = (collectionId: number, postId: number) => {
+  return profileApi
+    .delete(`/collections/${collectionId}/posts/${postId}`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("erro ao deletar a publicação na coleção: ", err);
       throw err;
     });
 };
