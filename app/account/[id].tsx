@@ -7,6 +7,7 @@ import { useFollowStatus } from "@/hooks/useFollowStatus";
 import useProfile from "@/hooks/useProfile";
 import useProfileById from "@/hooks/useProfileById";
 import { useProfilePosts } from "@/hooks/useProfilePost";
+import useSavedCollectionId from "@/hooks/useSavedCollectionId";
 import { useToggleFollow } from "@/hooks/useToggleFollow";
 import { MaterialIcons, Octicons } from "@expo/vector-icons";
 import ReadMore from "@fawazahmed/react-native-read-more";
@@ -42,6 +43,7 @@ const AccountPage = () => {
   const isFollowed = !isMyProfile ? (followStatus?.is_followed ?? false) : false;
 
   const { data: posts = [], isLoading: postsLoading } = useProfilePosts(currentProfile?.id);
+  const { data: savedCollectionId } = useSavedCollectionId();
 
   const toggleFollow = useToggleFollow(currentProfile?.id ?? 0);
 
@@ -162,7 +164,11 @@ const AccountPage = () => {
             data={posts}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
-              <Publication publication={item} onPressComments={() => openComments(item.id)} />
+              <Publication
+                publication={item}
+                onPressComments={() => openComments(item.id)}
+                savedCollectionId={savedCollectionId}
+              />
             )}
             contentContainerStyle={{ gap: 20, paddingBottom: 40 }}
             showsVerticalScrollIndicator={false}

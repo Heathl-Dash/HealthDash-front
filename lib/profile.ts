@@ -219,6 +219,16 @@ export const deletePostToCollection = (collectionId: number, postId: number) => 
     });
 };
 
+export const getCollections = () => {
+  return profileApi
+    .get(`/collections`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("erro ao receber coleções: ", err);
+      throw err;
+    });
+};
+
 // follows
 
 export const getFollow = (userId: number) => {

@@ -1,9 +1,10 @@
 import { Colors } from "@/constants/Colors";
+import useSavedCollectionId from "@/hooks/useSavedCollectionId";
 import { DropDownOption } from "@/types/dropdownOptions";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import DropDown from "../dropDown";
 
 interface HeaderProps {
@@ -13,6 +14,7 @@ interface HeaderProps {
 
 const Header = ({ feedSocialMedia, accountPage }: HeaderProps) => {
   const router = useRouter();
+  const { data: savedCollectionId, isLoading: savedCollectionLoading } = useSavedCollectionId();
 
   const accountButtonClick = () => {
     router.push("/account/me");
@@ -22,7 +24,18 @@ const Header = ({ feedSocialMedia, accountPage }: HeaderProps) => {
     {
       label: "Salvos",
       onPress: () => {
-        router.push({ pathname: "/collection/[id]", params: { id: "1" } });
+        if (savedCollectionLoading) {
+          Alert.alert("Aguarde", "Carregando coleções...");
+          return;
+        }
+        if (savedCollectionId == null) {
+          Alert.alert(
+            "Coleção indisponível",
+            "Não foi possível localizar a coleção Salvos."
+          );
+          return;
+        }
+        router.push({ pathname: "/collection/[id]", params: { id: String(savedCollectionId) } });
       },
     },
   ];

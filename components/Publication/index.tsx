@@ -15,14 +15,14 @@ import DropDown from "../dropDown";
 interface PublicationProps {
   publication: IPublication;
   onPressComments: () => void;
+  savedCollectionId?: number | null;
 }
 
-const Publication = ({ publication, onPressComments }: PublicationProps) => {
+const Publication = ({ publication, onPressComments, savedCollectionId }: PublicationProps) => {
   const { profile } = useProfile();
   const isMyPublication = profile?.id === publication.profileId;
   const isCollected = publication.isCollected ?? false;
   const saveLabel = isCollected ? "Remover dos salvos" : "Salvar";
-  const savedCollectionId = 1;
   const router = useRouter();
   const deleteMutation = useDeletePublication();
   const toggleCollectionMutation = useToggleCollection(publication.id);
@@ -59,6 +59,13 @@ const Publication = ({ publication, onPressComments }: PublicationProps) => {
   };
 
   const handleToggleSave = () => {
+    if (savedCollectionId == null) {
+      Alert.alert(
+        "Coleção indisponível",
+        "Não foi possível localizar a coleção Salvos. Tente novamente mais tarde."
+      );
+      return;
+    }
     toggleCollectionMutation.mutate({ isCollected, collectionId: savedCollectionId });
   };
 
