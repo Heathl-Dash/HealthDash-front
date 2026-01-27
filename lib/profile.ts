@@ -173,3 +173,13 @@ export const getFollow = (userId: number) => {
       throw err;
     });
 };
+
+export const setFollow = (userId: number) => {
+  return profileApi
+    .patch(`/follow/${userId}`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("erro ao seguir/deixar de seguir perfil: ", err);
+      throw err;
+    });
+};

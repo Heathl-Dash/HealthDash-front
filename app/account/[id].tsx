@@ -7,6 +7,7 @@ import { useFollowStatus } from "@/hooks/useFollowStatus";
 import useProfile from "@/hooks/useProfile";
 import useProfileById from "@/hooks/useProfileById";
 import { useProfilePosts } from "@/hooks/useProfilePost";
+import { useToggleFollow } from "@/hooks/useToggleFollow";
 import { MaterialIcons, Octicons } from "@expo/vector-icons";
 import ReadMore from "@fawazahmed/react-native-read-more";
 import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
@@ -40,6 +41,8 @@ const AccountPage = () => {
   const isFollowing = !isMyProfile ? (followStatus?.is_following ?? false) : false;
 
   const { data: posts = [], isLoading: postsLoading } = useProfilePosts(currentProfile?.id);
+
+  const toggleFollow = useToggleFollow(currentProfile?.id ?? 0);
 
   if (!currentProfile && (profileLoading || profileByIdLoading)) {
     return (
@@ -128,7 +131,7 @@ const AccountPage = () => {
               title="Deixar de seguir"
               variant="secondary"
               style={{ width: "50%" }}
-              onPress={() => {}}
+              onPress={toggleFollow.mutate}
             />
           ) : (
             <CustomButton
@@ -136,7 +139,7 @@ const AccountPage = () => {
               variant="secondary"
               icon={<Octicons name="plus" color="white" size={20} />}
               style={{ width: "50%" }}
-              onPress={() => {}}
+              onPress={toggleFollow.mutate}
             />
           )}
         </View>
