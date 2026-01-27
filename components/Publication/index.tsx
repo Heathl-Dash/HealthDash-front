@@ -136,7 +136,7 @@ const Publication = ({ publication, onPressComments }: PublicationProps) => {
           <Text>{publication.likesCount}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.action} onPress={onPressComments}>
-          <FontAwesome name="comment-o" size={28} color={Colors.light.darkGray} />{" "}
+          <FontAwesome name="comment-o" size={28} color={Colors.light.darkGray} />
           <Text>{publication.commentsCount}</Text>
         </TouchableOpacity>
       </View>
