@@ -39,6 +39,7 @@ const AccountPage = () => {
   const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
 
   const isFollowing = !isMyProfile ? (followStatus?.is_following ?? false) : false;
+  const isFollowed = !isMyProfile ? (followStatus?.is_followed ?? false) : false;
 
   const { data: posts = [], isLoading: postsLoading } = useProfilePosts(currentProfile?.id);
 
@@ -129,7 +130,15 @@ const AccountPage = () => {
           {!isMyProfile && isFollowing ? (
             <CustomButton
               title="Deixar de seguir"
+              variant="outLine"
+              style={{ width: "50%", opacity: 0.7 }}
+              onPress={toggleFollow.mutate}
+            />
+          ) : isFollowed ? (
+            <CustomButton
+              title="Seguir de Volta"
               variant="secondary"
+              icon={<Octicons name="plus" color="white" size={20} />}
               style={{ width: "50%" }}
               onPress={toggleFollow.mutate}
             />
