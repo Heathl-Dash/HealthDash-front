@@ -160,3 +160,16 @@ export const deletePublication = (id: number) => {
       throw err;
     });
 };
+
+
+// follows
+
+export const getFollow = (userId: number) => {
+  return profileApi
+    .get(`/follow/status/${userId}`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("erro ao verificar se segue o perfil: ", err);
+      throw err;
+    });
+};

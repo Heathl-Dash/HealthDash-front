@@ -3,6 +3,7 @@ import CustomButton from "@/components/CustomButton";
 import Header from "@/components/Header";
 import Publication from "@/components/Publication";
 import { Colors } from "@/constants/Colors";
+import { useFollowStatus } from "@/hooks/useFollowStatus";
 import useProfile from "@/hooks/useProfile";
 import useProfileById from "@/hooks/useProfileById";
 import { useProfilePosts } from "@/hooks/useProfilePost";
@@ -14,8 +15,6 @@ import React, { useRef, useState } from "react";
 import { ActivityIndicator, Image, StatusBar, StyleSheet, Text, View } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
-
-
 
 const AccountPage = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -29,10 +28,18 @@ const AccountPage = () => {
     profileErro: profileByIdErro,
   } = useProfileById(!isMyProfile ? numericId : undefined);
 
+  const { data: followStatus, isLoading: followStatusLoading } = useFollowStatus(
+    !isMyProfile ? numericId : undefined
+  );
+
   const currentProfile: IProfile | undefined = isMyProfile ? profile : profileById;
 
   const bottomSheetRef = useRef<BottomSheetMethods | null>(null);
   const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
+
+  const isFollowing = !isMyProfile ? (followStatus?.is_following ?? false) : false;
+
+  const { data: posts = [], isLoading: postsLoading } = useProfilePosts(currentProfile?.id);
 
   if (!currentProfile && (profileLoading || profileByIdLoading)) {
     return (
@@ -49,8 +56,6 @@ const AccountPage = () => {
       </SafeAreaView>
     );
   }
-
-  const { data: posts = [], isLoading: postsLoading } = useProfilePosts(currentProfile?.id);
 
   const followers = currentProfile.followersNumber ?? 0;
   const following = currentProfile.followingNumber ?? 0;
@@ -118,19 +123,22 @@ const AccountPage = () => {
         </View>
       ) : (
         <View>
-          <CustomButton
-            title="Seguir"
-            variant="primary"
-            icon={<Octicons name="plus" color="white" size={20} />}
-            style={{ width: "50%" }}
-            onPress={() => {}}
-          />
-          <CustomButton
-            title="Deixar de seguir"
-            variant="secondary"
-            style={{ width: "50%" }}
-            onPress={() => {}}
-          />
+          {!isMyProfile && isFollowing ? (
+            <CustomButton
+              title="Deixar de seguir"
+              variant="secondary"
+              style={{ width: "50%" }}
+              onPress={() => {}}
+            />
+          ) : (
+            <CustomButton
+              title="Seguir"
+              variant="secondary"
+              icon={<Octicons name="plus" color="white" size={20} />}
+              style={{ width: "50%" }}
+              onPress={() => {}}
+            />
+          )}
         </View>
       )}
 
