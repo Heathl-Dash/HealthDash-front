@@ -1,48 +1,48 @@
-import AddPublicationButton from "@/components/AddPublicationButton";
 import Comments from "@/components/Comments";
-import Header from "@/components/Header";
 import Publication from "@/components/Publication";
-import usePosts from "@/hooks/usePosts";
+import { Colors } from "@/constants/Colors";
+import { adaptPostToPublication } from "@/app/adapters/publicationAdapters";
+import { getCollectionById } from "@/lib/profile";
 import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
-import { useFocusEffect } from "@react-navigation/native";
-import { useRouter } from "expo-router";
-import { useCallback, useRef, useState } from "react";
-import { ActivityIndicator, Text } from "react-native";
-import { FlatList } from "react-native-gesture-handler";
+import { useQuery } from "@tanstack/react-query";
+import { Stack, useLocalSearchParams } from "expo-router";
+import React, { useRef, useState } from "react";
+import { ActivityIndicator, FlatList, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Colors } from "react-native/Libraries/NewAppScreen";
 
-export default function SocialMedia() {
+export default function Collection() {
+  const { id } = useLocalSearchParams();
+  const collectionId = Array.isArray(id) ? id[0] : id;
+
   const {
     data: publications = [],
     isLoading: publicationsLoading,
-    refetch: refetchPosts,
-  } = usePosts();
+  } = useQuery({
+    queryKey: ["collection", collectionId],
+    queryFn: async () => {
+      if (!collectionId) return [];
+      const data = await getCollectionById(Number(collectionId));
+      const items = Array.isArray(data) ? data : data?.content ?? [];
+      return items.map((post: any) => ({
+        ...adaptPostToPublication(post),
+        isCollected: true,
+      }));
+    },
+    enabled: !!collectionId,
+  });
 
   const bottomSheetRef = useRef<BottomSheetMethods | null>(null);
   const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
-
-  const router = useRouter();
 
   const openComments = (publicationId: number) => {
     setSelectedPostId(publicationId);
     bottomSheetRef.current?.expand();
   };
 
-  const AddPublicationClick = () => {
-    router.push("/createPublication");
-  };
-
-  useFocusEffect(
-    useCallback(() => {
-      refetchPosts();
-    }, [refetchPosts])
-  );
-  
-
   return (
-    <SafeAreaView style={{ flex: 1, paddingHorizontal: 30 }}>
-      <Header feedSocialMedia />
+    <SafeAreaView style={{ flexGrow: 1, paddingHorizontal: 30 }}>
+      <Stack.Screen options={{ title: "Salvos" }} />
+
       <FlatList
         data={publications}
         keyExtractor={(item) => item.id.toString()}
@@ -60,7 +60,6 @@ export default function SocialMedia() {
           )
         }
       />
-      <AddPublicationButton onPress={AddPublicationClick} />
       <Comments bottomSheetRef={bottomSheetRef} postId={selectedPostId} />
     </SafeAreaView>
   );
