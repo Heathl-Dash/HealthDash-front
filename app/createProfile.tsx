@@ -1,11 +1,10 @@
 import CustomInput from "@/components/CustomInput";
 import ImageInput from "@/components/ImageInput";
 import { Colors } from "@/constants/Colors";
-import { useCreatePhysicalProfile } from "@/hooks/useCreatePhysicalProfile";
+import { useCreateProfile } from "@/hooks/useCreateProfile";
 import { storage } from "@/service/storage";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { useLocalSearchParams } from "expo-router";
 
 import {
   Image,
@@ -23,6 +22,7 @@ type Mode = "create" | "edit";
 
 export default function CreateProfile() {
   const [socialName, setSocialName] = useState("");
+  const [bio, setBio] = useState("");
   const [avatar, setAvatar] = useState("");
   const [birthDay, setBirthDay] = useState("");
   const [birthMonth, setBirthMonth] = useState("");
@@ -37,28 +37,28 @@ export default function CreateProfile() {
   const isEdit = mode === "edit";
 
   useEffect(() => {
-  if (isEdit) return;
+    if (isEdit) return;
 
-  async function loadUserInfo() {
-    const tokens = await storage.getTokens();
-    if (!tokens?.access) return;
+    async function loadUserInfo() {
+      const tokens = await storage.getTokens();
+      if (!tokens?.access) return;
 
-    const decoded = decodeToken(tokens.access);
+      const decoded = decodeToken(tokens.access);
 
-    if (decoded?.name) {
-      setSocialName(decoded.name);
+      if (decoded?.name) {
+        setSocialName(decoded.name);
+      }
+
+      if (decoded?.picture) {
+        setAvatar(decoded.picture);
+      }
     }
 
-    if (decoded?.picture) {
-      setAvatar(decoded.picture);
-    }
-  }
+    loadUserInfo();
+  }, [isEdit]);
 
-  loadUserInfo();
-}, [isEdit]);
-
-  const createPhysicalProfile = useCreatePhysicalProfile();
-// const updatePhysicalProfile = useUpdatePhysicalProfile();
+  const createPhysicalProfile = useCreateProfile();
+  // const updatePhysicalProfile = useUpdatePhysicalProfile();
 
   const { push } = useRouter();
 
@@ -66,6 +66,7 @@ export default function CreateProfile() {
     const birthDate = `${birthYear}-${birthMonth.padStart(2, "0")}-${birthDay.padStart(2, "0")}`;
 
     const physicalPayload = {
+      socialName,
       birthDate,
       gender: gender as "FEMININO" | "MASCULINO",
       height: Number(height),
@@ -97,20 +98,22 @@ export default function CreateProfile() {
         <View style={styles.container}>
           <Text style={styles.title}>Meu perfil</Text>
 
-          <View style={styles.avatarContainer}>
-            {avatar ? (
-              <Image
-                source={{ uri: avatar || "https://via.placeholder.com/96" }}
-                style={styles.avatarImage}
-              />
-            ) : (
-              <ImageInput onChangeImage={setAvatar} label="" style={styles.avatarPlaceholder} />
-            )}
+          {isEdit && (
+            <View style={styles.avatarContainer}>
+              {avatar ? (
+                <Image
+                  source={{ uri: avatar || "https://via.placeholder.com/96" }}
+                  style={styles.avatarImage}
+                />
+              ) : (
+                <ImageInput onChangeImage={setAvatar} label="" style={styles.avatarPlaceholder} />
+              )}
 
-            <View>
-              <ImageInput onChangeImage={setAvatar} label="Trocar avatar" />
+              <View>
+                <ImageInput onChangeImage={setAvatar} label="Trocar avatar" />
+              </View>
             </View>
-          </View>
+          )}
 
           <CustomInput
             label="nome social"
@@ -120,6 +123,17 @@ export default function CreateProfile() {
             styleContainer={styles.inputSpacing}
             placeholderTextColor={Colors.light.darkGray}
           />
+
+          {isEdit && (
+            <CustomInput
+              label="Bio"
+              placeholder="Digite seu nome social"
+              value={bio}
+              onChangeText={setBio}
+              styleContainer={styles.inputSpacing}
+              placeholderTextColor={Colors.light.darkGray}
+            />
+          )}
 
           <Text style={styles.label}>* Data de nascimento</Text>
 

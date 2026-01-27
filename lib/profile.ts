@@ -1,5 +1,5 @@
+import { PhysicalProfileDTO } from "@/dto/createProfile.dto";
 import { profileApi } from "@/service/apis";
-import { PhysicalProfileDTO } from "@/dto/PhysicalProfile.dto";
 
 export type IProfileIMC = Pick<IProfile, "imc" | "imcDescription">;
 
@@ -47,7 +47,7 @@ export const getPostsByprofile = (id: number) => {
     });
 };
 
-export const createProfile = (data:PhysicalProfileDTO) => {
+export const createProfile = (data: PhysicalProfileDTO) => {
   return profileApi
     .post(`/profiles/onboarding`, data)
     .then((res) => res.data)
