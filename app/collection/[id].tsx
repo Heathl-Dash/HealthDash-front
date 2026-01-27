@@ -23,7 +23,10 @@ export default function Collection() {
       if (!collectionId) return [];
       const data = await getCollectionById(Number(collectionId));
       const items = Array.isArray(data) ? data : data?.content ?? [];
-      return items.map(adaptPostToPublication);
+      return items.map((post: any) => ({
+        ...adaptPostToPublication(post),
+        isCollected: true,
+      }));
     },
     enabled: !!collectionId,
   });
