@@ -169,7 +169,7 @@ const AccountPage = () => {
           />
         )}
       </View>
-      <Comments bottomSheetRef={bottomSheetRef} />
+      <Comments bottomSheetRef={bottomSheetRef} postId={selectedPostId} />
     </SafeAreaView>
   );
 };

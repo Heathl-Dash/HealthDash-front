@@ -1,6 +1,7 @@
 import { Colors } from "@/constants/Colors";
 import useDeletePublication from "@/hooks/useDeletePublication";
 import useProfile from "@/hooks/useProfile";
+import { useToggleCollection } from "@/hooks/useToggleCollection";
 import { useToggleLike } from "@/hooks/useToggleLike";
 import { DropDownOption } from "@/types/dropdownOptions";
 import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
@@ -21,8 +22,10 @@ const Publication = ({ publication, onPressComments }: PublicationProps) => {
   const isMyPublication = profile?.id === publication.profileId;
   const isCollected = publication.isCollected ?? false;
   const saveLabel = isCollected ? "Remover dos salvos" : "Salvar";
+  const savedCollectionId = 1;
   const router = useRouter();
   const deleteMutation = useDeletePublication();
+  const toggleCollectionMutation = useToggleCollection(publication.id);
 
   const handleEdit = () => {
     router.push({
@@ -55,13 +58,17 @@ const Publication = ({ publication, onPressComments }: PublicationProps) => {
     ]);
   };
 
+  const handleToggleSave = () => {
+    toggleCollectionMutation.mutate({ isCollected, collectionId: savedCollectionId });
+  };
+
   const dropdownItems: DropDownOption[] = isMyPublication
     ? [
-        { label: saveLabel, onPress: () => {} },
+        { label: saveLabel, onPress: handleToggleSave },
         { label: "Editar", onPress: handleEdit },
         { label: "Excluir", onPress: handleDelete },
       ]
-    : [{ label: saveLabel, onPress: () => {} }];
+    : [{ label: saveLabel, onPress: handleToggleSave }];
 
   const toggleLikeMutation = useToggleLike(publication.id);
 
