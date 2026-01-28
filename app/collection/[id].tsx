@@ -3,6 +3,7 @@ import Publication from "@/components/Publication";
 import { Colors } from "@/constants/Colors";
 import { adaptPostToPublication } from "@/app/adapters/publicationAdapters";
 import { getCollectionById } from "@/lib/profile";
+import useSavedCollectionId from "@/hooks/useSavedCollectionId";
 import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import { useQuery } from "@tanstack/react-query";
 import { Stack, useLocalSearchParams } from "expo-router";
@@ -30,6 +31,7 @@ export default function Collection() {
     },
     enabled: !!collectionId,
   });
+  const { data: savedCollectionId } = useSavedCollectionId();
 
   const bottomSheetRef = useRef<BottomSheetMethods | null>(null);
   const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
@@ -48,7 +50,11 @@ export default function Collection() {
         keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={{ gap: 25 }}
         renderItem={({ item }) => (
-          <Publication publication={item} onPressComments={() => openComments(item.id)} />
+          <Publication
+            publication={item}
+            onPressComments={() => openComments(item.id)}
+            savedCollectionId={savedCollectionId}
+          />
         )}
         ListEmptyComponent={
           publicationsLoading ? (

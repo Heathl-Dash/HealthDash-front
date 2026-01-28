@@ -12,6 +12,16 @@ export const getProfile = () => {
     });
 };
 
+export const getProfileById = (id: number) => {
+  return profileApi
+    .get(`/profiles/id/${id}`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("erro ao receber perfil por id: ", err);
+      throw err;
+    });
+};
+
 export const getProfileIMC = async (): Promise<IProfileIMC | null> => {
   try {
     const { data } = await profileApi.get<IProfile>("profiles/me");
@@ -205,6 +215,38 @@ export const deletePostToCollection = (collectionId: number, postId: number) => 
     .then((res) => res.data)
     .catch((err) => {
       console.error("erro ao deletar a publicação na coleção: ", err);
+      throw err;
+    });
+};
+
+export const getCollections = () => {
+  return profileApi
+    .get(`/collections`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("erro ao receber coleções: ", err);
+      throw err;
+    });
+};
+
+// follows
+
+export const getFollow = (userId: number) => {
+  return profileApi
+    .get(`/follow/status/${userId}`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("erro ao verificar se segue o perfil: ", err);
+      throw err;
+    });
+};
+
+export const setFollow = (userId: number) => {
+  return profileApi
+    .patch(`/follow/${userId}`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("erro ao seguir/deixar de seguir perfil: ", err);
       throw err;
     });
 };
