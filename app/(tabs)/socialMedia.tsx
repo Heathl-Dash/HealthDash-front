@@ -3,6 +3,7 @@ import Comments from "@/components/Comments";
 import Header from "@/components/Header";
 import Publication from "@/components/Publication";
 import usePosts from "@/hooks/usePosts";
+import useSavedCollectionId from "@/hooks/useSavedCollectionId";
 import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
@@ -18,6 +19,7 @@ export default function SocialMedia() {
     isLoading: publicationsLoading,
     refetch: refetchPosts,
   } = usePosts();
+  const { data: savedCollectionId } = useSavedCollectionId();
 
   const bottomSheetRef = useRef<BottomSheetMethods | null>(null);
   const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
@@ -48,7 +50,11 @@ export default function SocialMedia() {
         keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={{ gap: 25 }}
         renderItem={({ item }) => (
-          <Publication publication={item} onPressComments={() => openComments(item.id)} />
+          <Publication
+            publication={item}
+            onPressComments={() => openComments(item.id)}
+            savedCollectionId={savedCollectionId}
+          />
         )}
         ListEmptyComponent={
           publicationsLoading ? (
