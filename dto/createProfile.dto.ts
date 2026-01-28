@@ -9,11 +9,9 @@ export interface CreateProfileDTO {
 }
 
 export interface UpdateProfileDTO {
-  isPublic: boolean;
   birthDate: string;
   bio: string;
   socialName: string;
-  userName: string;
   height: number;
   weight: number;
   gender: Gender;

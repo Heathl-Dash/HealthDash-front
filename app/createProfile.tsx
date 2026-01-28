@@ -25,7 +25,6 @@ type Gender = "FEMININO" | "MASCULINO" | "OUTRO" | "";
 
 export default function CreateProfile() {
   const [socialName, setSocialName] = useState("");
-  const [userName, setUserName] = useState("");
   const [bio, setBio] = useState("");
   const [avatar, setAvatar] = useState("");
   const [birthDay, setBirthDay] = useState("");
@@ -34,7 +33,6 @@ export default function CreateProfile() {
   const [gender, setGender] = useState<Gender>("");
   const [height, setHeight] = useState("");
   const [weight, setWeight] = useState("");
-  const [isPublic, setIsPublic] = useState(true);
   const [hasHydrated, setHasHydrated] = useState(false);
 
   const { edit } = useLocalSearchParams<{ edit?: string }>();
@@ -92,32 +90,8 @@ export default function CreateProfile() {
       setGender(rawGender);
     }
 
-    if (typeof profileAny?.isPublic === "boolean") {
-      setIsPublic(profileAny.isPublic);
-    }
-
-    if (typeof profileAny?.userName === "string") {
-      setUserName(profileAny.userName);
-    }
-
     setHasHydrated(true);
   }, [hasHydrated, isEdit, profile]);
-
-  useEffect(() => {
-    if (!isEdit || userName) return;
-
-    async function loadUserName() {
-      const tokens = await storage.getTokens();
-      if (!tokens?.access) return;
-
-      const decoded = decodeToken(tokens.access);
-      if (decoded?.preferred_username) {
-        setUserName(decoded.preferred_username);
-      }
-    }
-
-    loadUserName();
-  }, [isEdit, userName]);
 
   const isLocalAvatar =
     avatar.startsWith("file://") || avatar.startsWith("content://") || avatar.startsWith("ph://");
@@ -131,11 +105,9 @@ export default function CreateProfile() {
       }
 
       await updatePhysicalProfile.mutateAsync({
-        isPublic,
         birthDate,
         bio,
         socialName,
-        userName,
         height: Number(height),
         weight: Number(weight),
         gender: gender as Exclude<Gender, "">,
@@ -199,17 +171,6 @@ export default function CreateProfile() {
 
           {isEdit && (
             <CustomInput
-              label="username"
-              placeholder="Digite seu username"
-              value={userName}
-              onChangeText={setUserName}
-              styleContainer={styles.inputSpacing}
-              placeholderTextColor={Colors.light.darkGray}
-            />
-          )}
-
-          {isEdit && (
-            <CustomInput
               label="Bio"
               placeholder="Digite seu nome social"
               value={bio}
@@ -265,29 +226,6 @@ export default function CreateProfile() {
               </TouchableOpacity>
             ))}
           </View>
-
-          {isEdit && (
-            <>
-              <Text style={styles.genderLabel}>Visibilidade</Text>
-              <View style={styles.genderContainer}>
-                {[
-                  { label: "Público", value: true },
-                  { label: "Privado", value: false },
-                ].map((item) => (
-                  <TouchableOpacity
-                    key={item.label}
-                    onPress={() => setIsPublic(item.value)}
-                    style={[
-                      styles.genderButton,
-                      isPublic === item.value && styles.genderButtonActive,
-                    ]}
-                  >
-                    <Text>{item.label}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </>
-          )}
 
           <CustomInput
             label="altura"
