@@ -85,9 +85,18 @@ export default function CreateProfile() {
       setBirthDay(day ?? "");
     }
 
-    const rawGender = profileAny?.gender;
-    if (rawGender === "FEMININO" || rawGender === "MASCULINO" || rawGender === "OUTRO") {
-      setGender(rawGender);
+    const rawGender = profileAny?.gender ?? profileAny?.genderDescription;
+    if (rawGender) {
+      const normalizedGender = String(rawGender).trim().toUpperCase();
+      if (normalizedGender === "FEMININO" || normalizedGender === "MASCULINO") {
+        setGender(normalizedGender as Gender);
+      } else if (normalizedGender === "OUTRO") {
+        setGender("OUTRO");
+      } else if (normalizedGender === "FEMININA") {
+        setGender("FEMININO");
+      } else if (normalizedGender === "MASCULINA") {
+        setGender("MASCULINO");
+      }
     }
 
     setHasHydrated(true);
