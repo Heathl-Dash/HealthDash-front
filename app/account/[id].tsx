@@ -14,40 +14,47 @@ import ReadMore from "@fawazahmed/react-native-read-more";
 import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import { Stack, useLocalSearchParams } from "expo-router";
 import React, { useRef, useState } from "react";
-import { ActivityIndicator, Image, StatusBar, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Image,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const AccountPage = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { profile, profileLoading } = useProfile();
 
-  const numericId = id ? Number(id) : undefined;
-  const isMyProfile = id === "me" || (numericId ? numericId === profile?.id : false);
+  const { profile: myProfile } = useProfile();
+
+  const numericId =
+    id === "me" ? myProfile?.id : id ? Number(id) : undefined;
+
+  const isMyProfile = numericId === myProfile?.id;
+
   const {
-    profile: profileById,
-    profileLoading: profileByIdLoading,
-    profileErro: profileByIdErro,
-  } = useProfileById(!isMyProfile ? numericId : undefined);
+    profile: currentProfile,
+    profileLoading,
+    profileErro,
+  } = useProfileById(numericId);
 
-  const { data: followStatus, isLoading: followStatusLoading } = useFollowStatus(
-    !isMyProfile ? numericId : undefined
-  );
+  const { data: followStatus, isLoading: followStatusLoading } =
+    useFollowStatus(!isMyProfile ? numericId : undefined);
 
-  const currentProfile: IProfile | undefined = isMyProfile ? profile : profileById;
+  const { data: posts = [], isLoading: postsLoading } =
+    useProfilePosts(currentProfile?.id);
 
-  const bottomSheetRef = useRef<BottomSheetMethods | null>(null);
-  const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
-
-  const isFollowing = !isMyProfile ? (followStatus?.is_following ?? false) : false;
-  const isFollowed = !isMyProfile ? (followStatus?.is_followed ?? false) : false;
-
-  const { data: posts = [], isLoading: postsLoading } = useProfilePosts(currentProfile?.id);
   const { data: savedCollectionId } = useSavedCollectionId();
 
   const toggleFollow = useToggleFollow(currentProfile?.id ?? 0);
 
-  if (!currentProfile && (profileLoading || profileByIdLoading)) {
+  const bottomSheetRef = useRef<BottomSheetMethods | null>(null);
+  const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
+
+  if (profileLoading) {
     return (
       <SafeAreaView>
         <ActivityIndicator size="large" color={Colors.light.primary} />
@@ -55,7 +62,7 @@ const AccountPage = () => {
     );
   }
 
-  if (!currentProfile || profileByIdErro) {
+  if (!currentProfile || profileErro) {
     return (
       <SafeAreaView>
         <Text>Perfil não encontrado</Text>
@@ -67,10 +74,13 @@ const AccountPage = () => {
   const following = currentProfile.followingNumber ?? 0;
 
   const followersNumber =
-    followers > 1000 ? `${(followers / 1000).toFixed(1)}k` : followers || "--";
+    followers > 1000 ? `${(followers / 1000).toFixed(1)}k` : followers;
 
   const followingNumber =
-    following > 1000 ? `${(following / 1000).toFixed(1)}k` : following || "--";
+    following > 1000 ? `${(following / 1000).toFixed(1)}k` : following;
+
+  const isFollowing = followStatus?.is_following ?? false;
+  const isFollowed = followStatus?.is_followed ?? false;
 
   const openComments = (publicationId: number) => {
     setSelectedPostId(publicationId);
@@ -83,70 +93,72 @@ const AccountPage = () => {
       <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
 
       <Header accountPage />
+
       <View style={styles.header}>
         <View style={styles.headerContent}>
           <View style={styles.avatarContainer}>
-            {currentProfile.avatarUrl !== null ? (
-              <Image source={{ uri: currentProfile.avatarUrl }} style={styles.profileAvatar} />
+            {currentProfile.avatarUrl ? (
+              <Image
+                source={{ uri: currentProfile.avatarUrl }}
+                style={styles.profileAvatar}
+              />
             ) : (
               <View style={styles.profileAvatarNull} />
             )}
           </View>
+
           <View style={styles.infoContainer}>
-            <Text style={styles.infoName}>{currentProfile?.socialName}</Text>
+            <Text style={styles.infoName}>{currentProfile.socialName}</Text>
+
             <View style={styles.followingContainer}>
-              <Text style={styles.followingContainer}>{followersNumber ?? "--"} seguidores</Text>
-              <Text style={styles.followingContainer}>|</Text>
-              <Text style={styles.followingContainer}>{followingNumber ?? "--"} Seguindo</Text>
+              <Text>{followersNumber} seguidores</Text>
+              <Text>|</Text>
+              <Text>{followingNumber} seguindo</Text>
             </View>
           </View>
         </View>
-        {currentProfile?.bio && (
-          <View>
-            <ReadMore
-              numberOfLines={2}
-              seeLessText="Ver menos"
-              seeMoreText="Ver mais"
-              seeMoreStyle={styles.seeMore}
-              seeLessStyle={styles.seeMore}
-            >
-              <Text>{currentProfile.bio}</Text>
-            </ReadMore>
-          </View>
+
+        {currentProfile.bio && (
+          <ReadMore
+            numberOfLines={2}
+            seeLessText="Ver menos"
+            seeMoreText="Ver mais"
+            seeMoreStyle={styles.seeMore}
+            seeLessStyle={styles.seeMore}
+          >
+            <Text>{currentProfile.bio}</Text>
+          </ReadMore>
         )}
       </View>
+
       {isMyProfile ? (
-        <View>
-          <CustomButton
-            title="Editar perfil"
-            variant="outLine"
-            onPress={() => {}}
-            style={{ borderColor: Colors.light.secondary, width: "50%" }}
-            styleText={{ color: Colors.light.secondary }}
-            icon={<MaterialIcons name="edit" size={20} color={Colors.light.secondary} />}
-            iconPosition="end"
-          />
-        </View>
+        <CustomButton
+          title="Editar perfil"
+          variant="outLine"
+          onPress={() => {}}
+          style={{ borderColor: Colors.light.secondary, width: "50%" }}
+          styleText={{ color: Colors.light.secondary }}
+          icon={
+            <MaterialIcons
+              name="edit"
+              size={20}
+              color={Colors.light.secondary}
+            />
+          }
+          iconPosition="end"
+        />
       ) : (
         <View>
-          {!isMyProfile && isFollowing ? (
+          {isFollowing ? (
             <CustomButton
               title="Deixar de seguir"
               variant="outLine"
               style={{ width: "50%", opacity: 0.7 }}
               onPress={toggleFollow.mutate}
             />
-          ) : isFollowed ? (
-            <CustomButton
-              title="Seguir de Volta"
-              variant="secondary"
-              icon={<Octicons name="plus" color="white" size={20} />}
-              style={{ width: "50%" }}
-              onPress={toggleFollow.mutate}
-            />
           ) : (
             <CustomButton
-              title="Seguir"
+              title={isFollowed ? "Seguir de Volta" : "Seguir"}
               variant="secondary"
               icon={<Octicons name="plus" color="white" size={20} />}
               style={{ width: "50%" }}
@@ -175,6 +187,7 @@ const AccountPage = () => {
           />
         )}
       </View>
+
       <Comments bottomSheetRef={bottomSheetRef} postId={selectedPostId} />
     </SafeAreaView>
   );

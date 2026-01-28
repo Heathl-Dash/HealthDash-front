@@ -10,6 +10,9 @@ export function useToggleFollow(userId: number) {
       queryClient.invalidateQueries({
         queryKey: ["follow-status", userId],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["profile", userId],
+      });
     },
   });
 }
