@@ -14,63 +14,22 @@ export function useToggleCollection(publicationId: number) {
       isCollected
         ? deletePostToCollection(collectionId, publicationId)
         : addPostToCollection(collectionId, publicationId),
-    onMutate: async ({ isCollected, collectionId }) => {
-      await queryClient.cancelQueries();
 
-      const nextIsCollected = !isCollected;
-
-      const previousQueries = queryClient.getQueriesData({
-        predicate: (query) => Array.isArray(query.state.data),
+    onSuccess: (_data, { collectionId }) => {
+      // coleção afetada
+      queryClient.invalidateQueries({
+        queryKey: ["collection", String(collectionId)],
       });
-      const previousCollection = queryClient.getQueryData<IPublication[]>([
-        "collection",
-        String(collectionId),
-      ]);
-      const previousOverrides = queryClient.getQueryData<Record<number, boolean>>([
-        "saved-post-overrides",
-      ]);
 
-      const updateCollectionState = (items?: IPublication[]) => {
-        if (!items) return items;
-
-        return items.map((item) =>
-          item.id === publicationId
-            ? {
-                ...item,
-                isCollected: nextIsCollected,
-              }
-            : item
-        );
-      };
-
-      queryClient.setQueriesData(
-        { predicate: (query) => Array.isArray(query.state.data) },
-        updateCollectionState
-      );
-      queryClient.setQueryData<IPublication[]>(["collection", String(collectionId)], (items) => {
-        if (!items) return items;
-        return isCollected ? items.filter((item) => item.id !== publicationId) : items;
+      // listas gerais de posts
+      queryClient.invalidateQueries({
+        queryKey: ["posts"],
       });
-      queryClient.setQueryData<Record<number, boolean>>(["saved-post-overrides"], (current) => ({
-        ...(current ?? {}),
-        [publicationId]: nextIsCollected,
-      }));
 
-      return { previousQueries, previousCollection, previousOverrides, collectionId };
-    },
-    onError: (_error, _variables, context) => {
-      context?.previousQueries?.forEach(([queryKey, data]) => {
-        queryClient.setQueryData(queryKey, data);
+      // posts do perfil (se existir)
+      queryClient.invalidateQueries({
+        queryKey: ["profile-posts"],
       });
-      if (context?.previousOverrides !== undefined) {
-        queryClient.setQueryData(["saved-post-overrides"], context.previousOverrides);
-      }
-      if (context?.previousCollection) {
-        queryClient.setQueryData(
-          ["collection", String(context.collectionId)],
-          context.previousCollection
-        );
-      }
     },
   });
 }
