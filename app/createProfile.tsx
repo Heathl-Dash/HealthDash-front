@@ -134,7 +134,6 @@ export default function CreateProfile() {
       weight: Number(weight),
     });
 
-    console.log("Perfil físico criado");
     router.replace("/(tabs)");
   }
 
