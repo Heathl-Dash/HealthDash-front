@@ -1,3 +1,4 @@
+import { CreateProfileDTO, ProfileFormDTO, UpdateProfileDTO } from "@/dto/createProfile.dto";
 import { profileApi } from "@/service/apis";
 
 export type IProfileIMC = Pick<IProfile, "imc" | "imcDescription">;
@@ -54,6 +55,64 @@ export const getPostsByprofile = (id: number) => {
       console.error("erro ao receber perfil: ", err);
       throw err;
     });
+};
+
+export const createProfile = (data: CreateProfileDTO) => {
+  return profileApi
+    .post(`/profiles/onboarding`, data)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("erro ao criar perfil: ", err);
+      throw err;
+    });
+};
+
+export const updateProfile = (data: UpdateProfileDTO | ProfileFormDTO) => {
+  return profileApi
+    .patch(`/profiles`, data)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("erro ao atualizar perfil: ", err);
+      throw err;
+    });
+};
+
+const getAvatarFileName = (uri: string) => {
+  const lastPart = uri.split("/").pop();
+  if (lastPart && lastPart.includes(".")) {
+    return lastPart;
+  }
+  return `profile-avatar.jpg`;
+};
+
+const getAvatarFileType = (fileName: string) => {
+  const extension = fileName.split(".").pop()?.toLowerCase();
+  if (extension === "png") return "image/png";
+  return "image/jpeg";
+};
+
+export const uploadProfileAvatar = async (uri: string) => {
+  const name = getAvatarFileName(uri);
+  const type = getAvatarFileType(name);
+  const formData = new FormData();
+  formData.append("file", { uri, name, type } as any);
+
+  try {
+    const response = await profileApi.post(`/profiles/upload`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch (err) {
+    console.error("erro ao enviar avatar: ", err);
+    console.error("detalhes do erro:", {
+      status: (err as any)?.response?.status,
+      data: (err as any)?.response?.data,
+      headers: (err as any)?.response?.headers,
+    });
+    throw err;
+  }
 };
 
 export const toggleLike = (id: number) => {

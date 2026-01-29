@@ -4,12 +4,13 @@ import IMCCard from "@/components/IMCCard";
 import Tabs from "@/components/Tabs";
 import ToDo from "@/components/ToDo";
 import { Colors } from "@/constants/Colors";
-import useAuth from "@/hooks/useAuth";
 import useHabit from "@/hooks/useHabit";
 import useIMC from "@/hooks/useIMC";
+import useProfile from "@/hooks/useProfile";
 import useTodo from "@/hooks/useToDo";
 import useWater from "@/hooks/useWater";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Redirect } from "expo-router";
+import { StyleSheet, Text, View } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AddBottleModal from "../../components/AddBottleModal";
@@ -28,7 +29,7 @@ export default function HomeScreen() {
     editBottleModalIsOpen,
     bottleToEdit,
     handleEditBottle,
-    handleCloseEditBottleModal
+    handleCloseEditBottleModal,
   } = useWater();
 
   const {
@@ -53,15 +54,18 @@ export default function HomeScreen() {
 
   const { imcData, loading } = useIMC();
 
+  const { profile } = useProfile();
+  if (profile?.status === "ONBOARDING_REQUIRED") {
+    console.log(profile);
+    return <Redirect href="/createProfile" />;
+  }
+
   return (
     <SafeAreaView style={[styles.container, { flexGrow: 1 }]}>
       <Header />
       <View style={{ flexDirection: "row" }}>
         <View style={{ width: "50%", padding: 5 }}>
-          <IMCCard
-            calc_IMC={imcData?.imc || null}
-            imc_classification={imcData?.imcDescription}
-          />
+          <IMCCard calc_IMC={imcData?.imc || null} imc_classification={imcData?.imcDescription} />
         </View>
         <View style={{ width: "50%", padding: 5 }}>
           <WaterButton
@@ -148,7 +152,11 @@ export default function HomeScreen() {
       />
       <AddBottleModal onClose={handleCloseAddBottleModal} visible={addBottleModalIsOpen} />
 
-      <AddBottleModal onClose={handleCloseEditBottleModal} visible={editBottleModalIsOpen} bottleToEdit={bottleToEdit}/>
+      <AddBottleModal
+        onClose={handleCloseEditBottleModal}
+        visible={editBottleModalIsOpen}
+        bottleToEdit={bottleToEdit}
+      />
     </SafeAreaView>
   );
 }

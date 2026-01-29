@@ -4,7 +4,7 @@ import Attach from "@/components/Attach";
 import AttachSelectorModal from "@/components/AttachSelectorModal";
 import ImageInput from "@/components/ImageInput";
 import { Colors } from "@/constants/Colors";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { Entypo, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Stack, useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -123,9 +123,14 @@ const CreatePublication = () => {
             )}
 
             <View style={styles.optionsContainer}>
-              <ImageInput onChangeImages={setImages} />
+              <ImageInput
+                onChangeImages={setImages}
+                allowsMultipleSelection
+                label="Adicionar imagem"
+                icon={<Entypo name="attachment" size={20} />}
+              />
               <CustomButton
-                title="Adicionar hábito/tarefa"
+                title="hábito/tarefa"
                 onPress={openAttachModal}
                 variant="tertiary"
                 shape="rect"

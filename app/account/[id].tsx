@@ -12,7 +12,7 @@ import { useToggleFollow } from "@/hooks/useToggleFollow";
 import { MaterialIcons, Octicons } from "@expo/vector-icons";
 import ReadMore from "@fawazahmed/react-native-read-more";
 import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
-import { Stack, useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useRef, useState } from "react";
 import {
   ActivityIndicator,
@@ -27,6 +27,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 const AccountPage = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const router = useRouter();
 
   const { profile: myProfile } = useProfile();
 
@@ -131,16 +132,16 @@ const AccountPage = () => {
         )}
       </View>
 
-      {isMyProfile ? (
-        <CustomButton
-          title="Editar perfil"
-          variant="outLine"
-          onPress={() => {}}
-          style={{ borderColor: Colors.light.secondary, width: "50%" }}
-          styleText={{ color: Colors.light.secondary }}
-          icon={
-            <MaterialIcons
-              name="edit"
+        {isMyProfile ? (
+          <CustomButton
+            title="Editar perfil"
+            variant="outLine"
+            onPress={() => router.push("/createProfile?edit=true")}
+            style={{ borderColor: Colors.light.secondary, width: "50%" }}
+            styleText={{ color: Colors.light.secondary }}
+            icon={
+              <MaterialIcons
+                name="edit"
               size={20}
               color={Colors.light.secondary}
             />
