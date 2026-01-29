@@ -5,8 +5,6 @@ import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import DropDown from "../dropDown";
-import CustomInput from "../CustomInput";
-import CustomButton from "../CustomButton";
 import { TextInput } from "react-native-gesture-handler";
 
 interface HeaderProps {
