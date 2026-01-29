@@ -42,7 +42,7 @@ export default function SocialMedia() {
 
   return (
     <SafeAreaView style={{ flex: 1, paddingHorizontal: 30 }}>
-      <Header feedSocialMedia />
+      <Header feedSocialMedia/>
       <FlatList
         data={publications}
         keyExtractor={(item) => item.id.toString()}
