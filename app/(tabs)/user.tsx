@@ -70,7 +70,6 @@ const UserInfo = ({ user, isLoading }: UserProps) => {
 export default function User() {
   const { handleLogout } = useAuth();
   const { profile, profileErro, profileLoading } = useProfile();
-  console.log(profile)
 
   const [isEditing, setIsEditing] = useState(false);
 
