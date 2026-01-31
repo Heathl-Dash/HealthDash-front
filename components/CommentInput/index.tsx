@@ -1,15 +1,30 @@
 import { Colors } from "@/constants/Colors";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import React from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import CustomInput from "../CustomInput";
 import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
 
 interface CommentInputProps {
   profileAvatar: string | null;
   profileUserName: string;
+  value: string;
+  onChangeText: (text: string) => void;
+  onSubmit: () => void;
+  submitting?: boolean;
+  disabled?: boolean;
 }
 
-const CommentInput = ({ profileAvatar, profileUserName }: CommentInputProps) => {
+const CommentInput = ({
+  profileAvatar,
+  profileUserName,
+  value,
+  onChangeText,
+  onSubmit,
+  submitting = false,
+  disabled = false,
+}: CommentInputProps) => {
+  const canSubmit = !disabled && !submitting && value.trim().length > 0;
   return (
     <View style={styles.container}>
       <View style={styles.profileContainer}>
@@ -23,7 +38,30 @@ const CommentInput = ({ profileAvatar, profileUserName }: CommentInputProps) => 
       </View>
       <View style={styles.content}>
         <Text style={styles.username}>{profileUserName}</Text>
-        <CustomInput InputComponent={BottomSheetTextInput} style={styles.inputStyle}/>
+        <View style={styles.inputRow}>
+          <CustomInput
+            InputComponent={BottomSheetTextInput}
+            style={styles.inputStyle}
+            value={value}
+            onChangeText={onChangeText}
+            placeholder="Escreva um comentário"
+            multiline
+            returnKeyType="send"
+            onSubmitEditing={onSubmit}
+            editable={!disabled}
+          />
+          <TouchableOpacity
+            style={[styles.sendButton, !canSubmit && styles.sendButtonDisabled]}
+            onPress={onSubmit}
+            disabled={!canSubmit}
+          >
+            <MaterialCommunityIcons
+              name="send"
+              size={18}
+              color={canSubmit ? Colors.light.primary : Colors.light.mediumGray}
+            />
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
@@ -40,10 +78,16 @@ const styles = StyleSheet.create({
     flex: 1
   },
   content: {
-    flex: 1,
+    width:"78%",
     paddingTop: 3,
     paddingHorizontal: 3,
     gap: 5,
+  },
+  inputRow: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "flex-end",
+    gap: 8,
   },
   username: {
     fontWeight: 600,
@@ -72,6 +116,20 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   inputStyle:{
-    borderColor: Colors.light.lightGray
+    borderColor: Colors.light.lightGray,
+    color: Colors.light.darkGray,
+    minHeight: 40,
+    paddingRight: 36,
+  },
+  sendButton: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: Colors.light.tertiary,
+  },
+  sendButtonDisabled: {
+    opacity: 0.5,
   }
 });

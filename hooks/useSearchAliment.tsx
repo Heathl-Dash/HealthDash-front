@@ -1,16 +1,15 @@
-import { postNutritionInfo } from '@/lib/axios';
-import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
-import { useMutation } from '@tanstack/react-query';
-import React, { useRef, useState } from 'react'
+import { postNutritionInfo } from "@/lib/profile";
+import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
+import { useMutation } from "@tanstack/react-query";
+import { useRef, useState } from "react";
 
 const useSearchAliment = () => {
-
   const [alimentValue, setAlimentValue] = useState("");
-    const [searchedAliment, setSearchedAliment] = useState("");
-  
-    const bottomSheetRef = useRef<BottomSheetMethods | null>(null);
+  const [searchedAliment, setSearchedAliment] = useState("");
 
-    const openSheet = () => {
+  const bottomSheetRef = useRef<BottomSheetMethods | null>(null);
+
+  const openSheet = () => {
     bottomSheetRef.current?.expand();
   };
 
@@ -47,7 +46,7 @@ const useSearchAliment = () => {
     searchedAliment,
     isPending,
     isError,
-  }
-}
+  };
+};
 
-export default useSearchAliment
+export default useSearchAliment;

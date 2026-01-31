@@ -1,13 +1,26 @@
-import { Entypo } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import React from "react";
-import { Alert, StyleSheet } from "react-native";
+import { Alert, StyleProp, StyleSheet, ViewStyle } from "react-native";
 import CustomButton from "../CustomButton";
 
 interface ImageInputProps {
-  onChangeImages: (images: string[]) => void;
+  value?: string | string[];
+  onChangeImages?: (images: string[]) => void;
+  onChangeImage?: (images: string) => void;
+  label: string;
+  allowsMultipleSelection?: boolean;
+  icon?: React.ReactNode;
+  style?: StyleProp<ViewStyle>
 }
-const ImageInput = ({ onChangeImages }: ImageInputProps) => {
+
+const ImageInput = ({
+  onChangeImages,
+  allowsMultipleSelection,
+  onChangeImage,
+  label,
+  icon,
+  style
+}: ImageInputProps) => {
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library.
     // Manually request permissions for videos on iOS when `allowsEditing` is set to `false`
@@ -26,26 +39,30 @@ const ImageInput = ({ onChangeImages }: ImageInputProps) => {
       mediaTypes: ["images"],
       aspect: [1, 1],
       quality: 1,
-      allowsMultipleSelection: true,
-      selectionLimit: 3,
+      allowsMultipleSelection,
+      selectionLimit: allowsMultipleSelection ? 3 : 1,
     });
 
-    console.log(result);
-
+    
     if (!result.canceled) {
       const uris = result.assets.map((asset) => asset.uri);
-      onChangeImages(uris);
+      if (allowsMultipleSelection) {
+        onChangeImages?.(uris);
+      } else {
+        onChangeImage?.(uris[0]);
+      }
     }
   };
 
   return (
     <>
       <CustomButton
-        title="Adicionar imagem"
+        title={label}
         onPress={pickImage}
         variant="tertiary"
         shape="rect"
-        icon={<Entypo name="attachment" size={20} />}
+        icon={icon}
+        style={style}
       />
     </>
   );

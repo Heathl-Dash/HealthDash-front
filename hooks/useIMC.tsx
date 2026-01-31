@@ -1,4 +1,4 @@
-import { getProfileIMC, IProfileIMC } from "@/lib/axios";
+import { getProfileIMC, IProfileIMC } from "@/lib/profile";
 import { useEffect, useState } from "react";
 
 export const useIMC = () => {
@@ -13,7 +13,7 @@ export const useIMC = () => {
         setImcData(null);
       })
       .finally(() => setLoading(false));
-  }, [imcData]);
+  }, []);
 
   return { imcData, loading };
 };

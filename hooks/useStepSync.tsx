@@ -1,4 +1,4 @@
-import { createFitData } from "@/lib/axios";
+import { createFitData } from "@/lib/fit";
 import NetInfo from "@react-native-community/netinfo";
 import { useMutation } from "@tanstack/react-query";
 import { useSQLiteContext } from "expo-sqlite";
@@ -69,7 +69,7 @@ const useStepSync = ({ steps, kcal, distance }: Props) => {
     };
 
     sendToBack();
-  }, [isConnected]);
+  }, []);
 };
 
 export default useStepSync;

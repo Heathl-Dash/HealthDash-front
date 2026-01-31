@@ -1,11 +1,12 @@
 import BarChart from "@/components/BarChart";
 import CustomButton from "@/components/CustomButton";
+import LineChart from "@/components/LineChart";
 import UserProfileForm from "@/components/UserProfileForm";
 import { Colors } from "@/constants/Colors";
 import useAuth from "@/hooks/useAuth";
 import useProfile from "@/hooks/useProfile";
-import useStorage from "@/hooks/useStorage";
-import { getFitData, getWaterIntakes } from "@/lib/axios";
+import { getFitData } from "@/lib/fit";
+import { getWaterIntakes } from "@/lib/nutri";
 import { Entypo, FontAwesome5, FontAwesome6 } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
 import moment from "moment";
@@ -14,9 +15,8 @@ import React, { useState } from "react";
 import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Header from "../../components/Header";
-import LineChart from "@/components/LineChart";
 
-moment.locale("pt-br",{week:{dow: 1}});
+moment.locale("pt-br", { week: { dow: 1 } });
 
 interface UserProps {
   user?: IProfile;
@@ -36,15 +36,15 @@ const UserInfo = ({ user, isLoading }: UserProps) => {
     <View style={styles.userInfoContainer}>
       <View style={styles.userInfoWrapper}>
         <Text style={styles.userInfoLabel}>Nome</Text>
-        <Text>{user?.name !== null ? user?.name : "Não informado"}</Text>
+        <Text>{user?.socialName !== null ? user?.socialName : "Não informado"}</Text>
       </View>
       <View style={styles.userInfoWrapper}>
         <Text style={styles.userInfoLabel}>Altura</Text>
-        <Text>{user?.heigth !== null ? user?.heigth : "Não informado"}</Text>
+        <Text>{user?.height !== null ? user?.height : "Não informado"}</Text>
       </View>
       <View style={styles.userInfoWrapper}>
         <Text style={styles.userInfoLabel}>Peso</Text>
-        <Text>{user?.weigth !== null ? user?.weigth : "Não informado"}</Text>
+        <Text>{user?.weight !== null ? user?.weight : "Não informado"}</Text>
       </View>
       <View style={styles.userInfoWrapper}>
         <Text style={styles.userInfoLabel}>Idade</Text>
@@ -54,17 +54,13 @@ const UserInfo = ({ user, isLoading }: UserProps) => {
       <View style={styles.userImcInfo}>
         <View style={styles.userInfoWrapper}>
           <Text style={styles.userInfoLabel}>IMC</Text>
-          <Text>{user?.calc_IMC !== null ? user?.calc_IMC : "Não informado"}</Text>
+          <Text>{user?.imc !== null ? user?.imc : "Não informado"}</Text>
         </View>
         <View style={styles.userInfoWrapper}>
           <Text style={styles.userInfoLabel}>Classificação</Text>
           <Text>
-            {user?.imc_classification !== null ? user?.imc_classification : "Não informado"}
+            {user?.imcDescription !== null ? user?.imcDescription : "Não informado"}
           </Text>
-        </View>
-        <View style={styles.userInfoWrapper}>
-          <Text style={styles.userInfoLabel}>Grau de obesidade</Text>
-          <Text>{user?.imc_degree !== null ? user?.imc_degree : "Não informado"}</Text>
         </View>
       </View>
     </View>
@@ -189,7 +185,7 @@ export default function User() {
                     ykeys="burned_calories"
                     formatXLabel={(val) => moment(val).format("ddd")}
                     formatYLabel={(val) => `${val}Kcal`}
-                    domain={{y:[0, maxYWaterCalorie]}}
+                    domain={{ y: [0, maxYWaterCalorie] }}
                     color={Colors.light.accent2}
                   />
                 ) : (
