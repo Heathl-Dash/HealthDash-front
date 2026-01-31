@@ -3,76 +3,67 @@ import CustomButton from "@/components/CustomButton";
 import Header from "@/components/Header";
 import Publication from "@/components/Publication";
 import { Colors } from "@/constants/Colors";
+import { useFollowStatus } from "@/hooks/useFollowStatus";
 import useProfile from "@/hooks/useProfile";
+import useProfileById from "@/hooks/useProfileById";
 import { useProfilePosts } from "@/hooks/useProfilePost";
+import useSavedCollectionId from "@/hooks/useSavedCollectionId";
+import { useToggleFollow } from "@/hooks/useToggleFollow";
 import { MaterialIcons, Octicons } from "@expo/vector-icons";
 import ReadMore from "@fawazahmed/react-native-read-more";
 import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
-import { Stack, useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useRef, useState } from "react";
-import { ActivityIndicator, Image, StatusBar, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Image,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const MOCK_USERS: IProfile[] = [
-  {
-    id: 11,
-    socialName: "Gabriella Silva",
-    email: "gabriella@email.com",
-    weight: 58.0,
-    height: 1.65,
-    age: 24,
-    imc: 21.3,
-    imcDescription: "Normal",
-    bio: "Apaixonada por tecnologia e bem-estar.",
-    avatarUrl: null,
-    followingNumber: 128,
-    followersNumber: 342,
-  },
-  {
-    id: 22,
-    socialName: "Lucas Andrade",
-    email: "lucas.andrade@email.com",
-    weight: 82,
-    height: 1.78,
-    age: 29,
-    imc: 25.9,
-    imcDescription: "Sobrepeso",
-    bio: "Corrida, café e constância. Corrida, café e constância. Corrida, café e constância. Corrida, café e constância. Corrida, café e constância.",
-    avatarUrl: "https://i.pravatar.cc/300?img=12",
-    followingNumber: 589,
-    followersNumber: 1200,
-  },
-  {
-    id: 33,
-    socialName: "Marina Costa",
-    email: "marina.costa@email.com",
-    weight: 64,
-    height: 1.7,
-    age: 26,
-    imc: 22.1,
-    imcDescription: "Normal",
-    bio: "Yoga, leitura e hábitos simples.",
-    avatarUrl: "https://i.pravatar.cc/300?img=32",
-    followingNumber: 210,
-    followersNumber: 198,
-  },
-];
-
 const AccountPage = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { profile, profileLoading } = useProfile();
+  const router = useRouter();
 
-  const isMyProfile = id === "me" || Number(id) === profile?.id;
+  const { profile: myProfile } = useProfile();
 
-  const currentProfile: IProfile = isMyProfile
-    ? profile
-    : MOCK_USERS.find((u) => u.id === Number(id));
+  const numericId =
+    id === "me" ? myProfile?.id : id ? Number(id) : undefined;
+
+  const isMyProfile = numericId === myProfile?.id;
+
+  const {
+    profile: currentProfile,
+    profileLoading,
+    profileErro,
+  } = useProfileById(numericId);
+
+  const { data: followStatus, isLoading: followStatusLoading } =
+    useFollowStatus(!isMyProfile ? numericId : undefined);
+
+  const { data: posts = [], isLoading: postsLoading } =
+    useProfilePosts(currentProfile?.id);
+
+  const { data: savedCollectionId } = useSavedCollectionId();
+
+  const toggleFollow = useToggleFollow(currentProfile?.id ?? 0);
 
   const bottomSheetRef = useRef<BottomSheetMethods | null>(null);
   const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
 
-  if (!currentProfile) {
+  if (profileLoading) {
+    return (
+      <SafeAreaView>
+        <ActivityIndicator size="large" color={Colors.light.primary} />
+      </SafeAreaView>
+    );
+  }
+
+  if (!currentProfile || profileErro) {
     return (
       <SafeAreaView>
         <Text>Perfil não encontrado</Text>
@@ -80,95 +71,101 @@ const AccountPage = () => {
     );
   }
 
-  if (profileLoading && isMyProfile) {
-    return (
-      <SafeAreaView>
-        <ActivityIndicator size="large" color={Colors.light.primary} />
-      </SafeAreaView>
-    );
-  }
-  const { data: posts = [], isLoading: postsLoading } = useProfilePosts(currentProfile?.id);
-
   const followers = currentProfile.followersNumber ?? 0;
   const following = currentProfile.followingNumber ?? 0;
 
   const followersNumber =
-    followers > 1000 ? `${(followers / 1000).toFixed(1)}k` : followers || "--";
+    followers > 1000 ? `${(followers / 1000).toFixed(1)}k` : followers;
 
   const followingNumber =
-    following > 1000 ? `${(following / 1000).toFixed(1)}k` : following || "--";
+    following > 1000 ? `${(following / 1000).toFixed(1)}k` : following;
+
+  const isFollowing = followStatus?.is_following ?? false;
+  const isFollowed = followStatus?.is_followed ?? false;
 
   const openComments = (publicationId: number) => {
     setSelectedPostId(publicationId);
     bottomSheetRef.current?.expand();
   };
 
-  console.log(currentProfile)
   return (
     <SafeAreaView style={{ paddingHorizontal: 30, flexGrow: 1, backgroundColor: "white" }}>
       <Stack.Screen options={{ headerShown: false }} />
       <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
 
       <Header accountPage />
+
       <View style={styles.header}>
         <View style={styles.headerContent}>
           <View style={styles.avatarContainer}>
-            {currentProfile.avatarUrl !== null ? (
-              <Image source={{ uri: currentProfile.avatarUrl }} style={styles.profileAvatar} />
+            {currentProfile.avatarUrl ? (
+              <Image
+                source={{ uri: currentProfile.avatarUrl }}
+                style={styles.profileAvatar}
+              />
             ) : (
               <View style={styles.profileAvatarNull} />
             )}
           </View>
+
           <View style={styles.infoContainer}>
-            <Text style={styles.infoName}>{currentProfile?.socialName}</Text>
+            <Text style={styles.infoName}>{currentProfile.socialName}</Text>
+
             <View style={styles.followingContainer}>
-              <Text style={styles.followingContainer}>{followersNumber ?? "--"} seguidores</Text>
-              <Text style={styles.followingContainer}>|</Text>
-              <Text style={styles.followingContainer}>{followingNumber ?? "--"} Seguindo</Text>
+              <Text>{followersNumber} seguidores</Text>
+              <Text>|</Text>
+              <Text>{followingNumber} seguindo</Text>
             </View>
           </View>
         </View>
-        {currentProfile?.bio && (
-          <View>
-            <ReadMore
-              numberOfLines={2}
-              seeLessText="Ver menos"
-              seeMoreText="Ver mais"
-              seeMoreStyle={styles.seeMore}
-              seeLessStyle={styles.seeMore}
-            >
-              <Text>{currentProfile.bio}</Text>
-            </ReadMore>
-          </View>
+
+        {currentProfile.bio && (
+          <ReadMore
+            numberOfLines={2}
+            seeLessText="Ver menos"
+            seeMoreText="Ver mais"
+            seeMoreStyle={styles.seeMore}
+            seeLessStyle={styles.seeMore}
+          >
+            <Text>{currentProfile.bio}</Text>
+          </ReadMore>
         )}
       </View>
-      {isMyProfile ? (
-        <View>
+
+        {isMyProfile ? (
           <CustomButton
             title="Editar perfil"
             variant="outLine"
-            onPress={() => {}}
+            onPress={() => router.push("/createProfile?edit=true")}
             style={{ borderColor: Colors.light.secondary, width: "50%" }}
             styleText={{ color: Colors.light.secondary }}
-            icon={<MaterialIcons name="edit" size={20} color={Colors.light.secondary} />}
-            iconPosition="end"
-          />
-        </View>
+            icon={
+              <MaterialIcons
+                name="edit"
+              size={20}
+              color={Colors.light.secondary}
+            />
+          }
+          iconPosition="end"
+        />
       ) : (
         <View>
-          <CustomButton
-            title="Seguir"
-            variant="primary"
-            icon={<Octicons name="plus" color="white" size={20} />}
-            style={{ width: "50%" }}
-            onPress={() => {}}
-          />
-          <CustomButton
-            title="Deixar de seguir"
-            variant="secondary"
-            style={{ width: "50%" }}
-            onPress={() => {}}
-          />
+          {isFollowing ? (
+            <CustomButton
+              title="Deixar de seguir"
+              variant="outLine"
+              style={{ width: "50%", opacity: 0.7 }}
+              onPress={toggleFollow.mutate}
+            />
+          ) : (
+            <CustomButton
+              title={isFollowed ? "Seguir de Volta" : "Seguir"}
+              variant="secondary"
+              icon={<Octicons name="plus" color="white" size={20} />}
+              style={{ width: "50%" }}
+              onPress={toggleFollow.mutate}
+            />
+          )}
         </View>
       )}
 
@@ -180,13 +177,18 @@ const AccountPage = () => {
             data={posts}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
-              <Publication publication={item} onPressComments={() => openComments(item.id)} />
+              <Publication
+                publication={item}
+                onPressComments={() => openComments(item.id)}
+                savedCollectionId={savedCollectionId}
+              />
             )}
             contentContainerStyle={{ gap: 20, paddingBottom: 40 }}
             showsVerticalScrollIndicator={false}
           />
         )}
       </View>
+
       <Comments bottomSheetRef={bottomSheetRef} postId={selectedPostId} />
     </SafeAreaView>
   );

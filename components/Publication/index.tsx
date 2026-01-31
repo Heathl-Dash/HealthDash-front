@@ -15,14 +15,14 @@ import DropDown from "../dropDown";
 interface PublicationProps {
   publication: IPublication;
   onPressComments: () => void;
+  savedCollectionId?: number | null;
 }
 
-const Publication = ({ publication, onPressComments }: PublicationProps) => {
+const Publication = ({ publication, onPressComments, savedCollectionId }: PublicationProps) => {
   const { profile } = useProfile();
   const isMyPublication = profile?.id === publication.profileId;
   const isCollected = publication.isCollected ?? false;
   const saveLabel = isCollected ? "Remover dos salvos" : "Salvar";
-  const savedCollectionId = 1;
   const router = useRouter();
   const deleteMutation = useDeletePublication();
   const toggleCollectionMutation = useToggleCollection(publication.id);
@@ -59,6 +59,13 @@ const Publication = ({ publication, onPressComments }: PublicationProps) => {
   };
 
   const handleToggleSave = () => {
+    if (savedCollectionId == null) {
+      Alert.alert(
+        "Coleção indisponível",
+        "Não foi possível localizar a coleção Salvos. Tente novamente mais tarde."
+      );
+      return;
+    }
     toggleCollectionMutation.mutate({ isCollected, collectionId: savedCollectionId });
   };
 
@@ -76,11 +83,20 @@ const Publication = ({ publication, onPressComments }: PublicationProps) => {
     <View style={styles.container}>
       <View style={styles.profileContainer}>
         <View style={styles.profileImage}>
-          {publication.profileAvatar !== null ? (
-            <Image source={{ uri: publication.profileAvatar }} style={styles.profileAvatar} />
-          ) : (
-            <View style={styles.profileAvatarNull} />
-          )}
+          <TouchableOpacity
+            onPress={() => {
+              router.push({
+                pathname: "/account/[id]",
+                params: { id: publication.profileId },
+              });
+            }}
+          >
+            {publication.profileAvatar !== null ? (
+              <Image source={{ uri: publication.profileAvatar }} style={styles.profileAvatar} />
+            ) : (
+              <View style={styles.profileAvatarNull} />
+            )}
+          </TouchableOpacity>
         </View>
         <View
           style={{
@@ -134,7 +150,7 @@ const Publication = ({ publication, onPressComments }: PublicationProps) => {
           <Text>{publication.likesCount}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.action} onPress={onPressComments}>
-          <FontAwesome name="comment-o" size={28} color={Colors.light.darkGray} />{" "}
+          <FontAwesome name="comment-o" size={28} color={Colors.light.darkGray} />
           <Text>{publication.commentsCount}</Text>
         </TouchableOpacity>
       </View>

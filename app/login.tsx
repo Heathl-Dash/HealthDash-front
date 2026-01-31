@@ -45,7 +45,6 @@ const LoginScreen = () => {
             disabled={!request}
             activeOpacity={0.8}
           >
-            <GoogleIcon width={30} height={30} />
             <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
               <Text style={styles.googleButtonText}>Entrar</Text>
             </View>
