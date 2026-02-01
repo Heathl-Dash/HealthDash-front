@@ -4,7 +4,7 @@ import { Colors } from "@/constants/Colors";
 import useAuth from "@/hooks/useAuth";
 import { Redirect, Stack } from "expo-router";
 import React from "react";
-import { SafeAreaView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, SafeAreaView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const LogoPlaceholder = () => (
   <View style={styles.logoContainer}>
@@ -17,7 +17,11 @@ const LogoPlaceholder = () => (
 const LoginScreen = () => {
   const { handleLogin, isAuthenticated, loading, request } = useAuth();
 
-  if (loading) return null; // Ou um Spinner
+  if (loading) {
+    return(
+      <ActivityIndicator/>
+    )
+  }
 
   if (isAuthenticated) {
     return <Redirect href="/(tabs)" />;
