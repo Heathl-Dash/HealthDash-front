@@ -1,5 +1,7 @@
 import { storage } from "@/service/storage";
 import Axios from "axios";
+import { router } from "expo-router";
+
 
 export const createApi = (baseURL: string) => {
   const api = Axios.create({ baseURL });
@@ -40,13 +42,23 @@ export const createApi = (baseURL: string) => {
         }
 
         try {
-          const response = await Axios.post(
-            `${process.env.EXPO_PUBLIC_PROFILE_API}/profiles/token/refresh/`,
-            { DashboardProfileRefresh: refresh }
-          );
+          const keycloakUrl = process.env.EXPO_PUBLIC_KEYCLOAK_URL;
+          const realm = process.env.EXPO_PUBLIC_KEYCLOAK_REALM;
+          const clientId = process.env.EXPO_PUBLIC_KEYCLOAK_CLIENT_ID;
+          const tokenEndpoint = `${keycloakUrl}/realms/${realm}/protocol/openid-connect/token`;
 
-          const newAccess = response.data.DashboardProfileAccess;
-          const newRefresh = response.data.DashboardProfileRefresh;
+          const params = new URLSearchParams({
+            grant_type: "refresh_token",
+            client_id: clientId || "",
+            refresh_token: refresh,
+          });
+
+          const response = await Axios.post(tokenEndpoint, params.toString(), {
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          });
+
+          const newAccess = response.data.access_token;
+          const newRefresh = response.data.refresh_token ?? refresh;
 
           await storage.saveTokens({
             DashboardProfileAccess: newAccess,
@@ -59,6 +71,7 @@ export const createApi = (baseURL: string) => {
         } catch (err) {
           await storage.removeAccessToken();
           await storage.removeRefreshToken();
+          router.replace("/login");
           return Promise.reject(err);
         }
       }
