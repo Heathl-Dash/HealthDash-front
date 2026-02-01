@@ -18,6 +18,7 @@ import {
 } from "@/lib/nutri";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import Toast from "react-native-toast-message";
 
 const useHabit = () => {
   const [currentTab, setCurrentTab] = useState("habit");
@@ -52,6 +53,7 @@ const useHabit = () => {
       },
       onError: (error: any) => {
         console.error("Erro ao criar hábito:", error.message ?? error);
+        Toast.show({ type: "error", text1: "Não foi possível criar o hábito " });
       },
     });
   };
@@ -65,6 +67,7 @@ const useHabit = () => {
       },
       onError: (error: any) => {
         console.error("Erro ao deletar hábito:", error.message ?? error);
+        Toast.show({ type: "error", text1: "Não foi possível deletar o hábito" });
       },
     });
   };
@@ -88,6 +91,7 @@ const useHabit = () => {
       },
       onError: (error: any) => {
         console.error("Erro ao deletar hábito:", error.message ?? error);
+        Toast.show({ type: "error", text1: "Não foi possível editar o hábito" });        
       },
     });
   };
@@ -107,6 +111,7 @@ const useHabit = () => {
       },
       onError: (error: any) => {
         console.error("Erro ao criar hábito:", error.message ?? error);
+        Toast.show({ type: "error", text1: "Não foi possível criar o hábito " });
       },
     });
   };
@@ -120,6 +125,7 @@ const useHabit = () => {
       },
       onError: (error: any) => {
         console.error("Erro ao deletar hábito:", error.message ?? error);
+        Toast.show({ type: "error", text1: "Não foi possível deletar o hábito" });
       },
     });
   };
@@ -138,6 +144,7 @@ const useHabit = () => {
       },
       onError: (error: any) => {
         console.error("Erro ao deletar hábito:", error.message ?? error);
+        Toast.show({ type: "error", text1: "Não foi possível editar o hábito" });
       },
     });
   };
