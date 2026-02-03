@@ -7,6 +7,7 @@ type CreatePublicationPayload = {
   description: string;
   typeId: number;
   isPublic: boolean;
+  attach?: IAttach | null;
 };
 
 type CreatePublicationInput = {
@@ -77,6 +78,7 @@ export const useCreatePublication = ({
         description: safeDescription,
         typeId,
         isPublic: true,
+        attach: attachDraft,
       };
 
       await mutation.mutateAsync({ payload, images });
