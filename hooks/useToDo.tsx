@@ -14,6 +14,7 @@ import {
   nutriToggleMarkTodoDone,
 } from "@/lib/nutri";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import Toast from "react-native-toast-message";
 
 const useTodo = () => {
   const {
@@ -48,6 +49,7 @@ const useTodo = () => {
       },
       onError: (error: any) => {
         console.error("Erro ao criar tarefa:", error.message ?? error);
+        Toast.show({ type: "error", text1: "Não foi possível criar a tarefa" });
       },
     });
   };
@@ -62,6 +64,7 @@ const useTodo = () => {
       },
       onError: (error: any) => {
         console.error("Erro ao editar tarefa:", error.message ?? error);
+        Toast.show({ type: "error", text1: "Não foi possível editar a tarefa" });
       },
     });
   };
@@ -74,6 +77,7 @@ const useTodo = () => {
       },
       onError: (error: any) => {
         console.error("Erro ao deletar tarefa:", error.message ?? error);
+        Toast.show({ type: "error", text1: "Não foi possível deletar a tarefa" });
       },
     });
   };
@@ -89,6 +93,7 @@ const useTodo = () => {
       },
       onError: (error: any) => {
         console.error("Erro ao criar tarefa:", error.message ?? error);
+        Toast.show({ type: "error", text1: "Não foi possível criar a tarefa" });
       },
     });
   };
@@ -103,6 +108,7 @@ const useTodo = () => {
       },
       onError: (error: any) => {
         console.error("Erro ao editar tarefa:", error.message ?? error);
+        Toast.show({ type: "error", text1: "Não foi possível editar a tarefa" });
       },
     });
   };
@@ -115,6 +121,7 @@ const useTodo = () => {
       },
       onError: (error: any) => {
         console.error("Erro ao deletar tarefa:", error.message ?? error);
+        Toast.show({ type: "error", text1: "Não foi possível deletar a tarefa" });
       },
     });
   };
@@ -124,6 +131,9 @@ const useTodo = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["nutriToDo"] });
     },
+    onError: () => {
+      Toast.show({ type: "error", text1: "Não foi marcar/desmarcar a tarefa" });
+    }
   });
 
   const toggleMarkToDoFit = useMutation({
@@ -131,6 +141,9 @@ const useTodo = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["fitToDo"] });
     },
+    onError: () => {
+      Toast.show({ type: "error", text1: "Não foi marcar/desmarcar a tarefa" });
+    }
   });
 
   const normalizedNutriTodos = nutriToDo.map((todo) => ({

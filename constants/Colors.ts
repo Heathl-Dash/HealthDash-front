@@ -21,6 +21,8 @@ export const Colors = {
     accent1: "#7FB069",
     accent2: "#FFB347",
     accent3: "#DDA0DD",
+    success: "#b7ed9f",
+    fail: "#ed8f8c"
   },
   dark: { darkBlue: "#1A405F"},
 };

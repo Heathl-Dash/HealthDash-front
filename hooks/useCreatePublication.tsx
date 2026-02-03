@@ -1,6 +1,7 @@
 import { createPublication, uploadPublicationImages } from "@/lib/profile";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Alert } from "react-native";
+import Toast from "react-native-toast-message";
 
 type CreatePublicationPayload = {
   title?: string;
@@ -60,6 +61,9 @@ export const useCreatePublication = ({
       queryClient.refetchQueries({ queryKey: ["posts"], type: "all" });
       queryClient.refetchQueries({ queryKey: ["profile-posts"], type: "all" });
     },
+    onError: () => {
+      Toast.show({type: "error", text1: "Não foi possível criar a publicação"});
+    }
   });
 
   const handlePublish = async () => {
