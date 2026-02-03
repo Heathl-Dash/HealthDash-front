@@ -3,6 +3,7 @@ import useHabit from "@/hooks/useHabit";
 import useTodo from "@/hooks/useToDo";
 import { habitForm, toDoForm } from "@/lib/profile";
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import CustomButton from "../CustomButton";
@@ -29,6 +30,7 @@ const HabitTodoManager = ({
   backFont,
   onClose,
 }: HabitTodoMangerProps) => {
+  const router = useRouter();
   const {
     createNutriHabitMutation,
     deleteNutriHabitMutation,
@@ -235,6 +237,44 @@ const HabitTodoManager = ({
     }
   };
 
+  const handleShare = () => {
+    if (!item) return;
+
+    if (type === "habit" && isHabit(item)) {
+      const attach: IAttach = {
+        title: item.title,
+        description: item.description ?? undefined,
+        isPositive: item.positive ?? false,
+        isNegative: item.negative ?? false,
+        positiveCount: item.positive_count,
+        negativeCount: item.negative_count,
+      };
+      onClose?.();
+      router.push({
+        pathname: "/createPublication",
+        params: {
+          attachType: "habit",
+          attachDraft: JSON.stringify(attach),
+        },
+      });
+      return;
+    }
+
+    const attach: IAttach = {
+      title: item.title,
+      description: item.description ?? undefined,
+      done: (item as IToDo).done ?? false,
+    };
+    onClose?.();
+    router.push({
+      pathname: "/createPublication",
+      params: {
+        attachType: "toDo",
+        attachDraft: JSON.stringify(attach),
+      },
+    });
+  };
+
   return (
     <Modal visible={visible} onRequestClose={onClose} transparent>
       <View style={styles.overlay}>
@@ -320,6 +360,16 @@ const HabitTodoManager = ({
             </View>
           )}
           <View style={styles.actionsButton}>
+            {mode === "edit" && item?.id && (
+              <CustomButton
+                title="Compartilhar"
+                variant="outLine"
+                style={{ borderColor: Colors.light.reactNativeWhite }}
+                styleText={{ color: Colors.light.reactNativeWhite }}
+                shape="rect"
+                onPress={handleShare}
+              />
+            )}
             {mode === "edit" && (
               <CustomButton
                 title="Excluir"

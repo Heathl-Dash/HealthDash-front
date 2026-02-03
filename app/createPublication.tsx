@@ -5,7 +5,7 @@ import AttachSelectorModal from "@/components/AttachSelectorModal";
 import ImageInput from "@/components/ImageInput";
 import { Colors } from "@/constants/Colors";
 import { Entypo, MaterialCommunityIcons } from "@expo/vector-icons";
-import { Stack, useRouter } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
   Alert,
@@ -19,6 +19,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import useCreatePublication from "@/hooks/useCreatePublication";
 
 const CreatePublication = () => {
+  const { attachType: attachTypeParam, attachDraft: attachDraftParam } =
+    useLocalSearchParams<{
+      attachType?: string;
+      attachDraft?: string;
+    }>();
   const [images, setImages] = useState<string[]>([]);
   const [attachType, setAttachType] = useState<"habit" | "toDo" | null>(null);
   const [attachDraft, setAttachDraft] = useState<IAttach | null>(null);
@@ -44,6 +49,29 @@ const CreatePublication = () => {
   const openAttachModal = () => {
     setIsAttachModalVisible(true);
   };
+
+  const parseAttachDraft = (rawAttach?: string): IAttach | null => {
+    if (!rawAttach) return null;
+    try {
+      const parsed = JSON.parse(rawAttach);
+      return parsed && typeof parsed === "object" ? (parsed as IAttach) : null;
+    } catch {
+      return null;
+    }
+  };
+
+  React.useEffect(() => {
+    if (attachDraft || attachType) return;
+
+    if (attachTypeParam !== "habit" && attachTypeParam !== "toDo") return;
+    const parsedAttach = parseAttachDraft(
+      typeof attachDraftParam === "string" ? attachDraftParam : undefined
+    );
+    if (!parsedAttach) return;
+
+    setAttachType(attachTypeParam);
+    setAttachDraft(parsedAttach);
+  }, [attachDraft, attachType, attachDraftParam, attachTypeParam]);
 
   const handleSelectHabit = (habit: IHabit) => {
     const attach: IAttach = {
