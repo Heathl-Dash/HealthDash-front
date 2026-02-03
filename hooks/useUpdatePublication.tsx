@@ -1,5 +1,6 @@
 import { updatePublication } from "@/lib/profile";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import Toast from "react-native-toast-message";
 
 type UpdatePublicationInput = {
   id: number;
@@ -23,7 +24,11 @@ export const useUpdatePublication = () => {
       queryClient.invalidateQueries({ queryKey: ["profile-posts"] });
       queryClient.refetchQueries({ queryKey: ["posts"], type: "all" });
       queryClient.refetchQueries({ queryKey: ["profile-posts"], type: "all" });
+      Toast.show({type:"success", text1:"Publicação atualizada com sucesso"})
     },
+    onError: () => {
+      Toast.show({type:"error", text1:"Não foi possível atualizar a publicação"})
+    }
   });
 };
 
