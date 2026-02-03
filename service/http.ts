@@ -1,5 +1,7 @@
 import { storage } from "@/service/storage";
 import Axios from "axios";
+import { router } from "expo-router";
+
 
 export const createApi = (baseURL: string) => {
   const api = Axios.create({ baseURL });
@@ -9,7 +11,7 @@ export const createApi = (baseURL: string) => {
       const tokens = await storage.getTokens();
 
       // console.log("tokens", tokens);
-      console.log(config.url)
+      console.log(config.url);
 
       if (tokens?.access) {
         config.headers.Authorization = `Bearer ${tokens.access}`;
@@ -20,64 +22,63 @@ export const createApi = (baseURL: string) => {
     (error) => Promise.reject(error)
   );
 
-  // api.interceptors.response.use(
-  //   (response) => response,
-  //   async (error) => {
-  //     if (error.response) {
-  //       // The server responded with a status code outside the 2xx range
-  //       // console.log(error.response.data);
-  //       // console.log(error.response.status);
-  //     } else if (error.request) {
-  //       // The request was made but no response was received (e.g., network error, server down)
-  //       // console.log(error.request);
-  //     } else {
-  //       // Something happened in setting up the request that triggered an Error
-  //       // console.log("Error", error.message);
-  //     }
+  api.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+      const originalRequest = error.config;
 
-  //     const originalRequest = error.config;
+      if (
+        (error.response?.status === 401 || error.response?.status === 403) &&
+        !originalRequest._retry
+      ) {
+        originalRequest._retry = true;
 
-  //     if (
-  //       (error.response?.status === 401 || error.response?.status === 403) &&
-  //       !originalRequest._retry
-  //     ) {
-  //       originalRequest._retry = true;
+        const refresh = await storage.getRefreshToken();
 
-  //       // console.log("tentando refresh");
+        if (!refresh) {
+          await storage.removeAccessToken();
+          await storage.removeRefreshToken();
+          return Promise.reject(error);
+        }
 
-  //       const refresh = await storage.getRefreshToken();
+        try {
+          const keycloakUrl = process.env.EXPO_PUBLIC_KEYCLOAK_URL;
+          const realm = process.env.EXPO_PUBLIC_KEYCLOAK_REALM;
+          const clientId = process.env.EXPO_PUBLIC_KEYCLOAK_CLIENT_ID;
+          const tokenEndpoint = `${keycloakUrl}/realms/${realm}/protocol/openid-connect/token`;
 
-  //       if (!refresh) {
-  //         await storage.removeAccessToken();
-  //         await storage.removeRefreshToken();
-  //         return Promise.reject(error);
-  //       }
+          const params = new URLSearchParams({
+            grant_type: "refresh_token",
+            client_id: clientId || "",
+            refresh_token: refresh,
+          });
 
-  //       try {
-  //         const response = await Axios.post(
-  //           `${process.env.EXPO_PUBLIC_PROFILE_API}/profiles/token/refresh/`,
-  //           { DashboardProfileRefresh: refresh }
-  //         );
+          const response = await Axios.post(tokenEndpoint, params.toString(), {
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          });
 
-  //         const newAccess = response.data.DashboardProfileAccess;
-  //         const newRefresh = response.data.DashboardProfileRefresh;
+          const newAccess = response.data.access_token;
+          const newRefresh = response.data.refresh_token ?? refresh;
 
-  //         await storage.setAccessToken(newAccess);
-  //         await storage.setRefreshToken(newRefresh);
+          await storage.saveTokens({
+            DashboardProfileAccess: newAccess,
+            DashboardProfileRefresh: newRefresh,
+          });
 
-  //         originalRequest.headers.Authorization = `Bearer ${newAccess}`;
+          originalRequest.headers.Authorization = `Bearer ${newAccess}`;
 
-  //         return api(originalRequest);
-  //       } catch (err) {
-  //         await storage.removeAccessToken();
-  //         await storage.removeRefreshToken();
-  //         return Promise.reject(err);
-  //       }
-  //     }
+          return api(originalRequest);
+        } catch (err) {
+          await storage.removeAccessToken();
+          await storage.removeRefreshToken();
+          router.replace("/login");
+          return Promise.reject(err);
+        }
+      }
 
-  //     return Promise.reject(error);
-  //   }
-  // );
+      return Promise.reject(error);
+    }
+  );
 
   return api;
 };
