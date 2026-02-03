@@ -11,7 +11,7 @@ export const useDeleteComment = (postId: number) => {
       queryClient.invalidateQueries({ queryKey: ["post-comments", postId] });
       queryClient.invalidateQueries({ queryKey: ["posts"] });
       queryClient.invalidateQueries({ queryKey: ["profile-posts"] });
-      Toast.show({type: "sucess", text1: "Comentário deletado com sucesso"});
+      Toast.show({type: "success", text1: "Comentário deletado com sucesso"});
     },
     onError: () => {
       Toast.show({type: "error", text1: "Não foi possível apagar o comentário"});
