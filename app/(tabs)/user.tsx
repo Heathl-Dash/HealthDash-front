@@ -139,7 +139,7 @@ export default function User() {
       <ScrollView
         contentContainerStyle={{ alignItems: "flex-end", marginTop: 32, paddingBottom: 32 }}
       >
-        {!isEditing && (
+        {/* {!isEditing && (
           <CustomButton
             title={"Editar"}
             variant="outLine"
@@ -148,7 +148,7 @@ export default function User() {
             icon={<FontAwesome6 name="edit" color={Colors.light.primary} size={16} />}
             onPress={handleToggleEdit}
           />
-        )}
+        )} */}
 
         {isEditing ? (
           <UserProfileForm
