@@ -309,3 +309,17 @@ export const setFollow = (userId: number) => {
       throw err;
     });
 };
+
+export const searchProfile = (search?: string) => {
+  const url = search
+    ? `profiles/search?search=${encodeURIComponent(search)}`
+    : `profiles/search`;
+  
+  return profileApi
+    .get(url)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("Erro ao pesquisar pelo perfil: ", err);
+      throw err;
+    });
+}
