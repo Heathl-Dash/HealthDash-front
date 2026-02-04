@@ -102,7 +102,7 @@ const CreatePublication = () => {
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <Stack.Screen
         options={{
-          title: "Publicar",
+          title: "Criar publicação",
           headerRight: () => (
             <CustomButton
               variant="primary"

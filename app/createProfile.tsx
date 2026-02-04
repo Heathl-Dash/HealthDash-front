@@ -6,7 +6,7 @@ import { useProfile } from "@/hooks/useProfile";
 import { useUpdateProfile } from "@/hooks/useUpdateProfile";
 import { uploadProfileAvatar } from "@/lib/profile";
 import { storage } from "@/service/storage";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 
 import {
@@ -143,13 +143,14 @@ export default function CreateProfile() {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 30}
     >
+      <Stack.Screen options={{ title: isEdit ? "Editar perfil" : "Criar perfil" }} />
       <ScrollView
         contentContainerStyle={{ flexGrow: 1 }}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.container}>
-          <Text style={styles.title}>Meu perfil</Text>
+          <Text style={styles.title}>{isEdit ? "Editar perfil" : "Criar perfil"}</Text>
 
           {isEdit && (
             <View style={styles.avatarContainer}>
