@@ -28,15 +28,17 @@ const Publication = ({ publication, onPressComments, savedCollectionId }: Public
   const toggleCollectionMutation = useToggleCollection(publication.id);
 
   const handleEdit = () => {
-    router.push({
-      pathname: "/editPublication/[id]",
-      params: {
-        id: publication.id.toString(),
-        description: publication.description ?? "",
-        images: JSON.stringify(publication.images ?? []),
-      },
-    });
-  };
+  router.push({
+    pathname: "/editPublication/[id]",
+    params: {
+      id: publication.id.toString(),
+      description: publication.description ?? "",
+      images: JSON.stringify(publication.images ?? []),
+      attachId: publication.attach?.originalId?.toString(),
+      publicationType: publication.type,
+    },
+  });
+};
 
   const handleDelete = () => {
     Alert.alert("Excluir publicação", "Tem certeza que deseja excluir?", [
