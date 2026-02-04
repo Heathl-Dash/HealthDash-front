@@ -34,7 +34,7 @@ const Publication = ({ publication, onPressComments, savedCollectionId }: Public
       id: publication.id.toString(),
       description: publication.description ?? "",
       images: JSON.stringify(publication.images ?? []),
-      attachId: publication.attach?.originalId?.toString(),
+      attachId: publication.attach?.id?.toString(),
       publicationType: publication.type,
     },
   });
