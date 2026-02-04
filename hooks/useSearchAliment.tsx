@@ -1,7 +1,12 @@
-import { postNutritionInfo } from "@/lib/profile";
+import { postNutritionInfo } from "@/lib/nutri"; 
 import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import { useMutation } from "@tanstack/react-query";
 import { useRef, useState } from "react";
+
+// 1. Defina a interface para o que a sua função de busca espera receber
+interface SearchVariables {
+  aliment: string;
+}
 
 const useSearchAliment = () => {
   const [alimentValue, setAlimentValue] = useState("");
@@ -19,11 +24,14 @@ const useSearchAliment = () => {
     isError,
     data,
   } = useMutation({
-    mutationFn: postNutritionInfo,
-    onSuccess: (_, variables) => {
-      setSearchedAliment(variables.aliment); // Atualiza somente quando a busca é bem-sucedida
+    mutationFn: (variables: SearchVariables) => postNutritionInfo(variables),
+    onSuccess: (data, variables) => {
+      setSearchedAliment(variables.aliment);
       openSheet();
     },
+    onError: (error) => {
+      console.error("Erro na busca de nutrientes:", error);
+    }
   });
 
   const handleSearch = () => {
