@@ -1,12 +1,13 @@
 import { Colors } from "@/constants/Colors";
 import useSavedCollectionId from "@/hooks/useSavedCollectionId";
+import { searchProfile } from "@/lib/profile";
 import { DropDownOption } from "@/types/dropdownOptions";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import DropDown from "../dropDown";
 import { TextInput } from "react-native-gesture-handler";
+import DropDown from "../dropDown";
 
 interface HeaderProps {
   feedSocialMedia?: boolean;
@@ -15,7 +16,26 @@ interface HeaderProps {
 
 const Header = ({ feedSocialMedia, accountPage }: HeaderProps) => {
   const router = useRouter();
+  const [searchText, setSearchText] = useState("");
+  const [results, setResults] = useState<IsimpleProfile[]>([]);
+  const [showResults, setShowResults] = useState(false);
   const { data: savedCollectionId, isLoading: savedCollectionLoading } = useSavedCollectionId();
+
+  const handleSearch = async (text: string) => {
+    setSearchText(text);
+    if (text.trim().length > 0) {
+      try {
+        const data = await searchProfile(text);
+        setResults(data.content || []);
+        setShowResults(true);
+      } catch (err) {
+        console.error(err);
+      }
+    } else {
+      setResults([]);
+      setShowResults(false);
+    }
+  };
 
   const accountButtonClick = () => {
     router.push("/account/me");
@@ -36,17 +56,19 @@ const Header = ({ feedSocialMedia, accountPage }: HeaderProps) => {
           );
           return;
         }
-        router.push({ pathname: "/collection/[id]", params: { id: String(savedCollectionId) } });
+        router.push({
+          pathname: "/collection/[id]",
+          params: { id: String(savedCollectionId) },
+        });
       },
     },
   ];
-  
-  const [searchText, setSearchText] = useState("");
+
   return (
     <View>
       <View style={[styles.container, { justifyContent: "space-between" }]}>
         <Text style={styles.title}>HealthDash</Text>
-        <View style={styles.iconsContainer}> 
+        <View style={styles.iconsContainer}>
           {feedSocialMedia && (
             <TouchableOpacity onPress={accountButtonClick}>
               <MaterialCommunityIcons name="account-circle-outline" size={28} />
@@ -62,27 +84,52 @@ const Header = ({ feedSocialMedia, accountPage }: HeaderProps) => {
           </TouchableOpacity>
         )}
       </View>
-      
-      {feedSocialMedia && (<View style={styles.searchBar}>
-        <TextInput
-          style = {styles.input}
-          placeholder="Pesquisar usuário"
-          placeholderTextColor={Colors.dark.darkBlue}
-          value={searchText}
-          onChangeText={(text) => setSearchText(text)}
-        />
-        <View style={styles.iconsContainer}>
-          {searchText.length > 0 && (
-            <TouchableOpacity onPress={() => setSearchText('')}>
-               <MaterialCommunityIcons name="close" size={20} />
-              </TouchableOpacity>
+
+      {feedSocialMedia && (
+        <View>
+          <View style={styles.searchBar}>
+            <TextInput
+              style={styles.input}
+              placeholder="Pesquisar usuário"
+              placeholderTextColor={Colors.dark.darkBlue}
+              value={searchText}
+              onChangeText={handleSearch}
+              onSubmitEditing={() => handleSearch(searchText)}
+              returnKeyType="search"
+            />
+            <View style={styles.iconsContainer}>
+              {searchText.length > 0 && (
+                <TouchableOpacity onPress={() => setSearchText("")}>
+                  <MaterialCommunityIcons name="close" size={20} />
+                </TouchableOpacity>
+              )}
+            </View>
+          </View>
+
+          {showResults && results.length > 0 && (
+            <View style={styles.resultsContainer}>
+              {results.map((profile) => (
+                <TouchableOpacity
+                  key={profile.id}
+                  style={styles.resultItem}
+                  onPress={() => {
+                    setShowResults(false);
+                    setSearchText("");
+                    router.push(`/account/${profile.id}`);
+                  }}
+                >
+                  <MaterialCommunityIcons
+                    name="account-circle"
+                    size={24}
+                    color={Colors.dark.darkBlue}
+                  />
+                  <Text style={styles.resultText}>{profile.socialName}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
           )}
-          <TouchableOpacity>
-            <MaterialCommunityIcons name="magnify" size={20}/>
-          </TouchableOpacity>
         </View>
-      </View>)}
-     
+      )}
     </View>
   );
 };
@@ -114,7 +161,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    borderWidth: 1, 
+    borderWidth: 1,
     borderColor: Colors.dark.darkBlue,
     borderRadius: 8,
     padding: 10,
@@ -124,5 +171,23 @@ const styles = StyleSheet.create({
     color: Colors.dark.darkBlue,
     height: 45,
     width: "80%",
-  }
+  },
+  resultsContainer: {
+    backgroundColor: "white",
+    borderRadius: 8,
+    marginTop: 5,
+    borderWidth: 1,
+    borderColor: "#eee",
+  },
+  resultItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
+  },
+  resultText: {
+    marginLeft: 10,
+    fontSize: 16,
+  },
 });
