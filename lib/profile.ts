@@ -42,7 +42,7 @@ export const getPosts = () => {
     .get(`/posts`)
     .then((res) => res.data)
     .catch((err) => {
-      console.error("erro ao receber perfil: ", err);
+      console.error("erro ao receber posts: ", err);
       throw err;
     });
 };
@@ -73,6 +73,16 @@ export const updateProfile = (data: UpdateProfileDTO | ProfileFormDTO) => {
     .then((res) => res.data)
     .catch((err) => {
       console.error("erro ao atualizar perfil: ", err);
+      throw err;
+    });
+};
+
+export const deleteProfile = () => {
+  return profileApi
+    .delete(`/profiles/`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("erro ao deletar perfil: ", err);
       throw err;
     });
 };

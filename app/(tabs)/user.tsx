@@ -4,6 +4,7 @@ import LineChart from "@/components/LineChart";
 import UserProfileForm from "@/components/UserProfileForm";
 import { Colors } from "@/constants/Colors";
 import useAuth from "@/hooks/useAuth";
+import { useDeleteProfile } from "@/hooks/useDeleteProfile";
 import useProfile from "@/hooks/useProfile";
 import { getFitData } from "@/lib/fit";
 import { getWaterIntakes } from "@/lib/nutri";
@@ -58,9 +59,7 @@ const UserInfo = ({ user, isLoading }: UserProps) => {
         </View>
         <View style={styles.userInfoWrapper}>
           <Text style={styles.userInfoLabel}>Classificação</Text>
-          <Text>
-            {user?.imcDescription !== null ? user?.imcDescription : "Não informado"}
-          </Text>
+          <Text>{user?.imcDescription !== null ? user?.imcDescription : "Não informado"}</Text>
         </View>
       </View>
     </View>
@@ -132,6 +131,18 @@ export default function User() {
 
   const maxValueSteps = Math.max(...(fitData?.map((item) => item.burned_calories) || [0]));
   const maxYWaterSteps = Math.min(20000, Math.max(9000, maxValueSteps));
+
+  const { mutate: deleteProfileMutate, isPending } = useDeleteProfile();
+
+  const handleDelete = () => {
+  console.log("handleDelete");
+
+  deleteProfileMutate(undefined, {
+    onSuccess: async () => {
+      await handleLogout();
+    },
+  });
+};
 
   return (
     <SafeAreaView style={{ flexGrow: 1, paddingHorizontal: 30 }}>
@@ -227,7 +238,7 @@ export default function User() {
                 shape="rect"
                 iconPosition="end"
                 icon={<FontAwesome5 name="trash" size={16} color={Colors.light.redColor} />}
-                onPress={() => {}}
+                onPress={handleDelete}
               />
             </View>
           </>
