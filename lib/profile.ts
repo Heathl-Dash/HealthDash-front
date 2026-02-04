@@ -42,7 +42,7 @@ export const getPosts = () => {
     .get(`/posts`)
     .then((res) => res.data)
     .catch((err) => {
-      console.error("erro ao receber perfil: ", err);
+      console.error("erro ao receber posts: ", err);
       throw err;
     });
 };
@@ -323,3 +323,23 @@ export const searchProfile = (search?: string) => {
       throw err;
     });
 }
+
+export const getAttachById = (id: number) => {
+  return profileApi
+    .get(`/attach/${id}`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("erro ao procurar attach: ", err);
+      throw err;
+    });
+};
+
+export const uploadAttach = (id: number) => {
+  return profileApi
+    .patch(`/attach/${id}`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("erro ao editar attach: ", err);
+      throw err;
+    });
+};

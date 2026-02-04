@@ -1,7 +1,9 @@
+import Attach from "@/components/Attach";
 import CustomButton from "@/components/CustomButton";
 import CustomInput from "@/components/CustomInput";
 import ImageCarrousel from "@/components/ImageCarrousel";
 import { Colors } from "@/constants/Colors";
+import useAttachById from "@/hooks/useAttach";
 import useUpdatePublication from "@/hooks/useUpdatePublication";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useMemo, useState } from "react";
@@ -15,13 +17,18 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const EditPublication = () => {
-  const { id, description, images } = useLocalSearchParams<{
+  const { id, description, attachId, images, publicationType } = useLocalSearchParams<{
     id: string;
     description?: string;
+    attachId?: string;
     images?: string;
+    publicationType?: string
   }>();
   const router = useRouter();
   const [text, setText] = useState(description ?? "");
+
+  const attachIdNumber = attachId ? Number(attachId) : undefined;
+  const { data: attachDraft } = useAttachById(attachIdNumber);
 
   const parsedImages = useMemo(() => {
     if (!images) return [];
@@ -93,6 +100,10 @@ const EditPublication = () => {
             <View style={styles.imagesContainer}>
               <ImageCarrousel images={parsedImages} />
             </View>
+          )}
+
+          {attachDraft && (
+            <Attach attach={attachDraft} type={publicationType} />
           )}
         </View>
       </KeyboardAvoidingView>

@@ -11,7 +11,16 @@ const normalizeType = (rawType?: string): IPublication["type"] => {
 const normalizeAttach = (rawAttach?: any): IAttach | null => {
   if (!rawAttach) return null;
 
+  const id =
+    rawAttach.id ??
+    rawAttach.attachId ??
+    rawAttach.attachmentId ??
+    rawAttach.todoId ??
+    rawAttach.habitId;
+  if (id == null) return null;
+
   return {
+    id: Number(id),
     title: rawAttach.title ?? rawAttach.name ?? "",
     description: rawAttach.description ?? undefined,
     done: rawAttach.done ?? rawAttach.isDone ?? undefined,

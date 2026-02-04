@@ -1,4 +1,5 @@
 declare interface IAttach {
+  id: number;
   title: string;
   description?: string;
   done?: boolean;
